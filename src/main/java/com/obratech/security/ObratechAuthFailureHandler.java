@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Manejador de fallos de autenticación.
+ * Manejador de fallos de autenticacin.
  * Registra el intento fallido y redirige con mensaje apropiado.
  */
 @Component
@@ -31,7 +31,7 @@ public class ObratechAuthFailureHandler implements AuthenticationFailureHandler 
         if (username != null && !username.isBlank()) {
             loginAttemptService.registrarFallo(username);
 
-            // Si la cuenta quedó bloqueada por esta falla, indicarlo
+            // Si la cuenta qued bloqueada por esta falla, indicarlo
             if (loginAttemptService.estaBloqueado(username)) {
                 response.sendRedirect("/login?blocked=true");
                 return;

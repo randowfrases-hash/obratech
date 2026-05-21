@@ -3,44 +3,38 @@ package com.obratech.util;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.obratech.repository.ClienteRepository;
-import com.obratech.repository.ContratistaRepository;
+import com.obratech.entity.Perfil;
+import com.obratech.repository.PerfilRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Component
 public class CleanupRunner implements CommandLineRunner {
 
-    private final ClienteRepository clienteRepository;
-    private final ContratistaRepository contratistaRepository;
+    private final PerfilRepository perfilRepository;
 
-    public CleanupRunner(ClienteRepository clienteRepository, ContratistaRepository contratistaRepository) {
-        this.clienteRepository = clienteRepository;
-        this.contratistaRepository = contratistaRepository;
+    public CleanupRunner(PerfilRepository perfilRepository) {
+        this.perfilRepository = perfilRepository;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Eliminar clientes sin username
-        var clientes = clienteRepository.findAll();
-        long removedClientes = clientes.stream()
-                .filter(c -> c.getUsername() == null || c.getUsername().trim().isEmpty())
-                .peek(c -> clienteRepository.deleteById(c.getId()))
+        // Eliminar perfiles sin username
+        List<Perfil> perfiles = perfilRepository.findAll();
+        long removed = perfiles.stream()
+                .filter(p -> p.getUsername() == null || p.getUsername().trim().isEmpty())
+                .peek(p -> {
+                    String id = p.getId();
+                    if (id != null) perfilRepository.deleteById(id);
+                })
                 .count();
 
-        // Eliminar contratistas sin username
-        var contratistas = contratistaRepository.findAll();
-        long removedContratistas = contratistas.stream()
-                .filter(c -> c.getUsername() == null || c.getUsername().trim().isEmpty())
-                .peek(c -> contratistaRepository.deleteById(c.getId()))
-                .count();
-
-        if (removedClientes > 0 || removedContratistas > 0) {
-            System.out.println("[CleanupRunner] Removed empty Cliente rows: " + removedClientes +
-                    ", Contratista rows: " + removedContratistas);
+        if (removed > 0) {
+            System.out.println("[CleanupRunner] Eliminados " + removed + " documentos sin username de `perfiles`");
         } else {
-            System.out.println("[CleanupRunner] No empty Cliente/Contratista rows found.");
+            System.out.println("[CleanupRunner] No se encontraron documentos vacos en `perfiles`");
         }
     }
 }

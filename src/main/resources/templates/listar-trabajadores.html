@@ -1,116 +1,114 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercado de Trabajadores - ObraTech</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mercado de Trabajadores | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .table-row-hover {
+            transition: all 0.2s ease;
+        }
+        .table-row-hover:hover {
+            background: rgba(255, 152, 0, 0.05);
+        }
+    </style>
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#FF9800',
-                        'primary-light': '#FFF3E0',
-                        'background-dark': '#121212',
-                        'surface-dark': '#1A1A1A',
-                        'success': '#00A651',
-                        'danger': '#D32F2F',
-                        'warning': '#F57C00',
-                        'info': '#0097A7',
-                        'text-main-dark': '#E0E0E0',
-                        'text-secondary-dark': '#A0A0A0',
-                        'border-light': '#333333'
+                        "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1A1A1A",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
+                        "text-secondary-dark": "#A0A0A0",
                     },
-                    fontFamily: { "display": ["Work Sans", "sans-serif"] },
-                }
-            }
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
+                    },
+                },
+            },
         }
     </script>
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .sidebar-link:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-left: 3px solid #FF9800;
-        }
-    </style>
 </head>
 
-<body class="bg-background-dark font-display text-white">
-    <!-- Sidebar dynamically generated based on Role -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:flex flex-col">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span th:if="${usuario.role == 'ROLE_ADMIN'}" class="text-xl font-bold text-white">ObraTech Admin</span>
-                <span th:unless="${usuario.role == 'ROLE_ADMIN'}" class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide" th:text="${#lists.contains(usuario.roles, 'ROLE_ADMIN') ? 'ObraTech Admin' : 'ObraTech'}">ObraTech</span>
             </div>
         </div>
-
-        <!-- Role: CONTRACTOR -->
-        <nav th:if="${usuario.role == 'ROLE_CONTRACTOR'}" class="p-4 space-y-2">
-            <a th:href="@{/desboard-contratista}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Dashboard</span>
+        
+        <nav class="p-4 space-y-2 mt-4 font-display flex-1">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : (#lists.contains(usuario.roles, 'ROLE_ADMIN') ? '/admin/desboard' : '/desboard')}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium" th:text="${#lists.contains(usuario.roles, 'ROLE_ADMIN') ? 'Moderación' : 'Dashboard'}">Dashboard</span>
             </a>
-            <div class="mt-4">
-                <a th:href="@{/clientes}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">domain</span>
-                    <span class="text-text-secondary-dark">Directorio de Clientes</span>
+            
+            <a th:href="@{/trabajadores}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">engineering</span>
+                <span class="font-semibold">Trabajadores</span>
+            </a>
+
+            <div th:if="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR')}">
+                <a th:href="@{/clientes}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">domain</span>
+                    <span class="font-medium">Directorio Clientes</span>
                 </a>
-                <a th:href="@{/trabajadores}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                    <span class="material-symbols-outlined text-primary">engineering</span>
-                    <span class="text-text-main-dark font-medium">Mercado de Trabajadores</span>
-                </a>
-                <a th:href="@{/contratistas/historial}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">history</span>
-                    <span class="text-text-secondary-dark">Historial de Proyectos</span>
-                </a>
-                <a th:href="@{/contratistas/proyectos-asignados}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">folder_special</span>
-                    <span class="text-text-secondary-dark">Proyectos Activos</span>
-                </a>
-                <a th:href="@{/perfil-contratista}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">person</span>
-                    <span class="text-text-secondary-dark">Mi Perfil</span>
-                </a>
-                <a th:href="@{/postulaciones}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">assignment_turned_in</span>
-                    <span class="text-text-secondary-dark">Postularme a Proyectos</span>
+                <a th:href="@{/contratistas/proyectos-asignados}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder_special</span>
+                    <span class="font-medium">Proyectos Activos</span>
                 </a>
             </div>
         </nav>
-
-        <!-- Role: ADMIN -->
-        <nav th:if="${usuario.role == 'ROLE_ADMIN'}" class="p-4 space-y-2">
-            <a th:href="@{/admin/desboard}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Moderación general</span>
-            </a>
-            <a th:href="@{/trabajadores}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                <span class="material-symbols-outlined text-primary">engineering</span>
-                <span class="text-text-main-dark font-medium">Todos los Trabajadores</span>
-            </a>
-        </nav>
-
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white">person</span>
+        
+        <div class="p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold text-background-dark">
+                    <span th:text="${usuario != null ? usuario.username.substring(0,1).toUpperCase() : 'U'}">U</span>
                 </div>
                 <div class="flex-1 overflow-hidden">
-                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${usuario.username}">usuario</p>
-                    <p class="text-text-secondary-dark text-xs" th:text="${usuario.role == 'ROLE_ADMIN' ? 'Administrador' : 'Contratista'}">Rol</p>
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs font-semibold uppercase" th:text="${#lists.contains(usuario.roles, 'ROLE_ADMIN') ? 'Administrador' : 'Contratista'}">Rol</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -118,161 +116,179 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-3xl">group</span>
-                        Mercado de Trabajadores
-                    </h1>
-                    <p class="text-text-secondary-dark text-sm mt-1">Busca y recluta a los mejores talentos para tu obra.</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span th:if="${usuario.role == 'ROLE_ADMIN' and totalPendientes > 0}"
-                          class="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-sm font-semibold">
-                        <span class="material-symbols-outlined text-base">pending</span>
-                        <span th:text="${totalPendientes}">0</span> pendientes de aprobación
-                    </span>
-                    <a th:if="${usuario.role == 'ROLE_ADMIN'}" th:href="@{/registro}" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-orange-600 transition font-medium text-sm">
-                        <span class="material-symbols-outlined">person_add</span> Enlazar Trabajador
-                    </a>
-                </div>
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-[36px]">group</span>
+                    Mercado de Trabajadores
+                </h1>
+                <p class="text-text-secondary-dark font-medium">Busca y recluta a los mejores talentos para tu obra.</p>
+            </div>
+
+            <div class="flex items-center gap-3 shrink-0">
+                <span th:if="${#lists.contains(usuario.roles, 'ROLE_ADMIN') and totalPendientes > 0}"
+                      class="flex items-center gap-1.5 px-4 py-2.5 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-xl text-sm font-bold font-display shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+                    <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+                    <span th:text="${totalPendientes}">0</span> <span class="hidden sm:inline">pendientes</span>
+                </span>
+                <a th:if="${#lists.contains(usuario.roles, 'ROLE_ADMIN')}" th:href="@{/registro}" class="flex items-center gap-2 px-5 py-2.5 gradient-bg text-background-dark font-display font-bold rounded-xl hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1 text-sm">
+                    <span class="material-symbols-outlined text-[20px]">person_add</span> Enlazar Trabajador
+                </a>
             </div>
         </header>
 
-        <main class="p-8">
+        <main class="p-6 md:p-12 relative z-10 flex-1 max-w-7xl">
+            
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-surface-dark rounded-xl border border-border-light shadow-md p-6">
-                    <div class="flex items-center justify-between">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-text-secondary-dark text-sm font-medium">Total en Base de Datos</p>
-                            <p class="text-4xl font-bold text-primary mt-2" th:text="${#lists.size(trabajadores)}">0</p>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Total Registrados</p>
+                            <p class="text-4xl font-display font-bold text-white" th:text="${#lists.size(trabajadores)}">0</p>
                         </div>
-                        <span class="material-symbols-outlined text-primary text-5xl opacity-20">group</span>
+                        <div class="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center border border-primary/30 shadow-lg text-primary">
+                            <span class="material-symbols-outlined text-3xl">groups</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-surface-dark rounded-xl border border-border-light shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-text-secondary-dark text-sm font-medium">Disponibles</p>
-                            <p class="text-4xl font-bold text-success mt-2">
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Disponibles</p>
+                            <p class="text-4xl font-display font-bold text-green-400">
                                 <span th:text="${#lists.size(trabajadores)}">0</span>
                             </p>
                         </div>
-                        <span class="material-symbols-outlined text-success text-5xl opacity-20">verified_user</span>
+                        <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30 shadow-lg text-green-400">
+                            <span class="material-symbols-outlined text-3xl">verified_user</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-surface-dark rounded-xl border border-border-light shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-text-secondary-dark text-sm font-medium">Top Especialidad</p>
-                            <p class="text-2xl font-bold text-info mt-2 truncate">Ayudantes</p>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Especialidad Frecuente</p>
+                            <p class="text-2xl font-display font-bold text-blue-400 truncate">Ayudantes</p>
                         </div>
-                        <span class="material-symbols-outlined text-info text-5xl opacity-20">assignment</span>
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30 shadow-lg text-blue-400">
+                            <span class="material-symbols-outlined text-3xl">assignment</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Table Section -->
-            <div class="bg-surface-dark rounded-xl border border-gray-800 shadow-md overflow-hidden">
-                <div class="p-6 border-b border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h2 class="text-xl font-bold text-white">Directorio Profesional</h2>
+            <div class="glass-panel rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 class="text-xl font-display font-bold text-white">Directorio Profesional</h2>
                     
                     <!-- Search Filter -->
-                    <div class="relative w-full md:w-80">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
-                        <input type="text" id="filtroTrabajadores" placeholder="Buscar por nombre, correo u oficio..." 
-                            class="w-full bg-background-dark border border-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-primary transition text-sm">
+                    <div class="flex items-center gap-2 px-4 py-2.5 bg-surface-light border border-white/10 rounded-xl text-text-secondary-dark text-sm w-full sm:w-80 transition-colors focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50">
+                        <span class="material-symbols-outlined outline text-[20px] text-primary">search</span>
+                        <input type="text" id="filtroTrabajadores" placeholder="Buscar por nombre, correo u oficio..." class="bg-transparent border-none outline-none text-white w-full placeholder:text-text-secondary-dark/50">
                     </div>
                 </div>
 
-                <div th:if="${#lists.isEmpty(trabajadores)}" class="p-12 text-center">
-                    <span class="material-symbols-outlined text-6xl text-text-secondary-dark opacity-50 block mb-4">people_outline</span>
-                    <p class="text-text-secondary-dark text-lg">El directorio de trabajadores está vacío momentáneamente.</p>
+                <div th:if="${#lists.isEmpty(trabajadores)}" class="p-16 text-center flex flex-col items-center justify-center">
+                    <div class="w-20 h-20 bg-surface-light rounded-full flex items-center justify-center mb-4 border border-white/5 shadow-lg">
+                        <span class="material-symbols-outlined text-text-secondary-dark outline text-[40px]">people_outline</span>
+                    </div>
+                    <p class="text-lg font-display font-bold text-white mb-2">El directorio está vacío momentáneamente.</p>
                 </div>
 
                 <div th:unless="${#lists.isEmpty(trabajadores)}" class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-800/50 border-b border-gray-700">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Profesional</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Oficio</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Contacto</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Experiencia</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Estado</th>
-                                <th th:if="${usuario.role == 'ROLE_ADMIN'}" class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Aprobación</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Acciones</th>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-light/50 border-b border-white/5">
+                                <th class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Profesional</th>
+                                <th class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Oficio / Perfil</th>
+                                <th class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Contacto</th>
+                                <th class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Estado</th>
+                                <th th:if="${#lists.contains(usuario.roles, 'ROLE_ADMIN')}" class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Admin</th>
+                                <th class="px-6 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-800" id="tablaTrabajadores">
-                            <tr th:each="trabajador : ${trabajadores}" class="hover:bg-gray-800/40 transition trabajador-row">
+                        <tbody class="divide-y divide-white/5" id="tablaTrabajadores">
+                            <tr th:each="trabajador : ${trabajadores}" class="table-row-hover group trabajador-row">
+                                
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-gray-300 font-bold uppercase"
-                                             th:text="${trabajador.nombre != null and !trabajador.nombre.isEmpty()} ? #strings.substring(trabajador.nombre,0,1) : 'T'">
-                                        </div>
+                                    <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shrink-0 font-bold text-background-dark text-lg shadow-md"
+                                                th:text="${trabajador.nombre != null and !trabajador.nombre.isEmpty() ? #strings.substring(trabajador.nombre,0,1) : 'T'}">
+                                                </div>
                                         <div>
-                                            <p class="font-bold text-white text-sm searchable-text"
-                                                th:text="${trabajador.nombre != null and !trabajador.nombre.isBlank() ? (trabajador.nombre + ' ' + (trabajador.apellido ?: '')) : trabajador.username}">Nombre
+                                            <p class="font-display font-bold text-white text-sm searchable-text flex items-center gap-1.5">
+                                                <span th:text="${(trabajador.nombre ?: '') + ' ' + (trabajador.apellido ?: '') + ((trabajador.nombre == null and trabajador.apellido == null) ? trabajador.username : '')}">Nombre</span>
+                                                <span th:if="${trabajador.verificado}" class="inline-flex items-center text-primary" title="Trabajador Verificado">
+                                                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                                                </span>
                                             </p>
-                                            <!-- Badge solo admin para ver estado de aprobación -->
-                                            <span th:if="${usuario.role == 'ROLE_ADMIN' and !trabajador.activo}"
-                                                  class="inline-block mt-1 px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">
-                                                ⏳ Pendiente aprobación
+                                            <span th:if="${#lists.contains(usuario.roles, 'ROLE_ADMIN') and !trabajador.activo}"
+                                                  class="inline-flex mt-1 items-center gap-1 px-2 py-0.5 bg-yellow-500/10 text-yellow-400 text-[10px] uppercase font-bold tracking-wider rounded-md border border-yellow-500/20">
+                                                <span class="material-symbols-outlined text-[12px]">schedule</span> Pendiente
                                             </span>
                                         </div>
                                     </div>
                                 </td>
+
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20 searchable-text"
-                                        th:text="${trabajador.oficio != null ? trabajador.oficio : 'Sin especificar'}">
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-300 searchable-text" th:text="${trabajador.email}"></p>
-                                    <p class="text-xs text-gray-500" th:text="${trabajador.telefono}"></p>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-gray-300 text-sm font-medium"
-                                        th:text="${trabajador.experiencia != null ? trabajador.experiencia + ' años' : '0 años'}">
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-1.5" th:if="${trabajador.disponibilidad == true}">
-                                        <span class="w-2 h-2 rounded-full bg-success"></span>
-                                        <span class="text-xs font-medium text-success">Disponible</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5" th:unless="${trabajador.disponibilidad == true}">
-                                        <span class="w-2 h-2 rounded-full bg-danger"></span>
-                                        <span class="text-xs font-medium text-danger">Ocupado</span>
+                                    <div class="flex flex-col gap-1.5 items-start">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-surface-light border border-white/10 text-white searchable-text"
+                                            th:text="${trabajador.oficio != null ? trabajador.oficio : 'Sin oficio registrado'}">
+                                        </span>
+                                        <span class="text-xs text-text-secondary-dark font-medium" th:text="${trabajador.experiencia != null ? trabajador.experiencia + ' años exp.' : 'N/A'}">0 años exp.</span>
                                     </div>
                                 </td>
+
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <p class="text-sm text-text-secondary-dark searchable-text flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">mail</span><span th:text="${trabajador.email}">correo</span></p>
+                                        <p class="text-xs text-text-secondary-dark flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">call</span><span th:text="${trabajador.telefono}">tel</span></p>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full" th:if="${trabajador.disponibilidad == true}">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                        <span class="text-[11px] font-display font-bold uppercase tracking-wider text-green-400">Disponible</span>
+                                    </div>
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full" th:unless="${trabajador.disponibilidad == true}">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                        <span class="text-[11px] font-display font-bold uppercase tracking-wider text-red-400">Ocupado</span>
+                                    </div>
+                                </td>
+
                                 <!-- Columna Aprobación: solo admin -->
-                                <td th:if="${usuario.role == 'ROLE_ADMIN'}" class="px-6 py-4">
+                                <td th:if="${#lists.contains(usuario.roles, 'ROLE_ADMIN')}" class="px-6 py-4">
                                     <form th:action="@{/admin/trabajadores/{id}/toggle(id=${trabajador.id})}" method="post">
                                         <button type="submit"
-                                            th:class="${trabajador.activo} ? 'flex items-center gap-1 px-3 py-1.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-xs font-semibold transition' : 'flex items-center gap-1 px-3 py-1.5 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded-lg text-xs font-semibold transition'">
-                                            <span class="material-symbols-outlined text-sm"
+                                            th:class="${trabajador.activo} ? 'flex items-center gap-1.5 px-3 py-1.5 bg-surface-light hover:bg-red-500/10 text-text-secondary-dark hover:text-red-400 hover:border-red-500/30 border border-white/5 rounded-lg text-xs font-semibold transition-all' : 'flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg text-xs font-semibold transition-all shadow-[0_0_10px_rgba(74,222,128,0.1)]'">
+                                            <span class="material-symbols-outlined text-[16px]"
                                                   th:text="${trabajador.activo} ? 'block' : 'check_circle'">check_circle</span>
                                             <span th:text="${trabajador.activo} ? 'Desactivar' : 'Aprobar'">Aprobar</span>
                                         </button>
                                     </form>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center space-x-2">
+
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end space-x-2">
                                         <a th:href="@{/trabajadores/{id}(id=${trabajador.id})}"
-                                            class="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition" title="Ver Perfil">
-                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-surface-light border border-white/10 text-text-secondary-dark hover:text-white hover:border-primary/50 hover:bg-primary/10 transition-colors" title="Ver Perfil">
+                                            <span class="material-symbols-outlined outline text-[20px]">visibility</span>
                                         </a>
-                                        <a th:if="${usuario.role == 'ROLE_CONTRACTOR' and trabajador.disponibilidad == true}"
+                                        <a th:if="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') and trabajador.disponibilidad == true}"
                                            th:href="@{/contratistas/contratar/{id}(id=${trabajador.id})}"
-                                            class="p-2 rounded-lg bg-primary/20 text-primary hover:bg-primary hover:text-white transition" title="Contratar Trabajador">
-                                            <span class="material-symbols-outlined text-[18px]">handshake</span>
+                                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg gradient-bg text-background-dark hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-0.5" title="Agregar a Proyecto">
+                                            <span class="material-symbols-outlined outline text-[20px]">group_add</span>
                                         </a>
                                     </div>
                                 </td>
@@ -281,6 +297,7 @@
                     </table>
                 </div>
             </div>
+
         </main>
     </div>
 

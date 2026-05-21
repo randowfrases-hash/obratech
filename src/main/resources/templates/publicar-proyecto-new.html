@@ -104,7 +104,7 @@
 
 <body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
                 <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
@@ -112,13 +112,13 @@
             </div>
         </div>
         <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}"
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                 class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
                 <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
                 <span class="text-text-secondary-dark">Dashboard</span>
             </a>
 
-            <div th:if="${session.usuario != null and session.usuario.role == 'ROLE_CLIENT'}">
+            <div th:if="${session.usuario != null and #lists.contains(session.usuario.roles, 'ROLE_CLIENT')}">
                 <a th:href="@{/proyectos/publicar}"
                     class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
                     <span class="material-symbols-outlined text-primary">construction</span>
@@ -152,7 +152,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="md:ml-64 min-h-screen">
         <!-- Header -->
         <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
             <div class="flex items-center justify-between">
@@ -217,20 +217,101 @@
                             </div>
 
                             <div>
-                                <label for="tipoProyecto" class="block text-sm font-semibold mb-2 text-text-main-dark">
+                                <label class="block text-sm font-semibold mb-4 text-text-main-dark">
                                     <span class="material-symbols-outlined align-middle text-primary text-sm">category</span>
                                     Tipo de Proyecto
                                 </label>
-                                <select id="tipoProyecto" name="tipoProyecto" th:field="*{tipoProyecto}"
-                                    class="input-field w-full p-3 rounded-lg text-white focus:outline-none"
-                                    required>
-                                    <option value="">Selecciona un tipo...</option>
-                                    <option value="Residencial">Residencial</option>
-                                    <option value="Comercial">Comercial</option>
-                                    <option value="Industrial">Industrial</option>
-                                    <option value="Institucional">Institucional</option>
-                                    <option value="Infraestructura">Infraestructura</option>
-                                </select>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <!-- Residencial -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="tipoProyecto" th:field="*{tipoProyecto}" value="Residencial" class="peer sr-only" required />
+                                        <div class="h-full flex flex-col items-center text-center gap-3 p-5 rounded-2xl border border-white/10 bg-black/40 transition-all duration-300
+                                                    group-hover:bg-primary/5 group-hover:border-primary/50
+                                                    peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.15)]">
+                                            <div class="w-14 h-14 rounded-2xl bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                        peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                                <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                             peer-checked:text-background-dark group-hover:text-primary">home</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Residencial</p>
+                                                <p class="text-[10px] text-text-secondary-dark mt-1 leading-tight">Casas, apartamentos y conjuntos.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Comercial -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="tipoProyecto" th:field="*{tipoProyecto}" value="Comercial" class="peer sr-only" />
+                                        <div class="h-full flex flex-col items-center text-center gap-3 p-5 rounded-2xl border border-white/10 bg-black/40 transition-all duration-300
+                                                    group-hover:bg-primary/5 group-hover:border-primary/50
+                                                    peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.15)]">
+                                            <div class="w-14 h-14 rounded-2xl bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                        peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                                <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                             peer-checked:text-background-dark group-hover:text-primary">storefront</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Comercial</p>
+                                                <p class="text-[10px] text-text-secondary-dark mt-1 leading-tight">Locales, centros comerciales y oficinas.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Industrial -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="tipoProyecto" th:field="*{tipoProyecto}" value="Industrial" class="peer sr-only" />
+                                        <div class="h-full flex flex-col items-center text-center gap-3 p-5 rounded-2xl border border-white/10 bg-black/40 transition-all duration-300
+                                                    group-hover:bg-primary/5 group-hover:border-primary/50
+                                                    peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.15)]">
+                                            <div class="w-14 h-14 rounded-2xl bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                        peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                                <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                             peer-checked:text-background-dark group-hover:text-primary">factory</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Industrial</p>
+                                                <p class="text-[10px] text-text-secondary-dark mt-1 leading-tight">Bodegas, fábricas y plantas de producción.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Institucional -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="tipoProyecto" th:field="*{tipoProyecto}" value="Institucional" class="peer sr-only" />
+                                        <div class="h-full flex flex-col items-center text-center gap-3 p-5 rounded-2xl border border-white/10 bg-black/40 transition-all duration-300
+                                                    group-hover:bg-primary/5 group-hover:border-primary/50
+                                                    peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.15)]">
+                                            <div class="w-14 h-14 rounded-2xl bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                        peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                                <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                             peer-checked:text-background-dark group-hover:text-primary">school</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Institucional</p>
+                                                <p class="text-[10px] text-text-secondary-dark mt-1 leading-tight">Colegios, hospitales y edificios públicos.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Infraestructura -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="tipoProyecto" th:field="*{tipoProyecto}" value="Infraestructura" class="peer sr-only" />
+                                        <div class="h-full flex flex-col items-center text-center gap-3 p-5 rounded-2xl border border-white/10 bg-black/40 transition-all duration-300
+                                                    group-hover:bg-primary/5 group-hover:border-primary/50
+                                                    peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.15)]">
+                                            <div class="w-14 h-14 rounded-2xl bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                        peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                                <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                             peer-checked:text-background-dark group-hover:text-primary">traffic</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Infraestructura</p>
+                                                <p class="text-[10px] text-text-secondary-dark mt-1 leading-tight">Vías, puentes y servicios públicos.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -271,7 +352,7 @@
                             </div>
                         </div>
 
-                        <!-- Plazo Estimado y Área Total -->
+                        <!-- Plazo Estimado y Área Total -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="plazoEstimado" class="block text-sm font-semibold mb-2 text-text-main-dark">
@@ -286,7 +367,7 @@
                             <div>
                                 <label for="areaTotal" class="block text-sm font-semibold mb-2 text-text-main-dark">
                                     <span class="material-symbols-outlined align-middle text-primary text-sm">straighten</span>
-                                    Área Total (m²)
+                                    Área Total (mÂ²)
                                 </label>
                                 <input type="number" id="areaTotal" name="areaTotal" th:field="*{areaTotal}"
                                     min="0" step="0.01" placeholder="Ej. 5000"
@@ -326,7 +407,7 @@
                                 <span class="material-symbols-outlined align-middle">publish</span>
                                 <span>Publicar Proyecto</span>
                             </button>
-                            <a th:href="@{/desboard}"
+                            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                                 class="flex-1 px-6 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-semibold transition-colors flex items-center justify-center space-x-2">
                                 <span class="material-symbols-outlined align-middle">close</span>
                                 <span>Cancelar</span>

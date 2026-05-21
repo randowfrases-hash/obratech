@@ -67,7 +67,7 @@
 
 <body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
                 <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
@@ -75,7 +75,7 @@
             </div>
         </div>
         <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}"
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                 class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
                 <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
                 <span class="text-text-secondary-dark">Dashboard</span>
@@ -100,14 +100,14 @@
                 <button type="submit"
                     class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
                     <span class="material-symbols-outlined">logout</span>
-                    <span>Cerrar Sesión</span>
+                    <span>Cerrar SesiÁÂ³n</span>
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="md:ml-64 min-h-screen">
         <!-- Header -->
         <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
             <div class="flex items-center justify-between">
@@ -127,34 +127,34 @@
                     <form th:action="@{/proyectos/{id}/editar(id=${proyecto.id})}" th:object="${proyecto}" method="post"
                         class="space-y-6">
 
-                        <!-- Título -->
+                        <!-- TÁÂ­tulo -->
                         <div>
                             <label for="titulo" class="block text-sm font-semibold mb-2 text-text-main-dark">
                                 <span class="material-symbols-outlined align-middle text-primary text-sm">label</span>
-                                Título del Proyecto
+                                TÁÂ­tulo del Proyecto
                             </label>
                             <input type="text" id="titulo" name="titulo" th:field="*{titulo}"
                                 class="input-field w-full p-3 rounded-lg text-white placeholder-gray-500 focus:outline-none"
                                 required>
                         </div>
 
-                        <!-- Descripción -->
+                        <!-- DescripciÁÂ³n -->
                         <div>
                             <label for="descripcion" class="block text-sm font-semibold mb-2 text-text-main-dark">
                                 <span class="material-symbols-outlined align-middle text-primary text-sm">description</span>
-                                Descripción
+                                DescripciÁÂ³n
                             </label>
                             <textarea id="descripcion" name="descripcion" th:field="*{descripcion}" rows="5"
                                 class="input-field w-full p-3 rounded-lg text-white placeholder-gray-500 focus:outline-none resize-none"
                                 required></textarea>
                         </div>
 
-                        <!-- Ubicación y Tipo de Proyecto -->
+                        <!-- UbicaciÁÂ³n y Tipo de Proyecto -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="ubicacion" class="block text-sm font-semibold mb-2 text-text-main-dark">
                                     <span class="material-symbols-outlined align-middle text-primary text-sm">location_on</span>
-                                    Ubicación
+                                    UbicaciÁÂ³n
                                 </label>
                                 <input type="text" id="ubicacion" name="ubicacion" th:field="*{ubicacion}"
                                     class="input-field w-full p-3 rounded-lg text-white placeholder-gray-500 focus:outline-none"
@@ -214,7 +214,7 @@
                             </div>
                         </div>
 
-                        <!-- Plazo Estimado y Área Total -->
+                        <!-- Plazo Estimado y ÁÂrea Total -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="plazoEstimado" class="block text-sm font-semibold mb-2 text-text-main-dark">
@@ -228,11 +228,22 @@
                             <div>
                                 <label for="areaTotal" class="block text-sm font-semibold mb-2 text-text-main-dark">
                                     <span class="material-symbols-outlined align-middle text-primary text-sm">straighten</span>
-                                    Área Total (m²)
+                                    ÁÂrea Total (mÁÂ²)
                                 </label>
                                 <input type="number" id="areaTotal" name="areaTotal" th:field="*{areaTotal}"
                                     min="0" step="0.01" class="input-field w-full p-3 rounded-lg text-white placeholder-gray-500 focus:outline-none">
                             </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div>
+                            <label for="observaciones" class="block text-sm font-semibold mb-2 text-text-main-dark">
+                                <span class="material-symbols-outlined align-middle text-primary text-sm">notes</span>
+                                Observaciones del Proyecto
+                            </label>
+                            <textarea id="observaciones" name="observaciones" th:field="*{observaciones}" rows="4"
+                                class="input-field w-full p-3 rounded-lg text-white placeholder-gray-500 focus:outline-none resize-none"
+                                placeholder="Escribe observaciones importantes sobre el proyecto, avances, notas o comentarios relevantes..."></textarea>
                         </div>
 
                         <!-- Botones de Acción -->

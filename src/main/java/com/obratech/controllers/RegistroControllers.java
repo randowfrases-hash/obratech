@@ -9,10 +9,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.obratech.entity.Usuario;
 import com.obratech.service.UsuarioService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.obratech.entity.Perfil;
+import com.obratech.repository.PerfilRepository;
+import com.obratech.repository.UsuarioRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import com.obratech.entity.DetallesCliente;
+import com.obratech.entity.DetallesContratista;
+import com.obratech.entity.DetallesTrabajador;
+
 @Controller
 public class RegistroControllers {
 
     private final UsuarioService usuarioService;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PerfilRepository perfilRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     public RegistroControllers(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -27,12 +43,12 @@ public class RegistroControllers {
     public String procesarRegistro(
             @RequestParam String username,
             @RequestParam String password,
-            @RequestParam(defaultValue = "none") String role,
+            @RequestParam(name = "roles", required = false) java.util.List<String> rolesList,
             Model model) {
 
-        // Validación extra server-side por seguridad
-        if (role.equals("none")) {
-            model.addAttribute("mensaje", "Debes seleccionar un tipo de usuario.");
+        // Validacin extra server-side por seguridad
+        if (rolesList == null || rolesList.isEmpty()) {
+            model.addAttribute("mensaje", "Debes seleccionar al menos un tipo de usuario.");
             return "registro";
         }
 
@@ -40,19 +56,130 @@ public class RegistroControllers {
             Usuario nuevo = new Usuario();
             nuevo.setUsername(username.trim().toLowerCase());
             nuevo.setPassword(password);
-            nuevo.setRole(role);
+            
+            java.util.Set<String> setRoles = new java.util.HashSet<>(rolesList);
+            nuevo.setRoles(setRoles);
 
             usuarioService.register(nuevo);
+            System.out.println("[REGISTRO] Usuario registrado exitosamente: " + username);
 
-            // Redirige al login con mensaje de éxito
+            // Redirige al login con mensaje de xito
             return "redirect:/login?registered=true";
 
         } catch (IllegalArgumentException ex) {
+            System.err.println("[REGISTRO] Error de validacin: " + ex.getMessage());
             model.addAttribute("mensaje", ex.getMessage());
+            model.addAttribute("tipoMensaje", "error");
             return "registro";
         } catch (Exception ex) {
-            model.addAttribute("mensaje", "Ocurrió un error inesperado. Por favor intenta de nuevo.");
+            System.err.println("[REGISTRO] Error inesperado: " + ex.getMessage());
+            ex.printStackTrace();
+            model.addAttribute("mensaje", "Ocurrió un error inesperado: " + ex.getMessage());
+            model.addAttribute("tipoMensaje", "error");
             return "registro";
+        }
+    }
+
+    @GetMapping("/completar-registro-oauth2")
+    public String mostrarCompletarRegistro(HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        
+        // Si no hay usuario en sesión, al login
+        if (usuario == null) return "redirect:/login";
+
+        // Si ya tiene roles de negocio, no debería estar aquí (opcional)
+        boolean tieneRolesNegocio = usuario.getRoles() != null && usuario.getRoles().stream()
+                .anyMatch(r -> r.equals("ROLE_CLIENT") || r.equals("ROLE_CONTRACTOR") || r.equals("ROLE_WORKER"));
+        
+        if (tieneRolesNegocio && !usuario.getRoles().contains("ROLE_GUEST")) {
+            return "redirect:/desboard";
+        }
+
+        return "completar-registro-oauth2";
+    }
+
+    @PostMapping("/completar-registro-oauth2")
+    public String procesarCompletarRegistro(
+            @RequestParam(name = "roles", required = false) java.util.List<String> rolesList,
+            @RequestParam String password,
+            HttpSession session,
+            HttpServletRequest request,
+            Model model) {
+
+        Usuario sessionUsuario = (Usuario) session.getAttribute("usuario");
+        if (sessionUsuario == null) return "redirect:/login";
+
+        if (rolesList == null || rolesList.isEmpty()) {
+            model.addAttribute("mensaje", "Debes seleccionar al menos un rol para continuar.");
+            return "completar-registro-oauth2";
+        }
+
+        if (password == null || password.length() < 8) {
+            model.addAttribute("mensaje", "La contraseña debe tener al menos 8 caracteres.");
+            return "completar-registro-oauth2";
+        }
+
+        try {
+            // Buscar usuario real por email para asegurar persistencia
+            Usuario dbUsuario = usuarioRepository.findByUsername(sessionUsuario.getUsername()).orElse(null);
+            if (dbUsuario == null) return "redirect:/login";
+
+            // 1. Actualizar Usuario (Roles y Password)
+            dbUsuario.setPassword(passwordEncoder.encode(password));
+            java.util.Set<String> rolesFinales = new java.util.HashSet<>();
+            for (String r : rolesList) {
+                if (r.equalsIgnoreCase("cliente")) rolesFinales.add("ROLE_CLIENT");
+                if (r.equalsIgnoreCase("contratista")) rolesFinales.add("ROLE_CONTRACTOR");
+                if (r.equalsIgnoreCase("trabajador")) rolesFinales.add("ROLE_WORKER");
+            }
+            dbUsuario.setRoles(rolesFinales);
+            dbUsuario.setActivo(true); // Permitir inicio de sesión inmediato
+            dbUsuario.setVerificado(false); // Pendiente de verificación por el admin
+            usuarioRepository.save(dbUsuario);
+
+            // 2. Crear/Actualizar Perfil unificado
+            Perfil perfil = perfilRepository.findByUsername(dbUsuario.getUsername()).orElse(new Perfil());
+            perfil.setUsername(dbUsuario.getUsername());
+            perfil.setEmail(dbUsuario.getUsername());
+            perfil.setRoles(rolesFinales);
+            perfil.setActivo(true); // Perfil activo
+            perfil.setVerificado(false); // No verificado inicialmente
+
+            String oauth2Nombre = (String) session.getAttribute("oauth2_nombre");
+            String oauth2Apellido = (String) session.getAttribute("oauth2_apellido");
+            if (perfil.getNombre() == null) perfil.setNombre(oauth2Nombre != null ? oauth2Nombre : dbUsuario.getUsername());
+            if (perfil.getApellido() == null) perfil.setApellido(oauth2Apellido != null ? oauth2Apellido : "");
+
+            // Inicializar detalles de negocio
+            if (rolesFinales.contains("ROLE_CLIENT") && perfil.getDetallesCliente() == null) {
+                perfil.setDetallesCliente(new DetallesCliente());
+            }
+            if (rolesFinales.contains("ROLE_CONTRACTOR") && perfil.getDetallesContratista() == null) {
+                DetallesContratista dc = new DetallesContratista();
+                dc.setCalificacionPromedio(0.0);
+                perfil.setDetallesContratista(dc);
+            }
+            if (rolesFinales.contains("ROLE_WORKER") && perfil.getDetallesTrabajador() == null) {
+                DetallesTrabajador dt = new DetallesTrabajador();
+                dt.setDisponibilidad(true);
+                perfil.setDetallesTrabajador(dt);
+            }
+            perfilRepository.save(perfil);
+
+            // 3. Limpiar variables de sesión del flujo de OAuth2
+            session.removeAttribute("usuario");
+            session.removeAttribute("userRole");
+            session.removeAttribute("userRoles");
+            session.removeAttribute("oauth2_nombre");
+            session.removeAttribute("oauth2_apellido");
+
+            System.out.println("[OAuth2] Registro premium completado (activo y pendiente verificación) para: " + dbUsuario.getUsername());
+            return "redirect:/login?registered=true";
+
+        } catch (Exception e) {
+            System.err.println("[OAuth2] Error en registro premium: " + e.getMessage());
+            model.addAttribute("mensaje", "Ocurrió un error al procesar tu registro. Por favor intenta de nuevo.");
+            return "completar-registro-oauth2";
         }
     }
 }

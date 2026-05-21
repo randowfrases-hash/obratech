@@ -1,6 +1,5 @@
 package com.obratech.controllers;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,57 +13,103 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.obratech.entity.Persona;
+import com.obratech.entity.Calificacion;
+import com.obratech.entity.Perfil;
 import com.obratech.entity.Proyecto;
 import com.obratech.service.CalificacionService;
-import com.obratech.service.PersonaService;
+import com.obratech.service.PerfilService;
 import com.obratech.service.ProyectoService;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
 
-    private final PersonaService personaService;
+    private final PerfilService perfilService;
     private final ProyectoService proyectoService;
     private final CalificacionService calificacionService;
 
-    public ApiController(PersonaService personaService, ProyectoService proyectoService, CalificacionService calificacionService) {
-        this.personaService = personaService;
+    public ApiController(
+            PerfilService perfilService,
+            ProyectoService proyectoService,
+            CalificacionService calificacionService) {
+
+        this.perfilService = perfilService;
         this.proyectoService = proyectoService;
         this.calificacionService = calificacionService;
     }
 
-    @GetMapping("/personas")
-    public List<Persona> listPersonas() {
-        return personaService.findAll();
+    // =========================
+    // PERFILES
+    // =========================
+
+    @GetMapping("/perfiles")
+    public List<Perfil> listPerfiles() {
+        return perfilService.findAll();
     }
 
-    @GetMapping("/personas/{id}")
-    public ResponseEntity<Persona> getPersona(@PathVariable String id) {
-        Optional<Persona> p = personaService.findById(id);
-        return p.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/perfiles/{id}")
+    public ResponseEntity<Perfil> getPerfil(@PathVariable String id) {
+
+        Optional<Perfil> perfilOpt = perfilService.findById(id);
+
+        return perfilOpt
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/personas")
-    public ResponseEntity<Persona> createPersona(@RequestBody Persona p) {
-        Persona saved = personaService.save(p);
-        return ResponseEntity.created(URI.create("/api/personas/" + saved.getId())).body(saved);
+    @PostMapping("/perfiles")
+    public ResponseEntity<Perfil> crearPerfil(@RequestBody Perfil perfil) {
+
+        if (perfil == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Perfil saved = perfilService.save(perfil);
+
+        if (saved == null || saved.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity
+                .created(java.net.URI.create("/api/perfiles/" + saved.getId()))
+                .body(saved);
     }
 
-    @PutMapping("/personas/{id}")
-    public ResponseEntity<Persona> updatePersona(@PathVariable String id, @RequestBody Persona p) {
-        Persona updated = personaService.update(id, p);
-        if (updated == null) return ResponseEntity.notFound().build();
+    @PutMapping("/perfiles/{id}")
+    public ResponseEntity<Perfil> updatePerfil(
+            @PathVariable String id,
+            @RequestBody Perfil perfil) {
+
+        if (perfil == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Perfil updated = perfilService.update(id, perfil);
+
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/personas/{id}")
-    public ResponseEntity<Void> deletePersona(@PathVariable String id) {
-        Optional<Persona> existing = personaService.findById(id);
-        if (existing.isEmpty()) return ResponseEntity.notFound().build();
-        personaService.deleteById(id);
+    @DeleteMapping("/perfiles/{id}")
+    public ResponseEntity<Void> deletePerfil(@PathVariable String id) {
+
+        Optional<Perfil> existing = perfilService.findById(id);
+
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        perfilService.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
+
+    // =========================
+    // PROYECTOS
+    // =========================
 
     @GetMapping("/proyectos")
     public List<Proyecto> listProyectos() {
@@ -73,51 +118,138 @@ public class ApiController {
 
     @GetMapping("/proyectos/{id}")
     public ResponseEntity<Proyecto> getProyecto(@PathVariable String id) {
-        Optional<Proyecto> p = proyectoService.findById(id);
-        return p.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
+        Optional<Proyecto> proyectoOpt = proyectoService.findById(id);
+
+        return proyectoOpt
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/proyectos")
-    public ResponseEntity<Proyecto> createProyecto(@RequestBody Proyecto p) {
-        Proyecto saved = proyectoService.save(p);
-        return ResponseEntity.created(URI.create("/api/proyectos/" + saved.getId())).body(saved);
+    public ResponseEntity<Proyecto> crearProyecto(@RequestBody Proyecto proyecto) {
+
+        if (proyecto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Proyecto saved = proyectoService.save(proyecto);
+
+        if (saved == null || saved.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity
+                .created(java.net.URI.create("/api/proyectos/" + saved.getId()))
+                .body(saved);
     }
 
     @PutMapping("/proyectos/{id}")
-    public ResponseEntity<Proyecto> updateProyecto(@PathVariable String id, @RequestBody Proyecto p) {
-        Proyecto updated = proyectoService.update(id, p);
-        if (updated == null) return ResponseEntity.notFound().build();
+    public ResponseEntity<Proyecto> updateProyecto(
+            @PathVariable String id,
+            @RequestBody Proyecto proyecto) {
+
+        if (proyecto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Proyecto updated = proyectoService.update(id, proyecto);
+
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/proyectos/{id}")
     public ResponseEntity<Void> deleteProyecto(@PathVariable String id) {
+
         Optional<Proyecto> existing = proyectoService.findById(id);
-        if (existing.isEmpty()) return ResponseEntity.notFound().build();
+
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         proyectoService.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
 
+    // =========================
+    // CALIFICACIONES
+    // =========================
 
-    // Calificacion endpoints
     @GetMapping("/calificaciones")
-    public List<com.obratech.entity.Calificacion> listCalificaciones() { return calificacionService.findAll(); }
-
-    @PostMapping("/calificaciones")
-    public ResponseEntity<com.obratech.entity.Calificacion> createCalificacion(@RequestBody com.obratech.entity.Calificacion c) {
-        com.obratech.entity.Calificacion saved = calificacionService.save(c);
-        return ResponseEntity.created(URI.create("/api/calificaciones/" + saved.getId())).body(saved);
+    public List<Calificacion> listCalificaciones() {
+        return calificacionService.findAll();
     }
 
-    // Optional helper: link a persona to a proyecto
-    @PostMapping("/proyectos/{proyectoId}/personas/{personaId}")
-    public ResponseEntity<Proyecto> addPersonaToProyecto(@PathVariable String proyectoId, @PathVariable String personaId) {
-        Optional<Proyecto> projOpt = proyectoService.findById(proyectoId);
-        Optional<Persona> personOpt = personaService.findById(personaId);
-        if (projOpt.isEmpty() || personOpt.isEmpty()) return ResponseEntity.notFound().build();
-        Proyecto proyecto = projOpt.get();
-        proyecto.getPersonas().add(personOpt.get());
+    @PostMapping("/calificaciones")
+    public ResponseEntity<Calificacion> crearCalificacion(
+            @RequestBody Calificacion calificacion) {
+
+        if (calificacion == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Calificacion saved = calificacionService.save(calificacion);
+
+        if (saved == null || saved.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity
+                .created(java.net.URI.create("/api/calificaciones/" + saved.getId()))
+                .body(saved);
+    }
+
+    // =========================
+    // ASIGNAR CONTRATISTA
+    // =========================
+
+    @PostMapping("/proyectos/{proyectoId}/asignar/{perfilId}")
+    public ResponseEntity<Proyecto> asignarContratista(
+            @PathVariable String proyectoId,
+            @PathVariable String perfilId) {
+
+        // Buscar proyecto
+        Optional<Proyecto> proyectoOpt =
+                proyectoService.findById(proyectoId);
+
+        // Buscar perfil
+        Optional<Perfil> perfilOpt =
+                perfilService.findById(perfilId);
+
+        // Validar existencia
+        if (proyectoOpt.isEmpty() || perfilOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Proyecto proyecto = proyectoOpt.get();
+        Perfil contratista = perfilOpt.get();
+
+        // Validar que no tenga contratista asignado
+        if (proyecto.getContratistaAsignado() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Validar máximo 5 proyectos activos
+        List<Proyecto> proyectosActivos =
+                proyectoService.findByContratistaAsignadoId(
+                        contratista.getId());
+
+        if (proyectosActivos != null
+                && proyectosActivos.size() >= 5) {
+
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Asignar contratista
+        proyecto.setContratistaAsignado(contratista);
+
         Proyecto saved = proyectoService.save(proyecto);
+
         return ResponseEntity.ok(saved);
     }
 }

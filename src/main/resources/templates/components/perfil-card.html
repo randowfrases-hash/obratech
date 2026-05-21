@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Punto 14: Tarjeta de Perfil con Badge de Verificación -->
+<!-- Uso: <div th:replace="components/perfil-card :: perfil-card(perfil=${perfil})"></div> -->
+
+<div th:fragment="perfil-card(perfil)" class="flex flex-col items-start p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
+    <!-- Encabezado con nombre y badge -->
+    <div class="flex items-center gap-2 w-full mb-3">
+        <div class="flex-1">
+            <h3 class="font-semibold text-gray-900" th:text="${perfil.nombre} + ' ' + ${perfil.apellido}"></h3>
+            <p class="text-sm text-gray-500" th:text="${perfil.detallesContratista?.especialidad} ?: 'Sin especialidad'"></p>
+        </div>
+        <!-- Badge de verificación -->
+        <div th:if="${perfil.verificado}" 
+             class="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-300">
+            <span class="material-symbols-outlined" style="font-size: 14px;">verified</span>
+            Verificado
+        </div>
+    </div>
+    
+    <!-- Información adicional -->
+    <div class="text-sm text-gray-600 space-y-1 w-full">
+        <p th:if="${perfil.detallesContratista?.calificacion}" 
+           class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-warning" style="font-size: 16px;">star</span>
+            <span th:text="${perfil.detallesContratista.calificacion}"></span>/5
+        </p>
+        <p th:if="${perfil.telefono}" 
+           class="flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size: 16px;">phone</span>
+            <span th:text="${perfil.telefono}"></span>
+        </p>
+    </div>
+</div>
+
+<!-- Variante compacta para listas -->
+<div th:fragment="perfil-list-item(perfil)" class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+    <!-- Avatar + Nombre -->
+    <div class="flex-1 flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+            <span th:text="${#strings.substring(perfil.nombre, 0, 1)}"></span>
+        </div>
+        <div>
+            <p class="font-medium text-gray-900" th:text="${perfil.nombre}"></p>
+            <p class="text-xs text-gray-500" th:text="${perfil.detallesContratista?.especialidad} ?: 'Usuario'"></p>
+        </div>
+    </div>
+    
+    <!-- Badge de verificación compacto -->
+    <div th:if="${perfil.verificado}" 
+         class="flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-white shadow-sm"
+         th:title="'Perfil verificado'">
+        <span class="material-symbols-outlined" style="font-size: 12px;">done</span>
+    </div>
+</div>
+
+<!-- Componente para mostrar perfil con calificación y badge -->
+<div th:fragment="perfil-with-rating(perfil)" class="p-3 bg-white rounded-lg border border-gray-200">
+    <div class="flex items-start justify-between">
+        <div>
+            <h4 class="font-semibold text-gray-900" th:text="${perfil.nombre}"></h4>
+            <div class="flex items-center gap-2 mt-1">
+                <!-- Especialidad -->
+                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700"
+                      th:text="${perfil.detallesContratista?.especialidad}"></span>
+                <!-- Badge de verificación -->
+                <span th:if="${perfil.verificado}" 
+                      class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined" style="font-size: 12px;">verified</span>
+                    Verificado
+                </span>
+            </div>
+        </div>
+        <!-- Calificación -->
+        <div th:if="${perfil.calificacionPromedio}" class="text-right">
+            <div class="text-lg font-bold text-warning" th:text="${#numbers.formatDecimal(perfil.calificacionPromedio, 1, 1)}"></div>
+            <p class="text-xs text-gray-500">de 5.0</p>
+        </div>
+    </div>
+</div>
+
+</html>

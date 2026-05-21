@@ -1,7 +1,7 @@
-
 package com.obratech.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.time.LocalDateTime;
@@ -13,12 +13,14 @@ public class Calificacion {
     private String id;
 
     @DBRef
-    private Persona contratista;
+    @Indexed
+    private Perfil contratista;
 
     @DBRef
     private Usuario cliente;
 
     @DBRef
+    @Indexed
     private Proyecto proyecto;
 
     private int puntuacion; // 1-5
@@ -37,11 +39,11 @@ public class Calificacion {
         this.id = id;
     }
 
-    public Persona getContratista() {
+    public Perfil getContratista() {
         return contratista;
     }
 
-    public void setContratista(Persona contratista) {
+    public void setContratista(Perfil contratista) {
         this.contratista = contratista;
     }
 

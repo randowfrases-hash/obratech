@@ -1,6 +1,7 @@
 package com.obratech.controllers;
 
 import java.util.List;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +11,7 @@ import com.obratech.entity.Proyecto;
 import com.obratech.entity.Usuario;
 import com.obratech.repository.ProyectoRepository;
 
-@Controller
+// @Controller - DESACTIVADO: ProyectoControllers ya maneja esta ruta
 public class MisProyectosController {
 
     @Autowired
@@ -28,18 +29,16 @@ public class MisProyectosController {
             return "redirect:/desboard";
         }
 
-        // Filtrar proyectos del cliente logueado
-        List<Proyecto> proyectos = proyectoRepository.findAll()
-            .stream()
-            .filter(p -> p.getCliente() != null 
-                      && p.getCliente().getUsername() != null
-                      && p.getCliente().getUsername().equals(usuario.getUsername()))
-            .toList();
+        // Filtrar proyectos del cliente logueado por ID
+        List<Proyecto> proyectos = proyectoRepository.findByClienteId(usuario.getId());
+        if (proyectos == null) {
+            proyectos = new ArrayList<>();
+        }
 
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("usuario", usuario);
         model.addAttribute("totalProyectos", proyectos.size());
 
-        return "/mis-proyectos"; // <-- asegúrate de tener este HTML en templates/clientes/
+        return "/mis-proyectos"; 
     }
 }

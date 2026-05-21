@@ -1,23 +1,47 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - Cliente | ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Perfil Cliente | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%);
+
+        .cover-photo {
+            background-image: url('https://images.unsplash.com/photo-1541888086425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
-        .profile-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #242424 100%);
-            border: 1px solid rgba(255, 152, 0, 0.2);
-            transition: all 0.3s ease;
+
+        .avatar-float {
+            transform: translateY(-50%);
+            box-shadow: 0 0 0 6px #121212, 0 10px 25px rgba(255, 152, 0, 0.4);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .avatar-float:hover {
+            transform: translateY(calc(-50% - 5px)) scale(1.02);
+        }
+
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 152, 0, 0.4);
+            box-shadow: 0 12px 24px -10px rgba(255, 152, 0, 0.2);
         }
     </style>
     <script>
@@ -27,54 +51,65 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-background-dark font-display text-white">
+
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Dashboard</span>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
             </a>
-            <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-secondary-dark">folder</span>
-                <span class="text-text-secondary-dark">Mis Proyectos</span>
+            <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder_open</span>
+                <span class="font-medium">Mis Proyectos</span>
             </a>
-            <a th:href="@{/perfil-cliente}" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                <span class="material-symbols-outlined text-primary">person</span>
-                <span class="text-primary font-medium">Mi Perfil</span>
+            <!-- Activo -->
+            <a th:href="@{/perfil-cliente}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden mt-2 border-t border-white/5 pt-4 group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">person</span>
+                <span class="font-semibold">Mi Perfil</span>
             </a>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center">
-                    <span th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}">U</span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-text-main-dark font-medium text-sm" th:text="${session.usuario.username}">Usuario</p>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs font-semibold uppercase">Cliente</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -82,135 +117,168 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a th:href="@{/desboard}" class="text-text-secondary-dark hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                    </a>
-                    <div>
-                        <h1 class="text-2xl font-bold text-white">Mi Perfil</h1>
-                        <p class="text-text-secondary-dark text-sm mt-1">Información de tu cuenta</p>
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+
+        <!-- Cover Photo -->
+        <div class="h-64 md:h-80 w-full cover-photo relative">
+            <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent"></div>
+            
+            <header class="px-6 md:px-12 py-6 relative z-10 flex justify-between items-center">
+                <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/20 px-4 py-2 rounded-xl backdrop-blur-md border border-white/10">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    <span class="font-display font-medium text-sm">Volver al Hub</span>
+                </a>
+                
+                <a th:href="@{/perfil-cliente/editar}" class="gradient-bg text-background-dark font-display font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                    <span>Editar Perfil</span>
+                </a>
+            </header>
+        </div>
+
+        <main class="px-6 md:px-12 pb-12 -mt-16 md:-mt-24 relative z-20 max-w-7xl mx-auto w-full">
+            
+            <!-- User Identity Section -->
+            <div class="flex flex-col md:flex-row items-center md:items-end gap-6 mb-12">
+                <!-- Floating Avatar -->
+                <div class="w-32 h-32 md:w-40 md:h-40 gradient-bg rounded-3xl rotate-3 avatar-float flex items-center justify-center shrink-0">
+                    <div class="w-full h-full -rotate-3 flex items-center justify-center font-display font-bold text-5xl md:text-7xl text-background-dark">
+                        <span th:text="${session.usuario != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
+                    </div>
+                </div>
+                
+                <!-- Name & Tags -->
+                <div class="flex-1 text-center md:text-left mb-2 md:mb-6">
+                    <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight" 
+                        th:text="${cliente != null && cliente.nombre != null ? cliente.nombre + ' ' + (cliente.apellido != null ? cliente.apellido : '') : session.usuario.username}">
+                        Nombre de Usuario
+                    </h1>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <span th:if="${cliente != null and cliente.verificado}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-display font-bold uppercase tracking-wide">
+                            <span class="material-symbols-outlined text-[14px]">verified</span>
+                            Cliente Verificado
+                        </span>
+                        <span th:if="${cliente == null or !cliente.verificado}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-display font-bold uppercase tracking-wide">
+                            <span class="material-symbols-outlined text-[14px] outline">pending</span>
+                            Pendiente de Verificación
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-display font-bold uppercase tracking-wide">
+                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                            Activo
+                        </span>
                     </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Content -->
-        <main class="p-8">
-            <div class="max-w-4xl mx-auto">
-                <!-- Profile Header Card -->
-                <div class="profile-card rounded-2xl p-8 mb-8">
-                    <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
-                        <!-- Avatar -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-28 h-28 gradient-bg rounded-full flex items-center justify-center shadow-lg mb-4">
-                                <span class="text-white font-bold text-5xl" th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
-                            </div>
-                            <p class="text-sm text-text-secondary-dark">Tu perfil</p>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 stat-card border border-white/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+                            <span class="material-symbols-outlined outline">folder_open</span>
                         </div>
+                    </div>
+                    <p class="text-3xl font-display font-bold text-white mb-1">0</p>
+                    <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Proyectos Publicados</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 stat-card border border-white/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                            <span class="material-symbols-outlined outline">handshake</span>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-display font-bold text-white mb-1">0</p>
+                    <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Contratos Activos</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 stat-card border border-white/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined outline">star</span>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-display font-bold text-white mb-1">5.0</p>
+                    <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Reputación</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 stat-card border border-white/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400">
+                            <span class="material-symbols-outlined outline">payments</span>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-display font-bold text-white mb-1">$0</p>
+                    <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Inversión Total</p>
+                </div>
+            </div>
 
-                        <!-- User Info -->
-                        <div class="flex-1">
-                            <div class="mb-6">
-                                <p class="text-text-secondary-dark text-sm mb-1">Nombre de Usuario</p>
-                                <h2 class="text-3xl font-bold text-white" th:text="${session.usuario.username}">usuario@ejemplo.com</h2>
+            <!-- Content Split -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Info Lateral -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-panel rounded-3xl p-8 border border-white/5">
+                        <h3 class="font-display font-bold text-xl text-white mb-8 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined outline">account_circle</span>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-text-secondary-dark text-sm mb-1">Tipo de Cuenta</p>
-                                    <p class="text-lg font-semibold text-primary">
-                                        <span th:if="${session.usuario.role == 'ROLE_CLIENT'}">Cliente / Empresa</span>
-                                        <span th:unless="${session.usuario.role == 'ROLE_CLIENT'}" th:text="${session.usuario.role}">Usuario</span>
-                                    </p>
+                            Detalles de la Cuenta
+                        </h3>
+                        
+                        <ul class="space-y-6">
+                            <li>
+                                <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Correo Electrónico</p>
+                                <div class="flex items-center gap-3 bg-surface-light/50 p-3 rounded-xl border border-white/5">
+                                    <span class="material-symbols-outlined outline text-text-secondary-dark text-[20px]">mail</span>
+                                    <p class="text-sm font-medium text-white truncate" th:text="${session.usuario.username}">correo@ejemplo.com</p>
                                 </div>
-                                <div>
-                                    <p class="text-text-secondary-dark text-sm mb-1">Estado</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                                        <span class="text-lg font-semibold text-green-400">Activo</span>
-                                    </div>
+                            </li>
+                            <li>
+                                <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Teléfono</p>
+                                <div class="flex items-center gap-3 bg-surface-light/50 p-3 rounded-xl border border-white/5">
+                                    <span class="material-symbols-outlined outline text-text-secondary-dark text-[20px]">call</span>
+                                    <p class="text-sm font-medium text-white" th:text="${cliente != null && cliente.telefono != null ? cliente.telefono : 'No especificado'}">+00 0000 0000</p>
                                 </div>
-                            </div>
-                        </div>
+                            </li>
+                            <li>
+                                <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Empresa</p>
+                                <div class="flex items-center gap-3 bg-surface-light/50 p-3 rounded-xl border border-white/5">
+                                    <span class="material-symbols-outlined outline text-text-secondary-dark text-[20px]">business</span>
+                                    <p class="text-sm font-medium text-white" th:text="${cliente != null && cliente.empresa != null ? cliente.empresa : 'Independiente'}">Independiente</p>
+                                </div>
+                            </li>
+                            <li>
+                                <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Miembro Desde</p>
+                                <div class="flex items-center gap-3 bg-surface-light/50 p-3 rounded-xl border border-white/5">
+                                    <span class="material-symbols-outlined outline text-text-secondary-dark text-[20px]">calendar_today</span>
+                                    <p class="text-sm font-medium text-white" th:text="${cliente != null && cliente.creado != null ? #temporals.format(cliente.creado, 'MMM yyyy') : 'Recientemente'}">2026</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- Account Details -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    <!-- Account Info -->
-                    <div class="profile-card rounded-2xl p-6">
-                        <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-primary">info</span>
-                            <span>Información de la Cuenta</span>
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="border-b border-gray-700 pb-4">
-                                <p class="text-text-secondary-dark text-sm mb-1">Username</p>
-                                <p class="text-text-main-dark font-medium" th:text="${session.usuario.username}">usuario</p>
+                <!-- Main Panel -->
+                <div class="lg:col-span-2">
+                    <div class="glass-panel rounded-3xl p-8 md:p-12 border border-white/5 relative overflow-hidden h-full min-h-[400px]">
+                        <!-- Deco -->
+                        <div class="absolute -right-20 -top-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+                        
+                        <div class="relative z-10 flex flex-col h-full justify-center items-center text-center">
+                            <div class="w-24 h-24 bg-surface-light rounded-3xl flex items-center justify-center mb-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-white/10 rotate-3 hover:rotate-0 transition-transform">
+                                <span class="material-symbols-outlined text-5xl text-primary">rocket_launch</span>
                             </div>
-                            <div class="border-b border-gray-700 pb-4">
-                                <p class="text-text-secondary-dark text-sm mb-1">Nombre Completo</p>
-                                <p class="text-text-main-dark font-medium" th:text="${cliente != null && cliente.nombre != null ? cliente.nombre + ' ' + (cliente.apellido != null ? cliente.apellido : '') : 'No especificado'}">Nombre y Apellido</p>
-                            </div>
-                            <div class="border-b border-gray-700 pb-4">
-                                <p class="text-text-secondary-dark text-sm mb-1">Teléfono</p>
-                                <p class="text-text-main-dark font-medium" th:text="${cliente != null && cliente.telefono != null ? cliente.telefono : 'No especificado'}">Teléfono</p>
-                            </div>
-                            <div class="border-b border-gray-700 pb-4">
-                                <p class="text-text-secondary-dark text-sm mb-1">Empresa</p>
-                                <p class="text-text-main-dark font-medium" th:text="${cliente != null && cliente.empresa != null ? cliente.empresa : 'No especificado'}">Empresa</p>
-                            </div>
-                            <div class="border-b border-gray-700 pb-4">
-                                <p class="text-text-secondary-dark text-sm mb-1">Rol</p>
-                                <div class="flex items-center space-x-2">
-                                    <span class="material-symbols-outlined text-primary text-sm">verified</span>
-                                    <p class="text-text-main-dark font-medium">Cliente Verificado</p>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-text-secondary-dark text-sm mb-1">Miembro desde</p>
-                                <p class="text-text-main-dark font-medium" th:text="${cliente != null && cliente.creado != null ? #temporals.format(cliente.creado, 'MMM yyyy') : 'Reciente'}">Noviembre 2025</p>
-                            </div>
+                            <h2 class="text-3xl font-display font-bold text-white mb-4">Impulsa tus ideas</h2>
+                            <p class="text-text-secondary-dark mb-10 max-w-md mx-auto leading-relaxed text-lg">Comienza a publicar tus proyectos hoy mismo y conecta con los mejores contratistas y trabajadores de ObraTech.</p>
+                            
+                            <a th:href="@{/proyectos/mis-proyectos}" class="gradient-bg text-background-dark font-display font-bold py-4 px-10 rounded-2xl flex items-center gap-2 hover:shadow-[0_0_30px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1 text-lg">
+                                Ir a Mis Proyectos
+                                <span class="material-symbols-outlined text-[24px]">arrow_forward</span>
+                            </a>
                         </div>
                     </div>
-
-                    <!-- Activity Stats -->
-                    <div class="profile-card rounded-2xl p-6">
-                        <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-primary">trending_up</span>
-                            <span>Mis Proyectos</span>
-                        </h3>
-                        <a th:href="@{/proyectos/mis-proyectos}" class="bg-gray-700/30 hover:bg-gray-700/50 rounded-lg p-4 cursor-pointer transition-colors block">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <span class="material-symbols-outlined text-primary text-2xl">folder_open</span>
-                                    <div>
-                                        <p class="text-text-secondary-dark text-sm">Proyectos Publicados</p>
-                                        <p class="text-2xl font-bold text-white">Ver mis proyectos →</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col md:flex-row gap-4">
-                    <a th:href="@{/perfil-cliente/editar}" class="flex-1 gradient-bg hover:opacity-90 px-6 py-3 rounded-lg text-white font-semibold transition-all flex items-center justify-center space-x-2">
-                        <span class="material-symbols-outlined">edit</span>
-                        <span>Editar Perfil</span>
-                    </a>
-                    <a th:href="@{/desboard}" class="flex-1 bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg text-white font-semibold transition-colors flex items-center justify-center space-x-2">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                        <span>Volver al Dashboard</span>
-                    </a>
                 </div>
             </div>
         </main>
     </div>
+    
 <script src="/js/obratech.js"></script>
 </body>
 </html>

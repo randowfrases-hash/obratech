@@ -68,7 +68,7 @@
 
 <body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
                 <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
@@ -108,7 +108,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="md:ml-64 min-h-screen">
         <!-- Header -->
         <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
             <div class="flex items-center justify-between">
@@ -152,7 +152,12 @@
                             <!-- Información del Postulante -->
                             <div class="md:col-span-1">
                                 <p class="text-text-secondary-dark text-sm mb-1">Postulante:</p>
-                                <p class="text-white font-medium mb-3" th:text="${post.usuario.username}">usuario</p>
+                                <p class="text-white font-medium mb-3 flex items-center gap-1.5">
+                                    <span th:text="${post.usuario.username}">usuario</span>
+                                    <span th:if="${post.usuario.verificado}" class="inline-flex items-center text-primary" title="Contratista Verificado">
+                                        <span class="material-symbols-outlined text-[16px]">verified</span>
+                                    </span>
+                                </p>
                                 <p class="text-text-secondary-dark text-sm mb-1">Fecha de Postulación:</p>
                                 <p class="text-text-main-dark text-sm" th:text="${#temporals.format(post.fechaPostulacion, 'dd/MM/yyyy HH:mm')}">--/--/---- --:--</p>
                             </div>
@@ -162,8 +167,8 @@
                                 <div>
                                     <p class="text-text-secondary-dark text-sm mb-2">Estado:</p>
                                     <span class="px-3 py-1 rounded-full text-sm font-medium"
-                                        th:classappend="${post.estado == 'PENDING' ? 'status-pending' : post.estado == 'ACCEPTED' ? 'status-accepted' : 'status-rejected'}"
-                                        th:text="${post.estado == 'PENDING' ? 'Pendiente' : post.estado == 'ACCEPTED' ? 'Aceptado' : 'Rechazado'}">
+                                        th:classappend="${post.estado.name() == 'PENDING' ? 'status-pending' : post.estado.name() == 'ACCEPTED' ? 'status-accepted' : 'status-rejected'}"
+                                        th:text="${post.estado.name() == 'PENDING' ? 'Pendiente' : post.estado.name() == 'ACCEPTED' ? 'Aceptado' : 'Rechazado'}">
                                         Estado
                                     </span>
                                 </div>
@@ -179,7 +184,7 @@
     </a>
 
     <!-- BOTONES PARA ESTADO PENDING -->
-    <div th:if="${post.estado == 'PENDING'}" class="flex gap-2 w-full">
+    <div th:if="${post.estado.name() == 'PENDING'}" class="flex gap-2 w-full">
         <form th:action="@{/postulaciones/{proyectoId}/postulantes/{postId}/aceptar(proyectoId=${post.proyecto.id}, postId=${post.id})}"
               method="post" class="flex-1">
             <button type="submit"
@@ -202,7 +207,7 @@
     </div>
 
     <!-- BOTONES PARA ESTADO ACCEPTED -->
-    <div th:if="${post.estado == 'ACCEPTED'}" class="flex gap-2 w-full">
+    <div th:if="${post.estado.name() == 'ACCEPTED'}" class="flex gap-2 w-full">
         <a th:href="@{/contratistas/por-username/{username}(username=${post.usuario.username})}"
            class="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors
                   font-medium flex items-center justify-center space-x-1">
@@ -223,7 +228,7 @@
     </div>
 
     <!-- BOTONES PARA ESTADO REJECTED -->
-    <div th:if="${post.estado == 'REJECTED'}" class="flex gap-2 w-full">
+    <div th:if="${post.estado.name() == 'REJECTED'}" class="flex gap-2 w-full">
         <form th:action="@{/postulaciones/{proyectoId}/postulantes/{postId}/eliminar(proyectoId=${post.proyecto.id}, postId=${post.id})}"
               method="post" class="flex-1"
               onsubmit="return confirm('¿Está seguro de que desea eliminar esta postulación?');">

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "usuarios")
@@ -13,27 +14,31 @@ public class Usuario implements Serializable {
     private String id;
 
     // Correo del usuario 
+    @Indexed
     private String username;
 
-    // Contraseña encriptada con BCrypt
+    // Contrasea encriptada con BCrypt
     private String password;
 
-    // Rol del usuario: ROLE_ADMIN, ROLE_CLIENT, ROLE_CONTRACTOR, ROLE_WORKER
-    private String role = "ROLE_USER";
+    // Roles del usuario: ROLE_ADMIN, ROLE_CLIENT, ROLE_CONTRACTOR, ROLE_WORKER
+    private java.util.Set<String> roles = new java.util.HashSet<>(java.util.Collections.singleton("ROLE_USER"));
 
     // Estado: activo/bloqueado 
     private boolean activo = true;
 
+    // Verificado por admin
+    private boolean verificado = false;
+
     // Intentos fallidos de login 
     private int intentosFallidos = 0;
 
-    // Fecha en que se bloqueó la cuenta temporalmente
+    // Fecha en que se bloque la cuenta temporalmente
     private LocalDateTime bloqueadoHasta;
 
-    // Fecha de creación
+    // Fecha de creacin
     private LocalDateTime creado;
 
-    // Último acceso
+    // ltimo acceso
     private LocalDateTime ultimoAcceso;
 
     public Usuario() {
@@ -42,7 +47,7 @@ public class Usuario implements Serializable {
         }
     }
 
-    // ─── Getters y Setters ────────────────────────────────────────────────────
+    //  Getters y Setters 
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -53,11 +58,28 @@ public class Usuario implements Serializable {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public java.util.Set<String> getRoles() { return roles; }
+    public void setRoles(java.util.Set<String> roles) { this.roles = roles; }
+
+    // Mtodo de conveniencia para migraciones y compatibilidad (devuelve el primero o ROLE_USER)
+    public String getRole() { 
+        if (roles == null || roles.isEmpty()) return "ROLE_USER";
+        if (roles.contains("ROLE_ADMIN")) return "ROLE_ADMIN";
+        if (roles.contains("ROLE_CLIENT")) return "ROLE_CLIENT";
+        if (roles.contains("ROLE_CONTRACTOR")) return "ROLE_CONTRACTOR";
+        if (roles.contains("ROLE_WORKER")) return "ROLE_WORKER";
+        return roles.iterator().next(); 
+    }
+    public void setRole(String role) { 
+        if (this.roles == null) this.roles = new java.util.HashSet<>();
+        this.roles.add(role); 
+    }
 
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+
+    public boolean isVerificado() { return verificado; }
+    public void setVerificado(boolean verificado) { this.verificado = verificado; }
 
     public int getIntentosFallidos() { return intentosFallidos; }
     public void setIntentosFallidos(int intentosFallidos) { this.intentosFallidos = intentosFallidos; }
@@ -73,6 +95,6 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "Usuario{id=" + id + ", username='" + username + "', role='" + role + "', activo=" + activo + "}";
+        return "Usuario{id=" + id + ", username='" + username + "', role='" + getRole() + "', activo=" + activo + ", verificado=" + verificado + "}";
     }
 }

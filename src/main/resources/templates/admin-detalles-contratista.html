@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
@@ -58,7 +58,7 @@
     <style>
         body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
         
-        /* Premium Ambient FX */
+      
         .ambient-glow {
             position: fixed;
             top: -20%; left: -10%;
@@ -83,7 +83,7 @@
             100% { transform: translateY(40px) scale(1.1); }
         }
 
-        /* Glassmorphism Classes */
+        
         .glass-panel {
             background: rgba(19, 26, 42, 0.6);
             backdrop-filter: blur(16px);
@@ -105,11 +105,11 @@
             outline: none;
         }
 
-        /* Tooltip style */
+        
         .copy-tooltip { opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         .group:hover .copy-tooltip { opacity: 1; }
 
-        /* Custom Scrollbar */
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0B0F19; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -154,7 +154,7 @@
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="w-full flex items-center justify-center lg:justify-start px-4 py-3 rounded-xl text-text-muted hover:bg-danger/10 hover:text-red-400 transition-all group border border-transparent hover:border-danger/20">
                         <span class="material-symbols-outlined text-[22px] group-hover:-translate-x-1 transition-transform">logout</span>
-                        <span class="hidden lg:block ml-4 font-medium">Cerrar Sesión</span>
+                        <span class="hidden lg:block ml-4 font-medium">Cerrar SesiÁÂ³n</span>
                     </button>
                 </form>
             </div>
@@ -180,7 +180,10 @@
                                     <div class="w-32 h-32 md:w-36 md:h-36 rounded-2xl bg-surface-dark border-4 border-surface-dark shadow-[0_0_30px_rgba(0,0,0,0.8)] flex items-center justify-center overflow-hidden group">
                                         <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                         <span class="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500 group-hover:scale-110 transition-transform duration-500" 
-                                              th:text="${contratista.nombre != null ? #strings.substring(contratista.nombre,0,1) : 'C'}">C</span>
+                                              th:if="${contratista.nombre != null and !#strings.isEmpty(contratista.nombre)}"
+                                              th:text="${#strings.substring(contratista.nombre,0,1)}">C</span>
+                                        <span class="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500 group-hover:scale-110 transition-transform duration-500" 
+                                              th:unless="${contratista.nombre != null and !#strings.isEmpty(contratista.nombre)}">C</span>
                                     </div>
                                     <!-- Status Badge -->
                                     <div class="absolute -bottom-3 -right-3 px-4 py-1.5 rounded-xl border-4 border-surface-dark font-bold text-xs shadow-lg flex items-center gap-2" 
@@ -196,7 +199,7 @@
                                     <div class="flex flex-wrap items-center gap-3">
                                         <span class="px-3 py-1 rounded-full bg-brand-admin/10 border border-brand-admin/20 text-brand-admin text-sm font-semibold flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-[16px]">engineering</span>
-                                            <span th:text="${contratista.especialidad != null and !contratista.especialidad.isEmpty() ? contratista.especialidad : 'Especialidad General'}">Especialidad</span>
+                                            <span th:text="${!#strings.isEmpty(contratista.especialidad) ? contratista.especialidad : 'Especialidad General'}">Especialidad</span>
                                         </span>
                                         <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-text-muted text-sm flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-[16px]">shield_person</span>
@@ -260,13 +263,13 @@
                                 
                                 <!-- Phone -->
                                 <div>
-                                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1 pl-1">Teléfono Principal</p>
+                                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1 pl-1">TelÁ©fono Principal</p>
                                     <div class="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-white/5 hover:border-white/10 transition-colors">
                                         <div class="flex items-center gap-3 overflow-hidden">
                                             <div class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success flex-shrink-0">
                                                 <span class="material-symbols-outlined text-[18px]">call</span>
                                             </div>
-                                            <span id="txt-phone" class="text-sm font-semibold text-white truncate" th:text="${contratista.telefono != null ? contratista.telefono : 'N/A'}">Teléfono</span>
+                                            <span id="txt-phone" class="text-sm font-semibold text-white truncate" th:text="${contratista.telefono != null ? contratista.telefono : 'N/A'}">TelÁ©fono</span>
                                         </div>
                                         <button onclick="copyToClipboard('txt-phone', this)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 text-text-muted hover:text-white transition-colors relative group/btn">
                                             <span class="icon-copy material-symbols-outlined text-[18px]">content_copy</span>
@@ -277,13 +280,13 @@
 
                                 <!-- Location -->
                                 <div>
-                                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1 pl-1">Sede / Ubicación</p>
+                                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1 pl-1">Sede / UbicaciÁÂ³n</p>
                                     <div class="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-white/5 hover:border-white/10 transition-colors">
                                         <div class="flex items-center gap-3 overflow-hidden">
                                             <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
                                                 <span class="material-symbols-outlined text-[18px]">location_on</span>
                                             </div>
-                                            <span id="txt-loc" class="text-sm font-semibold text-white break-words" th:text="${contratista.ubicacion != null ? contratista.ubicacion : 'Sin registrar'}">Ubicación</span>
+                                            <span id="txt-loc" class="text-sm font-semibold text-white break-words" th:text="${contratista.ubicacion != null ? contratista.ubicacion : 'Sin registrar'}">UbicaciÁÂ³n</span>
                                         </div>
                                     </div>
                                 </div>
@@ -295,6 +298,15 @@
                                         <span id="txt-id" th:text="${contratista.id}">12345-abcde</span>
                                         <span class="material-symbols-outlined text-[14px] opacity-0 group-hover/id:opacity-100 transition-opacity">content_copy</span>
                                     </div>
+                                </div>
+
+                                <!-- Legal/CV Document -->
+                                <div class="pt-2" th:if="${!#strings.isEmpty(contratista.cvUrl)}">
+                                    <p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1 pl-1">Documentos Legales</p>
+                                    <a th:href="@{/trabajadores/cv/{id}(id=${contratista.cvUrl})}" class="flex items-center justify-center w-full gap-2 p-2 rounded-lg border border-primary/30 bg-primary/10 text-xs font-bold text-primary hover:bg-primary/20 transition-all">
+                                        <span class="material-symbols-outlined text-[16px]">file_download</span>
+                                        Ver Estatutos / CV
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -310,7 +322,7 @@
                                 <span class="material-symbols-outlined text-4xl text-primary/30 mb-2 group-hover:scale-110 transition-transform duration-500">military_tech</span>
                                 <div class="flex items-baseline gap-1">
                                     <p class="counter-val text-5xl font-black text-white" th:attr="data-val=${contratista.experiencia != null ? contratista.experiencia : 0}">0</p>
-                                    <span class="text-lg font-bold text-text-muted"> Años</span>
+                                    <span class="text-lg font-bold text-text-muted"> AÁÂ±os</span>
                                 </div>
                                 <p class="text-xs uppercase tracking-widest font-bold text-primary mt-1">Experiencia Comprobada</p>
                             </div>
@@ -322,7 +334,7 @@
                                     <p class="text-5xl font-black text-white" th:text="${contratista.calificacionPromedio != null ? contratista.calificacionPromedio : '0.0'}">0.0</p>
                                     <span class="text-lg font-bold text-text-muted"> / 5.0</span>
                                 </div>
-                                <p class="text-xs uppercase tracking-widest font-bold text-secondary mt-1">Reputación Promedio</p>
+                                <p class="text-xs uppercase tracking-widest font-bold text-secondary mt-1">ReputaciÁÂ³n Promedio</p>
                             </div>
                         </div>
 
@@ -330,13 +342,13 @@
                         <div class="glass-panel p-8 rounded-3xl">
                             <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-brand-admin">description</span>
-                                Descripción / Perfil
+                                Descripcion / Perfil
                             </h3>
                             <div class="text-gray-300 text-sm leading-relaxed p-5 bg-black/20 rounded-2xl border border-white/5 shadow-inner">
-                                <p th:if="${contratista.descripcion != null and !contratista.descripcion.isEmpty()}" th:text="${contratista.descripcion}"></p>
-                                <p th:if="${contratista.descripcion == null or contratista.descripcion.isEmpty()}" class="italic text-text-muted flex items-center gap-2">
+                                <p th:if="${!#strings.isEmpty(contratista.descripcion)}" th:text="${contratista.descripcion}"></p>
+                                <p th:if="${#strings.isEmpty(contratista.descripcion)}" class="italic text-text-muted flex items-center gap-2">
                                     <span class="material-symbols-outlined">info</span>
-                                    El perfil corporativo de este contratista aún no cuenta con una descripción detallada.
+                                    El perfil corporativo de este contratista aÁÂºn no cuenta con una descripciÁÂ³n detallada.
                                 </p>
                             </div>
                         </div>
@@ -352,7 +364,7 @@
                                 <!-- Empty state -->
                                 <div th:if="${#lists.isEmpty(calificaciones)}" class="text-sm text-text-muted italic p-6 bg-black/20 rounded-2xl border border-white/5 border-dashed flex flex-col items-center justify-center text-center">
                                     <span class="material-symbols-outlined text-3xl mb-2 opacity-50">comments_disabled</span>
-                                    El sistema no registra valoraciones para las obras de este contratista todavía.
+                                    El sistema no registra valoraciones para las obras de este contratista todavia.
                                 </div>
                                 
                                 <!-- Data list -->
@@ -367,13 +379,11 @@
                                     <p class="text-sm text-gray-200 italic leading-relaxed border-l-2 border-secondary pl-3 ml-1">"<span th:text="${calif.comentario}"></span>"</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Proyectos y Personal Asignado -->
+                                       <!-- Proyectos del Contratista con Observaciones -->
                         <div class="glass-panel p-8 rounded-3xl">
                             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">construction</span>
-                                Proyectos y Personal Asignado
+                                Proyectos Asignados
                             </h3>
 
                             <div th:if="${proyectosDelContratista == null or #lists.isEmpty(proyectosDelContratista)}"
@@ -390,36 +400,26 @@
                                         <p class="text-xs text-text-muted mt-1" th:text="${proyecto.ubicacion ?: 'Sin ubicación'}">Ciudad, Barrio</p>
                                     </div>
                                     <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest"
-                                          th:text="${proyecto.estadoEjecucion ?: 'Pendiente'}">Estado</span>
+                                          th:text="${proyecto.estadoEjecucion ?: 'PENDIENTE'}">Estado</span>
                                 </div>
+                                <!-- Observaciones del Proyecto -->
                                 <div class="p-5">
-                                    <p class="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">
-                                        <span class="material-symbols-outlined text-[14px] align-middle mr-1">group</span>
-                                        Trabajadores en Obra
+                                    <p class="text-xs font-bold text-text-muted uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[14px] align-middle">notes</span>
+                                        Observaciones
                                     </p>
-                                    <div th:if="${#lists.isEmpty(proyecto.trabajadoresAsignados)}"
-                                         class="text-xs text-text-muted italic py-4 bg-black/20 rounded-xl text-center">
-                                        No hay trabajadores asignados a este proyecto.
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <div th:each="trab : ${proyecto.trabajadoresAsignados}"
-                                             class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 transition-colors group">
-                                            <div class="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-primary font-bold shadow-inner shrink-0"
-                                                 th:text="${trab.nombre != null ? #strings.substring(trab.nombre,0,1) : 'T'}">T</div>
-                                            <div class="overflow-hidden">
-                                                <p class="text-sm font-bold text-white truncate"
-                                                   th:text="${(trab.nombre ?: '') + ' ' + (trab.apellido ?: '')}">Nombre T.</p>
-                                                <p class="text-[10px] text-text-muted truncate"
-                                                   th:text="${trab.oficio ?: 'Sin oficio'}">Oficio</p>
-                                            </div>
-                                            <span th:if="${trab.disponibilidad}"
-                                                  class="ml-auto shrink-0 w-2 h-2 rounded-full bg-success"></span>
-                                            <span th:unless="${trab.disponibilidad}"
-                                                  class="ml-auto shrink-0 w-2 h-2 rounded-full bg-red-500"></span>
-                                        </div>
+                                    <div class="text-sm text-gray-300 leading-relaxed p-4 bg-black/20 rounded-xl border border-white/5 shadow-inner">
+                                        <p th:if="${proyecto.observaciones != null and !#strings.isEmpty(proyecto.observaciones)}"
+                                           th:text="${proyecto.observaciones}"></p>
+                                        <p th:if="${proyecto.observaciones == null or #strings.isEmpty(proyecto.observaciones)}"
+                                           class="italic text-text-muted flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-[16px]">info</span>
+                                            Sin observaciones registradas para este proyecto.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         </div>
 
                     </div>
@@ -433,7 +433,7 @@
 
     <!-- JS Modals & Scripts Area -->
 
-    <!-- Modal Confirmación de Estado -->
+    <!-- Modal ConfirmaciÁÂ³n de Estado -->
     <div id="confirmModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeConfirmModal()"></div>
         <div class="glass-panel w-full max-w-sm rounded-[2rem] p-8 relative transform scale-95 opacity-0 transition-all duration-300 text-center flex flex-col items-center" id="confirmContent">
@@ -442,8 +442,8 @@
                 <span id="confirmIcon" class="material-symbols-outlined text-4xl text-white"></span>
             </div>
             
-            <h2 id="confirmTitle" class="text-2xl font-black text-white mb-2">Confirmar Acción</h2>
-            <p id="confirmDesc" class="text-sm text-text-muted mb-8 leading-relaxed">¿Estás seguro de efectuar este cambio en la cuenta del contratista?</p>
+            <h2 id="confirmTitle" class="text-2xl font-black text-white mb-2">Confirmar AcciÁÂ³n</h2>
+            <p id="confirmDesc" class="text-sm text-text-muted mb-8 leading-relaxed">Á¿EstÁ¡s seguro de efectuar este cambio en la cuenta del contratista?</p>
             
             <div class="flex gap-3 w-full">
                 <button onclick="closeConfirmModal()" type="button" class="flex-1 py-3.5 rounded-xl bg-surface-dark border border-white/10 text-white font-bold hover:bg-white/5 transition-colors">Cancelar</button>
@@ -462,19 +462,19 @@
 
             <div class="mb-8">
                 <h2 class="text-2xl font-black text-white mb-2">Mensaje del Sistema</h2>
-                <p class="text-sm text-text-muted">Enviar una notificación directa al contratista.</p>
+                <p class="text-sm text-text-muted">Enviar una notificaciÁÂ³n directa al contratista.</p>
             </div>
 
             <form id="adminMsgForm" class="space-y-5" onsubmit="handleAdminMessage(event)">
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Asunto</label>
-                    <input type="text" id="msgSubject" class="glass-input w-full rounded-xl py-3 px-4" placeholder="Ej. Notificación de cuenta, Revisión..." required minlength="5">
-                    <p id="errSubj" class="text-danger text-xs font-medium ml-1 mt-1 hidden text-left">Mínimo 5 caracteres.</p>
+                    <input type="text" id="msgSubject" class="glass-input w-full rounded-xl py-3 px-4" placeholder="Ej. NotificaciÁÂ³n de cuenta, RevisiÁÂ³n..." required minlength="5">
+                    <p id="errSubj" class="text-danger text-xs font-medium ml-1 mt-1 hidden text-left">MÁÂ­nimo 5 caracteres.</p>
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Cuerpo del Mensaje</label>
-                    <textarea id="msgBody" rows="5" class="glass-input w-full rounded-xl py-3 px-4 resize-none" placeholder="Escribe tu mensaje administrativo aquí..." required minlength="10"></textarea>
+                    <textarea id="msgBody" rows="5" class="glass-input w-full rounded-xl py-3 px-4 resize-none" placeholder="Escribe tu mensaje administrativo aquÁÂ­..." required minlength="10"></textarea>
                     <div class="flex justify-between mt-1 px-1">
                         <p id="errBody" class="text-danger text-xs font-medium hidden">Mensaje demasiado corto.</p>
                         <p id="msgCounter" class="text-xs text-text-muted ml-auto">0/1000</p>
@@ -526,7 +526,7 @@
                 
                 const originalIcon = icon.innerText;
                 if(icon) { icon.innerText = 'check'; icon.classList.add('text-success'); }
-                if(tooltip && tooltip.classList.contains('copy-tooltip')) { tooltip.innerText = '¡Copiado!'; tooltip.classList.add('opacity-100'); }
+                if(tooltip && tooltip.classList.contains('copy-tooltip')) { tooltip.innerText = 'Á¡Copiado!'; tooltip.classList.add('opacity-100'); }
                 
                 setTimeout(() => {
                     if(icon) { icon.innerText = originalIcon; icon.classList.remove('text-success'); }
@@ -552,16 +552,16 @@
                 cIconBox.className = 'w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(239,68,68,0.4)] bg-gradient-to-br from-red-500 to-red-800';
                 cIcon.innerText = 'gavel';
                 cTitle.innerText = 'Suspender Cuenta';
-                cDesc.innerText = 'El contratista no podrá postularse a nuevos proyectos hasta ser reactivado. ¿Confirmas esta sanción?';
+                cDesc.innerText = 'El contratista no podrÁ¡ postularse a nuevos proyectos hasta ser reactivado. Á¿Confirmas esta sanciÁÂ³n?';
                 btnProceed.className = 'flex-1 py-3.5 rounded-xl text-white font-bold shadow-lg transition-all hover:scale-105 active:scale-95 bg-danger hover:bg-red-600';
-                btnProceed.innerText = 'Sí, Suspender';
+                btnProceed.innerText = 'SÁÂ­, Suspender';
             } else {
                 cIconBox.className = 'w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.4)] bg-gradient-to-br from-green-500 to-green-700';
                 cIcon.innerText = 'check_circle';
                 cTitle.innerText = 'Restaurar Cuenta';
-                cDesc.innerText = 'Se le devolverán los privilegios completos al contratista. ¿Deseas aprobar la reactivación?';
+                cDesc.innerText = 'Se le devolverÁ¡n los privilegios completos al contratista. Á¿Deseas aprobar la reactivaciÁÂ³n?';
                 btnProceed.className = 'flex-1 py-3.5 rounded-xl text-white font-bold shadow-lg transition-all hover:scale-105 active:scale-95 bg-success hover:bg-green-600';
-                btnProceed.innerText = 'Sí, Activar';
+                btnProceed.innerText = 'SÁÂ­, Activar';
             }
         }
 
@@ -571,10 +571,10 @@
         }
 
         function executeToggle() {
-            // Animación de carga en botón
+            // AnimaciÁÂ³n de carga en botÁÂ³n
             btnProceed.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Procesando...';
             btnProceed.classList.add('opacity-80', 'pointer-events-none');
-            // Enviar formulario tras un pequeño delay gráfico
+            // Enviar formulario tras un pequeÁÂ±o delay grÁ¡fico
             setTimeout(() => {
                 document.getElementById('formToggleStatus').submit();
             }, 600);
@@ -629,7 +629,7 @@
                     // Alert Float
                     const alertDiv = document.createElement('div');
                     alertDiv.className = 'fixed bottom-6 right-6 bg-surface-dark border-l-4 border-blue-500 p-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-3 animate-[fadeInUp_0.5s_forwards] z-50';
-                    alertDiv.innerHTML = '<span class="material-symbols-outlined text-blue-500">mark_email_read</span> <div><p class="text-white font-bold text-sm">Notificación Enviada</p><p class="text-xs text-text-muted">Mensaje guardado en la bitácora del contratista.</p></div>';
+                    alertDiv.innerHTML = '<span class="material-symbols-outlined text-blue-500">mark_email_read</span> <div><p class="text-white font-bold text-sm">NotificaciÁÂ³n Enviada</p><p class="text-xs text-text-muted">Mensaje guardado en la bitÁ¡cora del contratista.</p></div>';
                     document.body.appendChild(alertDiv);
                     
                     setTimeout(() => {

@@ -3,17 +3,37 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel de Administración - ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Panel de Administración | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
         .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
-        .sidebar-link:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-left: 3px solid #FF9800;
+        .gradient-bg-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
+
+        .list-card { transition: all 0.2s ease-in-out; }
+        .list-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 152, 0, 0.3);
+            background: rgba(36, 36, 36, 0.8);
+        }
+        
+        /* Custom Scrollbar for the lists */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 152, 0, 0.5); }
     </style>
     <script>
         tailwind.config = {
@@ -22,48 +42,89 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
-                        "background-light": "#f6f7f8",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
-                    fontFamily: { "display": ["Work Sans", "sans-serif"] },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
+                    },
                 },
             },
         }
     </script>
 </head>
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
 
-<body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech Admin</span>
+                <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
+                    <span class="material-symbols-outlined text-white font-bold text-[20px]">admin_panel_settings</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech <span class="text-red-500">Admin</span></span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/admin/desboard}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                <span class="material-symbols-outlined text-primary">dashboard</span>
-                <span class="text-text-main-dark font-medium">Moderación general</span>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <!-- Resumen -->
+            <a href="#top" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-semibold">Resumen General</span>
             </a>
-            <!-- Puedes añadir más vistas de admin después -->
+            
+            <div class="mt-4 pt-4 border-t border-white/5 space-y-1">
+                <p class="px-4 text-[10px] font-bold text-text-secondary-dark uppercase tracking-[0.2em] mb-2">Moderación</p>
+                
+                <a href="#seccion-proyectos" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">grading</span>
+                    <span class="font-medium text-sm">Proyectos</span>
+                </a>
+                
+                <a href="#seccion-verificaciones" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">verified_user</span>
+                    <span class="font-medium text-sm">Verificaciones</span>
+                </a>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-white/5 space-y-1">
+                <p class="px-4 text-[10px] font-bold text-text-secondary-dark uppercase tracking-[0.2em] mb-2">Directorios</p>
+                
+                <a href="#seccion-contratistas" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">engineering</span>
+                    <span class="font-medium text-sm">Contratistas</span>
+                </a>
+                
+                <a href="#seccion-clientes" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">person</span>
+                    <span class="font-medium text-sm">Clientes</span>
+                </a>
+
+                <a href="#seccion-inactivos" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">block</span>
+                    <span class="font-medium text-sm">Inactivos</span>
+                </a>
+            </div>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white">admin_panel_settings</span>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg-red rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span class="material-symbols-outlined text-white text-[20px]">shield</span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-text-main-dark font-medium text-sm" th:text="${usuario.username}">admin</p>
-                    <p class="text-text-secondary-dark text-xs">Administrador</p>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${usuario.username}">admin</p>
+                    <p class="text-red-500 text-xs font-semibold uppercase tracking-wider">Administrador</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -71,46 +132,136 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <h1 class="text-2xl font-bold text-white">Centro de Moderación</h1>
-            <p class="text-text-secondary-dark text-sm mt-1">Supervisa y valida las funciones globales de ObraTech.</p>
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+        <!-- Header -->
+        <header class="bg-surface-dark/80 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-6 z-30 fixed top-0 right-0 left-0 md:left-64">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-0.5 tracking-tight">Centro de Moderación</h1>
+                    <p class="text-text-secondary-dark text-xs font-medium">Supervisa y valida las funciones globales de ObraTech.</p>
+                </div>
+                <div class="hidden sm:flex items-center gap-4">
+                    <!-- Formulario de Semillero 15K -->
+                    <form th:action="@{/admin/seed-15k}" method="post" onsubmit="return confirm('¿Estás seguro? Esta acción borrará los datos actuales de usuarios, proyectos, calificaciones, postulaciones y equipos, y creará 15,000 registros nuevos de prueba.')">
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-background-dark font-display font-bold text-xs flex items-center gap-2 transition-all hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px]">database</span>
+                            Generar 15k Datos
+                        </button>
+                    </form>
+                    <div class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl flex items-center gap-3">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-xs font-bold text-text-secondary-dark uppercase tracking-wider">Sistema Online</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <main class="p-8">
+        <!-- Dashboard Content -->
+        <main id="top" class="p-6 md:p-12 pt-32 md:pt-36 relative z-10 flex-1 scroll-mt-24">
+            
+            <!-- Mensajes de Alerta -->
+            <div th:if="${mensajeExito}" class="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-center gap-3">
+                <span class="material-symbols-outlined text-green-400">check_circle</span>
+                <span th:text="${mensajeExito}">Éxito</span>
+            </div>
+            <div th:if="${mensajeError}" class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-3">
+                <span class="material-symbols-outlined text-red-400">error</span>
+                <span th:text="${mensajeError}">Error</span>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="glass-panel p-6 rounded-2xl border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Total Usuarios</span>
+                        <span class="material-symbols-outlined text-blue-500">groups</span>
+                    </div>
+                    <h3 class="text-3xl font-display font-bold text-white" th:text="${statsTotalUsuarios}">0</h3>
+                    <p class="text-[10px] text-green-400 mt-2 flex items-center gap-1 font-bold">
+                        <span class="material-symbols-outlined text-[12px]">trending_up</span> Crecimiento estable
+                    </p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border-l-4 border-primary">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Proyectos</span>
+                        <span class="material-symbols-outlined text-primary">construction</span>
+                    </div>
+                    <h3 class="text-3xl font-display font-bold text-white" th:text="${statsTotalProyectos}">0</h3>
+                    <p class="text-[10px] text-text-secondary-dark mt-2 font-medium">Registrados en plataforma</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Validaciones</span>
+                        <span class="material-symbols-outlined text-yellow-500">grading</span>
+                    </div>
+                    <h3 class="text-3xl font-display font-bold text-white" th:text="${statsProyectosPendientes}">0</h3>
+                    <p class="text-[10px] text-yellow-500/80 mt-2 font-bold animate-pulse">Requieren revisión</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-text-secondary-dark text-xs font-bold uppercase tracking-wider">Pendientes</span>
+                        <span class="material-symbols-outlined text-purple-500">verified_user</span>
+                    </div>
+                    <h3 class="text-3xl font-display font-bold text-white" th:text="${statsUsuariosPendientes}">0</h3>
+                    <p class="text-[10px] text-purple-400 mt-2 font-medium">Verificación de identidad</p>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 
                 <!-- Columna: Validación de Proyectos -->
-                <div class="bg-surface-dark rounded-xl p-6 border border-gray-800 shadow-md">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">grading</span>
+                <div id="seccion-proyectos" class="glass-panel rounded-2xl p-6 md:p-8 flex flex-col h-[700px] scroll-mt-24">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                                <span class="material-symbols-outlined outline">grading</span>
+                            </div>
                             Proyectos Pendientes
                         </h2>
-                        <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium" th:text="${totalProyectos} + ' PENDIENTES'">0</span>
+                        <span class="px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse"></span> <span th:text="${totalProyectos}">0</span> PENDIENTES
+                        </span>
                     </div>
 
-                    <div class="space-y-4">
-                        <div th:if="${#lists.isEmpty(proyectosPendientes)}" class="text-center py-10 text-text-secondary-dark border border-dashed border-gray-700 rounded-lg">
-                            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">task</span>
-                            <p>No hay proyectos nuevos pendientes de validación.</p>
+                    <div class="relative mb-6">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-dark text-[20px]">search</span>
+                        <input type="text" id="busquedaProyecto" placeholder="Buscar proyecto..." class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50 text-sm">
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4">
+                        <div th:if="${#lists.isEmpty(proyectosPendientes)}" class="h-full flex flex-col items-center justify-center text-center p-8 bg-surface-light/30 rounded-2xl border border-dashed border-white/10">
+                            <span class="material-symbols-outlined text-5xl text-white/20 mb-4 outline">task</span>
+                            <p class="text-text-secondary-dark font-medium">No hay proyectos nuevos pendientes de validación.</p>
                         </div>
 
-                        <div th:each="proyecto : ${proyectosPendientes}" class="p-4 bg-gray-800/60 rounded-lg border border-gray-700 transition hover:border-gray-600">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-bold text-white mb-1" th:text="${proyecto.titulo}">Título del Proyecto</h3>
-                                <p class="text-sm text-text-secondary-dark" th:text="${proyecto.descripcion}">Descripción rápida...</p>
-                                <p class="text-xs text-primary mt-2 uppercase font-medium" th:text="'Socio: ' + ${proyecto.cliente != null ? proyecto.cliente.username : 'Genérico'}">Cliente</p>
+                        <div th:each="proyecto : ${proyectosPendientes}" class="proyecto-item list-card bg-surface-light p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white mb-1" th:text="${proyecto.titulo}">Título del Proyecto</h3>
+                                <p class="text-sm text-text-secondary-dark line-clamp-2" th:text="${proyecto.descripcion}">Descripción rápida...</p>
+                                <div class="flex items-center gap-2 mt-3">
+                                    <span class="material-symbols-outlined text-primary text-[16px]">person</span>
+                                    <p class="text-xs text-text-secondary-dark font-semibold">
+                                        <span class="text-primary font-bold uppercase tracking-wider">Socio:</span> <span th:text="${proyecto.cliente != null ? proyecto.cliente.username : 'Genérico'}">Cliente</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-end space-x-3 mt-4">
-                                <form th:action="@{/admin/proyectos/{id}/rechazar(id=${proyecto.id})}" method="post">
-                                    <button type="submit" class="px-4 py-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded transition text-sm font-medium flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-sm">block</span> Rechazar
+                            <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-white/5">
+                                <a th:href="@{/proyectos/{id}(id=${proyecto.id})}" class="flex-1 flex items-center justify-center gap-1 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-colors text-sm font-display font-bold border border-blue-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">visibility</span> Ver
+                                </a>
+                                <form th:action="@{/admin/proyectos/{id}/rechazar(id=${proyecto.id})}" method="post" class="flex-1">
+                                    <button type="submit" class="w-full flex items-center justify-center gap-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors text-sm font-display font-bold border border-red-500/20">
+                                        <span class="material-symbols-outlined text-[18px]">block</span> Rechazar
                                     </button>
                                 </form>
-                                <form th:action="@{/admin/proyectos/{id}/aprobar(id=${proyecto.id})}" method="post">
-                                    <button type="submit" class="px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded transition text-sm font-medium flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-sm">check</span> Aprobar
+                                <form th:action="@{/admin/proyectos/{id}/aprobar(id=${proyecto.id})}" method="post" class="flex-1">
+                                    <button type="submit" class="w-full flex items-center justify-center gap-1 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-xl transition-colors text-sm font-display font-bold border border-green-500/20">
+                                        <span class="material-symbols-outlined text-[18px]">check</span> Aprobar
                                     </button>
                                 </form>
                             </div>
@@ -119,51 +270,52 @@
                 </div>
 
                 <!-- Columna: Gestión de Contratistas -->
-                <div class="bg-surface-dark rounded-xl p-6 border border-gray-800 shadow-md">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">manage_accounts</span>
-                            Directorio de Contratistas
+                <div id="seccion-contratistas" class="glass-panel rounded-2xl p-6 md:p-8 flex flex-col h-[700px] scroll-mt-24">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                <span class="material-symbols-outlined outline">manage_accounts</span>
+                            </div>
+                            Directorio Contratistas
                         </h2>
-                        <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium" th:text="${totalContratistas} + ' EN SISTEMA'">0</span>
+                        <span class="px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-full text-xs font-display font-bold tracking-wide">
+                            <span th:text="${totalContratistas}">0</span> EN SISTEMA
+                        </span>
                     </div>
 
-                    <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                        <!-- Buscador -->
-                        <div class="mb-4 sticky top-0 bg-surface-dark z-10 pb-2">
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                                <input type="text" id="busquedaContratista" placeholder="Buscar por nombre o correo..." class="w-full bg-gray-800/60 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-primary transition">
-                            </div>
+                    <div class="relative mb-6">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-dark text-[20px]">search</span>
+                        <input type="text" id="busquedaContratista" placeholder="Buscar por nombre o correo..." class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50 text-sm">
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
+                        <div th:if="${#lists.isEmpty(contratistas)}" class="h-full flex flex-col items-center justify-center text-center p-8 bg-surface-light/30 rounded-2xl border border-dashed border-white/10">
+                            <span class="material-symbols-outlined text-5xl text-white/20 mb-4 outline">group_off</span>
+                            <p class="text-text-secondary-dark font-medium">No hay contratistas registrados aún.</p>
                         </div>
 
-                        <div th:if="${#lists.isEmpty(contratistas)}" class="text-center py-10 text-text-secondary-dark border border-dashed border-gray-700 rounded-lg">
-                            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">group_off</span>
-                            <p>No hay contratistas registrados aún.</p>
-                        </div>
-
-                        <div th:each="contratista : ${contratistas}" class="contratista-item flex items-center justify-between p-4 bg-gray-800/60 border border-gray-700 rounded-lg transition hover:border-gray-600">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-gray-300">engineering</span>
+                        <div th:each="contratista : ${contratistas}" class="contratista-item list-card flex items-center justify-between p-4 bg-surface-light border border-white/5 rounded-2xl">
+                            <div class="flex items-center space-x-4 min-w-0">
+                                <div class="w-10 h-10 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-text-secondary-dark text-[20px]">engineering</span>
                                 </div>
-                                <div class="flex-1">
-                                    <a th:href="@{/admin/contratistas/{id}(id=${contratista.id})}" class="hover:text-primary transition-colors inline-block">
-                                        <h3 class="text-white font-medium contratista-nombre" th:text="${contratista.nombre} + ' ' + ${contratista.apellido} + (${contratista.nombre} == null and ${contratista.apellido} == null ? ${contratista.username} : '')">Nombre Test</h3>
+                                <div class="min-w-0">
+                                    <a th:href="@{/admin/contratistas/{id}(id=${contratista.id})}" class="hover:text-primary transition-colors inline-block truncate max-w-[150px] sm:max-w-xs">
+                                        <h3 class="text-white font-display font-bold text-sm contratista-nombre truncate" th:text="${(contratista.nombre ?: '') + ' ' + (contratista.apellido ?: '') + ((contratista.nombre == null and contratista.apellido == null) ? contratista.username : '')}">Nombre</h3>
                                     </a>
-                                    <p class="text-xs text-text-secondary-dark contratista-email" th:text="${contratista.username}">test@gmail.com</p>
+                                    <p class="text-xs text-text-secondary-dark contratista-email truncate max-w-[150px] sm:max-w-xs" th:text="${contratista.username}">test@gmail.com</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <span th:if="${contratista.activo != null and contratista.activo}" class="text-[10px] text-green-400 bg-green-500/20 px-2 py-1 rounded-full font-medium uppercase tracking-wider">Activo</span>
-                                <span th:if="${contratista.activo == null or !contratista.activo}" class="text-[10px] text-red-400 bg-red-500/20 px-2 py-1 rounded-full font-medium uppercase tracking-wider">Inactivo</span>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span th:if="${contratista.activo != null and contratista.activo}" class="hidden sm:inline-flex text-[10px] text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">Activo</span>
+                                <span th:if="${contratista.activo == null or !contratista.activo}" class="hidden sm:inline-flex text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">Inactivo</span>
 
                                 <form th:action="@{/admin/contratistas/{id}/toggle(id=${contratista.id})}" method="post">
-                                    <button th:if="${contratista.activo != null and contratista.activo}" type="submit" class="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition" title="Suspender">
-                                        <span class="material-symbols-outlined">power_settings_new</span>
+                                    <button th:if="${contratista.activo != null and contratista.activo}" type="submit" class="p-2 text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-colors border border-transparent hover:border-red-500/20" title="Suspender">
+                                        <span class="material-symbols-outlined text-[20px]">power_settings_new</span>
                                     </button>
-                                    <button th:if="${contratista.activo == null or !contratista.activo}" type="submit" class="p-2 text-green-400 hover:bg-green-500/20 rounded-lg transition" title="Activar">
-                                        <span class="material-symbols-outlined">power_settings_new</span>
+                                    <button th:if="${contratista.activo == null or !contratista.activo}" type="submit" class="p-2 text-green-400 bg-green-500/10 hover:bg-green-500/20 rounded-xl transition-colors border border-transparent hover:border-green-500/20" title="Activar">
+                                        <span class="material-symbols-outlined text-[20px]">power_settings_new</span>
                                     </button>
                                 </form>
                             </div>
@@ -172,41 +324,215 @@
                 </div>
 
                 <!-- Columna: Gestión de Clientes -->
-                <div class="bg-surface-dark rounded-xl p-6 border border-gray-800 shadow-md xl:col-span-2">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">person</span>
+                <div id="seccion-clientes" class="glass-panel rounded-2xl p-6 md:p-8 xl:col-span-2 scroll-mt-24">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                                <span class="material-symbols-outlined outline">person</span>
+                            </div>
                             Directorio de Clientes
                         </h2>
-                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium" th:text="${totalClientes} + ' EN SISTEMA'">0</span>
+                        <span class="px-3 py-1.5 bg-green-500/10 border border-green-500/30 text-green-400 rounded-full text-xs font-display font-bold tracking-wide">
+                            <span th:text="${totalClientes}">0</span> EN SISTEMA
+                        </span>
                     </div>
-                    <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
-                        <div th:if="${#lists.isEmpty(clientes)}" class="text-center py-8 text-text-secondary-dark border border-dashed border-gray-700 rounded-lg">
-                            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">person_off</span>
-                            <p>No hay clientes registrados.</p>
+
+                    <div class="relative mb-6">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-dark text-[20px]">search</span>
+                        <input type="text" id="busquedaCliente" placeholder="Buscar por nombre o correo..." class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50 text-sm">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto custom-scrollbar pr-2">
+                        <div th:if="${#lists.isEmpty(clientes)}" class="col-span-full text-center py-10 bg-surface-light/30 rounded-2xl border border-dashed border-white/10">
+                            <span class="material-symbols-outlined text-4xl text-white/20 mb-2 outline">person_off</span>
+                            <p class="text-text-secondary-dark font-medium">No hay clientes registrados.</p>
                         </div>
-                        <div th:each="cliente : ${clientes}" class="flex items-center justify-between p-4 bg-gray-800/60 border border-gray-700 rounded-lg hover:border-gray-600 transition">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-gray-300 text-base">person</span>
+                        
+                        <div th:each="cliente : ${clientes}" class="cliente-item list-card flex items-center justify-between p-4 bg-surface-light border border-white/5 rounded-2xl">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-white/5 rounded-full border border-white/10 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-text-secondary-dark text-[20px] outline">person</span>
                                 </div>
-                                <div>
-                                    <p class="text-white font-medium text-sm"
-                                       th:text="${(cliente.nombre ?: '') + ' ' + (cliente.apellido ?: cliente.username)}">Nombre</p>
-                                    <p class="text-text-secondary-dark text-xs" th:text="${cliente.username}">username</p>
+                                <div class="min-w-0">
+                                    <p class="text-white font-display font-bold text-sm truncate" th:text="${(cliente.nombre ?: '') + ' ' + (cliente.apellido ?: cliente.username)}">Nombre</p>
+                                    <p class="text-text-secondary-dark text-xs truncate" th:text="${cliente.username}">username</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span th:if="${cliente.activo != null and cliente.activo}" class="text-[10px] text-green-400 bg-green-500/20 px-2 py-1 rounded-full font-medium uppercase">Activo</span>
-                                <span th:if="${cliente.activo == null or !cliente.activo}" class="text-[10px] text-red-400 bg-red-500/20 px-2 py-1 rounded-full font-medium uppercase">Inactivo</span>
+                            <div class="flex items-center gap-2 shrink-0">
                                 <form th:action="@{/admin/clientes/{id}/toggle(id=${cliente.id})}" method="post">
                                     <button type="submit"
-                                            th:class="${cliente.activo != null and cliente.activo} ? 'p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition' : 'p-2 text-green-400 hover:bg-green-500/20 rounded-lg transition'"
+                                            th:class="${cliente.activo != null and cliente.activo} ? 'p-2 text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-colors border border-transparent hover:border-red-500/20' : 'p-2 text-green-400 bg-green-500/10 hover:bg-green-500/20 rounded-xl transition-colors border border-transparent hover:border-green-500/20'"
                                             th:title="${cliente.activo != null and cliente.activo} ? 'Suspender' : 'Activar'">
-                                        <span class="material-symbols-outlined">power_settings_new</span>
+                                        <span class="material-symbols-outlined text-[18px]">power_settings_new</span>
                                     </button>
                                 </form>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna: Verificación de Usuarios -->
+                <div id="seccion-verificaciones" class="glass-panel rounded-2xl p-6 md:p-8 xl:col-span-2 scroll-mt-24">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                <span class="material-symbols-outlined outline">verified_user</span>
+                            </div>
+                            Verificación de Usuarios
+                        </h2>
+                        <span class="px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></span>
+                            <span th:text="${#lists.size(contratistasNoVerificados) + #lists.size(clientesNoVerificados) + #lists.size(trabajadoresNoVerificados)}">0</span> PENDIENTES
+                        </span>
+                    </div>
+
+                    <div class="relative mb-6">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-dark text-[20px]">search</span>
+                        <input type="text" id="busquedaVerificacion" placeholder="Filtrar por nombre o correo..." class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50 text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar pr-2">
+                        <div th:if="${#lists.isEmpty(contratistasNoVerificados) and #lists.isEmpty(clientesNoVerificados) and #lists.isEmpty(trabajadoresNoVerificados)}" class="col-span-full text-center py-10 bg-surface-light/30 rounded-2xl border border-dashed border-white/10">
+                            <span class="material-symbols-outlined text-4xl text-white/20 mb-2 outline">check_circle</span>
+                            <p class="text-text-secondary-dark font-medium">Todos los usuarios están verificados.</p>
+                        </div>
+
+                        <!-- Contratistas no verificados -->
+                        <div th:each="contratista : ${contratistasNoVerificados}" class="verificacion-item list-card p-5 bg-surface-light rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <div class="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-blue-400 text-[20px] outline">engineering</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="text-white font-display font-bold text-sm truncate" th:text="${contratista.nombre} + ' ' + ${contratista.apellido}">Nombre</h3>
+                                    <p class="text-text-secondary-dark text-xs truncate mb-1" th:text="${contratista.username}">email</p>
+                                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Contratista</span>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/contratistas/{id}/verificar(id=${contratista.id})}" method="post" class="shrink-0">
+                                <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-1 px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-xl transition-colors text-sm font-display font-bold border border-purple-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">check</span> Verificar
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Clientes no verificados -->
+                        <div th:each="cliente : ${clientesNoVerificados}" class="verificacion-item list-card p-5 bg-surface-light rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <div class="w-10 h-10 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-green-400 text-[20px] outline">person</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="text-white font-display font-bold text-sm truncate" th:text="${cliente.nombre} + ' ' + ${cliente.apellido}">Nombre</h3>
+                                    <p class="text-text-secondary-dark text-xs truncate mb-1" th:text="${cliente.username}">email</p>
+                                    <span class="text-[10px] text-green-400 font-bold uppercase tracking-widest">Cliente</span>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/clientes/{id}/verificar(id=${cliente.id})}" method="post" class="shrink-0">
+                                <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-1 px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-xl transition-colors text-sm font-display font-bold border border-purple-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">check</span> Verificar
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Trabajadores no verificados -->
+                        <div th:each="trabajador : ${trabajadoresNoVerificados}" class="verificacion-item list-card p-5 bg-surface-light rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <div class="w-10 h-10 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-orange-400 text-[20px] outline">work</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="text-white font-display font-bold text-sm truncate" th:text="${(trabajador.nombre ?: '') + ' ' + (trabajador.apellido ?: '') + ((trabajador.nombre == null and trabajador.apellido == null) ? trabajador.username : '')}">Nombre</h3>
+                                    <p class="text-text-secondary-dark text-xs truncate mb-1" th:text="${trabajador.username}">email</p>
+                                    <span class="text-[10px] text-orange-400 font-bold uppercase tracking-widest" th:text="${trabajador.oficio ?: 'Trabajador'}">Trabajador</span>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/trabajadores/{id}/verificar(id=${trabajador.id})}" method="post" class="shrink-0">
+                                <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-1 px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-xl transition-colors text-sm font-display font-bold border border-purple-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">check</span> Verificar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna: Usuarios Inactivos -->
+                <div id="seccion-inactivos" class="glass-panel rounded-2xl p-6 md:p-8 xl:col-span-2 scroll-mt-24">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
+                                <span class="material-symbols-outlined outline">block</span>
+                            </div>
+                            Usuarios Inactivos / Suspendidos
+                        </h2>
+                        <span class="px-3 py-1.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-full text-xs font-display font-bold tracking-wide">
+                            <span th:text="${totalInactivos}">0</span> EN TOTAL
+                        </span>
+                    </div>
+
+                    <div class="relative mb-6">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-dark text-[20px]">search</span>
+                        <input type="text" id="busquedaInactivo" placeholder="Buscar inactivos..." class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all placeholder:text-text-secondary-dark/50 text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto custom-scrollbar pr-2">
+                        <div th:if="${#lists.isEmpty(contratistasInactivos) and #lists.isEmpty(clientesInactivos) and #lists.isEmpty(trabajadoresInactivos)}" class="col-span-full text-center py-10 bg-surface-light/30 rounded-2xl border border-dashed border-white/10">
+                            <span class="material-symbols-outlined text-4xl text-white/20 mb-2 outline">check_circle</span>
+                            <p class="text-text-secondary-dark font-medium">No hay usuarios inactivos en este momento.</p>
+                        </div>
+
+                        <!-- Contratistas Inactivos -->
+                        <div th:each="u : ${contratistasInactivos}" class="inactivo-item list-card flex items-center justify-between p-4 bg-surface-light border border-white/5 rounded-2xl">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-blue-500/10 rounded-full border border-blue-500/20 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-blue-400 text-[20px] outline">engineering</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-white font-display font-bold text-sm truncate" th:text="${(u.nombre ?: '') + ' ' + (u.apellido ?: u.username)}">Nombre</p>
+                                    <p class="text-text-secondary-dark text-[10px] uppercase font-bold tracking-tighter">Contratista</p>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/contratistas/{id}/toggle(id=${u.id})}" method="post">
+                                <button type="submit" class="p-2 text-green-400 bg-green-500/10 hover:bg-green-500/20 rounded-xl transition-colors border border-transparent hover:border-green-500/20" title="Activar">
+                                    <span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Clientes Inactivos -->
+                        <div th:each="u : ${clientesInactivos}" class="inactivo-item list-card flex items-center justify-between p-4 bg-surface-light border border-white/5 rounded-2xl">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-green-500/10 rounded-full border border-green-500/20 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-green-400 text-[20px] outline">person</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-white font-display font-bold text-sm truncate" th:text="${(u.nombre ?: '') + ' ' + (u.apellido ?: u.username)}">Nombre</p>
+                                    <p class="text-text-secondary-dark text-[10px] uppercase font-bold tracking-tighter">Cliente</p>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/clientes/{id}/toggle(id=${u.id})}" method="post">
+                                <button type="submit" class="p-2 text-green-400 bg-green-500/10 hover:bg-green-500/20 rounded-xl transition-colors border border-transparent hover:border-green-500/20" title="Activar">
+                                    <span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Trabajadores Inactivos -->
+                        <div th:each="u : ${trabajadoresInactivos}" class="inactivo-item list-card flex items-center justify-between p-4 bg-surface-light border border-white/5 rounded-2xl">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-orange-500/10 rounded-full border border-orange-500/20 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-orange-400 text-[20px] outline">work</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-white font-display font-bold text-sm truncate" th:text="${(u.nombre ?: '') + ' ' + (u.apellido ?: u.username)}">Nombre</p>
+                                    <p class="text-text-secondary-dark text-[10px] uppercase font-bold tracking-tighter">Trabajador</p>
+                                </div>
+                            </div>
+                            <form th:action="@{/admin/trabajadores/{id}/toggle(id=${u.id})}" method="post">
+                                <button type="submit" class="p-2 text-green-400 bg-green-500/10 hover:bg-green-500/20 rounded-xl transition-colors border border-transparent hover:border-green-500/20" title="Activar">
+                                    <span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -215,13 +541,6 @@
         </main>
     </div>
     
-    <style>
-        /* Custom Scrollbar for the list */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1A1A1A; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #FF9800; }
-    </style>
     <script>
         document.getElementById('busquedaContratista')?.addEventListener('keyup', function() {
             let text = this.value.toLowerCase();
@@ -234,6 +553,75 @@
                 } else {
                     item.style.display = 'none';
                 }
+            });
+        });
+
+        document.getElementById('busquedaProyecto')?.addEventListener('keyup', function() {
+            let text = this.value.toLowerCase();
+            let items = document.querySelectorAll('.proyecto-item');
+            items.forEach(item => {
+                let name = item.querySelector('h3')?.textContent.toLowerCase() || "";
+                let client = item.querySelector('.text-primary')?.textContent.toLowerCase() || "";
+                if (name.includes(text) || client.includes(text)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        document.getElementById('busquedaCliente')?.addEventListener('keyup', function() {
+            let text = this.value.toLowerCase();
+            let items = document.querySelectorAll('.cliente-item');
+            items.forEach(item => {
+                let name = item.querySelector('p.text-white')?.textContent.toLowerCase() || "";
+                let email = item.querySelector('p.text-text-secondary-dark')?.textContent.toLowerCase() || "";
+                if (name.includes(text) || email.includes(text)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('busquedaVerificacion')?.addEventListener('keyup', function() {
+            let text = this.value.toLowerCase();
+            let items = document.querySelectorAll('.verificacion-item');
+            items.forEach(item => {
+                let name = item.querySelector('h3')?.textContent.toLowerCase() || "";
+                let email = item.querySelector('p.text-text-secondary-dark')?.textContent.toLowerCase() || "";
+                if (name.includes(text) || email.includes(text)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('busquedaInactivo')?.addEventListener('keyup', function() {
+            let text = this.value.toLowerCase();
+            let items = document.querySelectorAll('.inactivo-item');
+            items.forEach(item => {
+                let name = item.querySelector('p.text-white')?.textContent.toLowerCase() || "";
+                if (name.includes(text)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Efecto de scroll suave y manejo de active class
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('bg-primary/10', 'text-primary'));
+                this.classList.add('bg-primary/10', 'text-primary');
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
     </script>

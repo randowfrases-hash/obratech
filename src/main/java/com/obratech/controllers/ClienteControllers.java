@@ -1,6 +1,7 @@
 package com.obratech.controllers;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +10,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.obratech.entity.Calificacion;
-import com.obratech.entity.Cliente;
-import com.obratech.entity.Contratista;
+import com.obratech.entity.Perfil;
 import com.obratech.entity.Proyecto;
 import com.obratech.entity.Usuario;
+import com.obratech.entity.enums.EstadoEjecucion;
 import com.obratech.repository.CalificacionRepository;
-import com.obratech.repository.ClienteRepository;
-import com.obratech.repository.ContratistaRepository;
+import com.obratech.repository.PerfilRepository;
 import com.obratech.repository.ProyectoRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,17 +24,17 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/clientes")
 public class ClienteControllers {
 
-    @Autowired private ClienteRepository clienteRepository;
+    @Autowired private PerfilRepository perfilRepository;
     @Autowired private ProyectoRepository proyectoRepository;
-    @Autowired private ContratistaRepository contratistaRepository;
     @Autowired private CalificacionRepository calificacionRepository;
+    @Autowired private com.obratech.repository.UsuarioRepository usuarioRepository;
 
     @GetMapping
     public String listarClientes(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
-        List<Cliente> clientes = clienteRepository.findAll();
+        List<Perfil> clientes = perfilRepository.findByRolesAndActivoTrue("ROLE_CLIENT");
         model.addAttribute("clientes", clientes);
         model.addAttribute("usuario", usuario);
         model.addAttribute("totalClientes", clientes.size());
@@ -45,13 +44,15 @@ public class ClienteControllers {
     @GetMapping("/mis-contratistas")
     public String misContratistas(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null || !"ROLE_CLIENT".equals(usuario.getRole())) return "redirect:/login";
+        if (usuario == null || usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_CLIENT")) return "redirect:/login";
 
-        List<Proyecto> proyectosDelCliente = proyectoRepository.findAll().stream()
-                .filter(p -> p.getCliente() != null && usuario.getUsername().equals(p.getCliente().getUsername()))
-                .collect(Collectors.toList());
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        List<Proyecto> proyectosDelCliente = proyectoRepository.findByClienteId(dbUsuario.getId());
+        if (proyectosDelCliente == null) {
+            proyectosDelCliente = new ArrayList<>();
+        }
 
-        List<Contratista> contratistas = proyectosDelCliente.stream()
+        List<Perfil> contratistas = proyectosDelCliente.stream()
                 .filter(p -> p.getContratistaAsignado() != null)
                 .map(Proyecto::getContratistaAsignado)
                 .distinct()
@@ -63,28 +64,54 @@ public class ClienteControllers {
         return "clientes/mis-contratistas";
     }
 
+    @GetMapping("/proyectos-en-proceso")
+    public String proyectosEnProceso(HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null || usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_CLIENT")) return "redirect:/login";
+
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        List<Proyecto> proyectosDelCliente = proyectoRepository.findByClienteId(dbUsuario.getId());
+        if (proyectosDelCliente == null) {
+            proyectosDelCliente = new ArrayList<>();
+        }
+
+        List<Proyecto> proyectosEnProceso = proyectosDelCliente.stream()
+                .filter(p -> p.getEstadoEjecucion() != null && p.getEstadoEjecucion() != EstadoEjecucion.COMPLETADO)
+                .collect(Collectors.toList());
+
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("proyectos", proyectosEnProceso);
+        model.addAttribute("totalProyectos", proyectosEnProceso.size());
+        model.addAttribute("proyectosEnProgreso", proyectosEnProceso.size());
+        model.addAttribute("proyectosCompletados", proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.COMPLETADO));
+        model.addAttribute("proyectosPendientes", proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.PENDIENTE));
+        return "clientes/proyectos-en-proceso";
+    }
+
     @GetMapping("/reportes")
     public String reportes(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null || !"ROLE_CLIENT".equals(usuario.getRole())) return "redirect:/login";
+        if (usuario == null || usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_CLIENT")) return "redirect:/login";
 
-        List<Proyecto> todosLosProyectos = proyectoRepository.findAll().stream()
-                .filter(p -> p.getCliente() != null && usuario.getUsername().equals(p.getCliente().getUsername()))
-                .collect(Collectors.toList());
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        List<Proyecto> todosLosProyectos = proyectoRepository.findByClienteId(dbUsuario.getId());
+        if (todosLosProyectos == null) {
+            todosLosProyectos = new ArrayList<>();
+        }
 
-        long completados = todosLosProyectos.stream().filter(p -> "COMPLETADO".equals(p.getEstadoEjecucion())).count();
-        long enProgreso  = todosLosProyectos.stream().filter(p -> "En Progreso".equals(p.getEstadoEjecucion())).count();
-        long pendientes  = todosLosProyectos.stream().filter(p -> "Pendiente".equals(p.getEstadoEjecucion())).count();
-        long conContratista = todosLosProyectos.stream().filter(p -> p.getContratistaAsignado() != null).count();
-        long calificacionesDadas = calificacionRepository.findAll().size();
+        long completados    = proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.COMPLETADO);
+        long enProgreso     = proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.EN_PROGRESO);
+        long pendientes     = proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.PENDIENTE);
+        long conContratista = proyectoRepository.countByClienteIdAndContratistaAsignadoIsNotNull(usuario.getId());
+        long calificaciones = calificacionRepository.count();
 
         model.addAttribute("usuario", usuario);
-        model.addAttribute("totalProyectos", todosLosProyectos.size());
+        model.addAttribute("totalProyectos", proyectoRepository.countByClienteId(usuario.getId()));
         model.addAttribute("proyectosCompletados", completados);
         model.addAttribute("proyectosEnProgreso", enProgreso);
         model.addAttribute("proyectosPendientes", pendientes);
         model.addAttribute("proyectosConContratista", conContratista);
-        model.addAttribute("calificacionesDadas", calificacionesDadas);
+        model.addAttribute("calificacionesDadas", calificaciones);
         model.addAttribute("proyectos", todosLosProyectos);
         return "clientes/reportes";
     }

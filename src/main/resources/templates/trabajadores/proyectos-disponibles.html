@@ -53,7 +53,7 @@
 
 <body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
                 <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
@@ -61,7 +61,7 @@
             </div>
         </div>
         <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}"
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                 class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="text-text-secondary-dark">Dashboard</span>
@@ -92,7 +92,7 @@
                     <h1 class="text-3xl font-bold text-white">Proyectos Disponibles</h1>
                     <p class="text-text-secondary-dark text-sm mt-1">Postúlate a los proyectos que te interesan</p>
                 </div>
-                <a th:href="@{/desboard}"
+                <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                     class="gradient-bg px-6 py-2 rounded-lg text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
                     <span class="material-symbols-outlined align-middle">arrow_back</span>
                     <span>Volver</span>
@@ -105,7 +105,7 @@
             <div th:if="${totalProyectos == 0}" class="bg-surface-dark rounded-xl p-12 text-center border border-gray-800">
                 <span class="material-symbols-outlined text-gray-500 text-6xl block mb-4">folder_open</span>
                 <p class="text-text-secondary-dark text-lg mb-4">No hay proyectos disponibles en este momento</p>
-                <a th:href="@{/desboard}"
+                <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}"
                     class="inline-block gradient-bg px-6 py-2 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
                     Volver al Dashboard
                 </a>

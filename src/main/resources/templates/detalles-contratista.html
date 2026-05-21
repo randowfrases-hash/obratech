@@ -79,7 +79,7 @@
 
             <!-- Navigation -->
             <nav class="p-4 space-y-2">
-                <a th:href="@{/desboard}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-[#222]">
+                <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-[#222]">
                     <span class="material-symbols-outlined sidebar-icon">dashboard</span>
                     <span class="sidebar-icon">Dashboard</span>
                 </a>
@@ -128,8 +128,11 @@
                                     <span class="material-symbols-outlined text-primary text-5xl">account_circle</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-3xl font-bold text-white"
-                                        th:text="${(contratista.nombre != null and contratista.nombre != '') ? contratista.nombre + ' ' + contratista.apellido : contratista.username}">
+                                    <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                                        <span th:text="${(contratista.nombre != null and contratista.nombre != '') ? contratista.nombre + ' ' + contratista.apellido : contratista.username}"></span>
+                                        <span th:if="${contratista.verificado}" class="inline-flex items-center text-white" title="Contratista Verificado">
+                                            <span class="material-symbols-outlined text-[24px]">verified</span>
+                                        </span>
                                     </h2>
                                     <p class="text-blue-100" th:text="'@' + ${contratista.username}">@usuario</p>
                                 </div>
@@ -255,6 +258,16 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Verificación -->
+                    <div class="card-dark rounded-lg shadow p-6 border-l-4" th:classappend="${contratista.verificado} ? 'border-success' : 'border-yellow-500'">
+                        <p class="text-secondary text-sm font-medium mb-2">Verificación de Cuenta</p>
+                        <div class="flex items-center space-x-2">
+                            <span class="material-symbols-outlined text-3xl" th:classappend="${contratista.verificado} ? 'text-success' : 'text-yellow-500'" th:text="${contratista.verificado} ? 'verified' : 'pending'">verified</span>
+                            <span class="text-xl font-bold text-white" th:text="${contratista.verificado} ? 'Cuenta Verificada' : 'Validación Pendiente'"></span>
+                        </div>
+                        <p class="text-xs text-secondary mt-2" th:text="${contratista.verificado} ? 'Este contratista fue validado por el administrador.' : 'La documentación de este contratista está en proceso de revisión.'"></p>
                     </div>
 
                     <!-- Rol -->

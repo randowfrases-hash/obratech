@@ -3,8 +3,11 @@ package com.obratech.entity;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import com.obratech.entity.enums.EstadoPostulacion;
 
 @Document(collection = "postulaciones")
 public class Postulacion {
@@ -13,14 +16,16 @@ public class Postulacion {
     private String id;
 
     @DBRef
+    @Indexed
     private Proyecto proyecto;
 
     @DBRef
+    @Indexed
     private Usuario usuario;
 
     private String mensaje; // optional message the contractor may send
 
-    private String estado = "PENDING"; // PENDING, ACCEPTED, REJECTED
+    private EstadoPostulacion estado = EstadoPostulacion.PENDING;
 
     private LocalDateTime fechaPostulacion = LocalDateTime.now();
 
@@ -56,11 +61,11 @@ public class Postulacion {
         this.mensaje = mensaje;
     }
 
-    public String getEstado() {
+    public EstadoPostulacion getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoPostulacion estado) {
         this.estado = estado;
     }
 

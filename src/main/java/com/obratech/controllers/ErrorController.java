@@ -24,7 +24,7 @@ public class ErrorController {
 
         if (rutaDenegada != null) {
             model.addAttribute("errorMessage",
-                    "No tienes permiso para acceder a: " + rutaDenegada + ". Esta sección requiere un rol diferente al tuyo.");
+                    "No tienes permiso para acceder a: " + rutaDenegada + ". Esta seccin requiere un rol diferente al tuyo.");
         } else {
             model.addAttribute("errorMessage", "No tienes los permisos necesarios para acceder a este recurso.");
         }
@@ -36,8 +36,8 @@ public class ErrorController {
     public String error404(HttpServletResponse response, Model model) {
         response.setStatus(404);
         model.addAttribute("codigoError", 404);
-        model.addAttribute("errorTitle", "Página No Encontrada");
-        model.addAttribute("errorMessage", "La página que buscas no existe o fue movida a otra dirección.");
+        model.addAttribute("errorTitle", "Pgina No Encontrada");
+        model.addAttribute("errorMessage", "La pgina que buscas no existe o fue movida a otra direccin.");
         model.addAttribute("errorIcon", "search_off");
         return "error";
     }
@@ -47,7 +47,7 @@ public class ErrorController {
         response.setStatus(500);
         model.addAttribute("codigoError", 500);
         model.addAttribute("errorTitle", "Error Interno del Servidor");
-        model.addAttribute("errorMessage", "Ocurrió un problema inesperado. Por favor intenta de nuevo más tarde.");
+        model.addAttribute("errorMessage", "Ocurri un problema inesperado. Por favor intenta de nuevo ms tarde.");
         model.addAttribute("errorIcon", "warning");
         return "error";
     }

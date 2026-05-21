@@ -45,11 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showClientError(errorBox, 'Ingresa un correo electrónico válido.');
             return;
         }
-        if (password.length < 6) {
-            e.preventDefault();
-            showClientError(errorBox, 'La contraseña debe tener al menos 6 caracteres.');
-            return;
-        }
+
 
         // Mostrar spinner en el botón
         const btn = loginForm.querySelector('[type="submit"]');

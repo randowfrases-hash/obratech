@@ -40,7 +40,7 @@
 </head>
 <body class="bg-background-dark font-display text-white min-h-screen">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
                 <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
@@ -76,7 +76,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="md:ml-64 min-h-screen">
         <!-- Header -->
         <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
             <div class="flex items-center justify-between">
@@ -96,7 +96,7 @@
         <main class="p-8">
             <div class="max-w-2xl mx-auto">
                 <div class="detail-card rounded-xl p-8">
-                <form th:attr="action=${calificacion.id != null} ? @{/calificaciones/{id}/editar(id=${calificacion.id})} : @{/calificaciones/crear/{proyectoId}/{personaId}(proyectoId=${proyecto.id},personaId=${contratista.id})}" method="post">
+                <form th:attr="action=${calificacion.id != null} ? @{/calificaciones/{id}/editar(id=${calificacion.id})} : @{/calificaciones/crear/{proyectoId}/{perfilId}(proyectoId=${proyecto.id},perfilId=${contratista.id})}" method="post">
                         <div>
                             <label class="block text-text-main-dark font-medium mb-2">Puntuación (1-5)</label>
                             <select name="puntuacion" class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-700 focus:border-primary outline-none">

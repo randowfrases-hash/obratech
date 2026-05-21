@@ -3,8 +3,13 @@ package com.obratech.service;
 import com.obratech.entity.HistorialProyecto;
 import com.obratech.entity.Proyecto;
 import com.obratech.entity.Usuario;
+import com.obratech.entity.enums.EstadoAsignacion;
+import com.obratech.entity.enums.EstadoEjecucion;
+import com.obratech.entity.enums.EstadoValidacion;
 import com.obratech.repository.HistorialProyectoRepository;
 import com.obratech.repository.ProyectoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,6 +21,9 @@ public class ProyectoService {
 
     private final ProyectoRepository repo;
     private final HistorialProyectoRepository historialRepo;
+    @Autowired
+    private ProyectoRepository proyectoRepository;
+
 
     public ProyectoService(ProyectoRepository repo, HistorialProyectoRepository historialRepo) {
         this.repo = repo;
@@ -29,13 +37,15 @@ public class ProyectoService {
 
     // Buscar proyecto por ID
     public Optional<Proyecto> findById(String id) {
+        if (id == null) return Optional.empty();
         return repo.findById(id);
     }
 
     public Proyecto publicarProyecto(Proyecto proyecto, Usuario cliente) {
         proyecto.setCliente(cliente);
-        proyecto.setEstadoAsignacion("Sin asignar");
-        proyecto.setEstadoEjecucion("Pendiente");
+        proyecto.setEstadoAsignacion(EstadoAsignacion.SIN_ASIGNAR);
+        proyecto.setEstadoEjecucion(EstadoEjecucion.PENDIENTE);
+        proyecto.setEstadoValidacion(EstadoValidacion.PENDIENTE);
         proyecto.setFechaCreacion(LocalDateTime.now());
 
         Proyecto guardado = repo.save(proyecto);
@@ -43,7 +53,7 @@ public class ProyectoService {
         // Registrar historial inicial
         HistorialProyecto historial = new HistorialProyecto(
             null,
-            "Pendiente",
+            EstadoEjecucion.PENDIENTE,
             guardado
         );
         historialRepo.save(historial);
@@ -51,8 +61,8 @@ public class ProyectoService {
         return guardado;
     }
 
-    public void cambiarEstado(Proyecto proyecto, String nuevoEstado) {
-        String anterior = proyecto.getEstadoEjecucion();
+    public void cambiarEstado(Proyecto proyecto, EstadoEjecucion nuevoEstado) {
+        EstadoEjecucion anterior = proyecto.getEstadoEjecucion();
         proyecto.setEstadoEjecucion(nuevoEstado);
         repo.save(proyecto);
 
@@ -63,6 +73,7 @@ public class ProyectoService {
 
     // Actualizar proyecto existente
     public Proyecto update(String id, Proyecto proyecto) {
+        if (id == null || proyecto == null) return null;
         Optional<Proyecto> existente = repo.findById(id);
         if (existente.isPresent()) {
             proyecto.setId(id);
@@ -72,10 +83,17 @@ public class ProyectoService {
     }
 
     public Proyecto save(Proyecto proyecto) {
+        if (proyecto == null) return null;
         return repo.save(proyecto);
     }
     
     public void deleteById(String id) {
-        repo.deleteById(id);
+        if (id != null) repo.deleteById(id);
     }
+
+
+    public List<Proyecto> findByContratistaAsignadoId(String contratistaId) {
+            return proyectoRepository.findByContratistaAsignadoId(contratistaId);
+        }
 }
+

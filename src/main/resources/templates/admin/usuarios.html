@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" class="dark" lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestión de Usuarios — ObraTech Admin</title>
+    <title>Gestión de Usuarios – ObraTech Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -121,7 +121,7 @@
                         <!-- Creado -->
                         <td class="px-6 py-4 text-text-secondary-dark">
                             <span th:if="${u.creado}" th:text="${#temporals.format(u.creado, 'dd/MM/yyyy')}"></span>
-                            <span th:unless="${u.creado}" class="text-white/30">—</span>
+                            <span th:unless="${u.creado}" class="text-white/30">–</span>
                         </td>
 
                         <!-- Último acceso -->

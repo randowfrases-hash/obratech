@@ -3,16 +3,39 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Directorio de Clientes - ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Directorio de Clientes | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
         .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
-        .sidebar-link:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-left: 3px solid #FF9800;
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .cliente-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cliente-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 152, 0, 0.3);
+            box-shadow: 0 12px 30px -10px rgba(255, 152, 0, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate3d(0, 20px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
     </style>
     <script>
@@ -22,64 +45,70 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
-                        "background-light": "#f6f7f8",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
-                    fontFamily: { "display": ["Work Sans", "sans-serif"] },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
+                    },
                 },
             },
         }
     </script>
 </head>
 
-<body class="bg-background-dark font-display text-white">
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:flex flex-col">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard-contratista}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Dashboard</span>
+        
+        <nav class="p-4 space-y-2 mt-4 font-display flex-1">
+            <a th:href="@{/desboard-contratista}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
             </a>
-            <div class="mt-4">
-                <a th:href="@{/clientes}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                    <span class="material-symbols-outlined text-primary">domain</span>
-                    <span class="text-text-main-dark font-medium">Directorio de Clientes</span>
+            
+            <div class="mt-4 border-t border-white/5 pt-4">
+                <a th:href="@{/clientes}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                    <span class="material-symbols-outlined">domain</span>
+                    <span class="font-semibold">Directorio Clientes</span>
                 </a>
-                <a th:href="@{/trabajadores}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">engineering</span>
-                    <span class="text-text-secondary-dark">Mercado de Trabajadores</span>
+                
+                <a th:href="@{/trabajadores}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">engineering</span>
+                    <span class="font-medium">Trabajadores</span>
                 </a>
-                <a th:href="@{/contratistas/historial}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">history</span>
-                    <span class="text-text-secondary-dark">Historial de Proyectos</span>
+                
+                <a th:href="@{/contratistas/proyectos-asignados}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder_special</span>
+                    <span class="font-medium">Proyectos Activos</span>
                 </a>
-                <a th:href="@{/contratistas/proyectos-asignados}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">folder_special</span>
-                    <span class="text-text-secondary-dark">Proyectos Activos</span>
-                </a>
-                <a th:href="@{/perfil-contratista}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">person</span>
-                    <span class="text-text-secondary-dark">Mi Perfil</span>
-                </a>
-                <a th:href="@{/postulaciones}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">assignment_turned_in</span>
-                    <span class="text-text-secondary-dark">Postularme a Proyectos</span>
+                
+                <a th:href="@{/perfil-contratista}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">person</span>
+                    <span class="font-medium">Mi Perfil</span>
                 </a>
             </div>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+        
+        <div class="p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -87,36 +116,106 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <h1 class="text-2xl font-bold text-white">Directorio de Clientes</h1>
-            <p class="text-text-secondary-dark text-sm mt-1" th:text="'Total de clientes registrados: ' + ${totalClientes}">Visión general</p>
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative z-20">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-[36px]">domain</span>
+                    Directorio de Clientes
+                </h1>
+                <p class="text-text-secondary-dark font-medium">Encuentra y gestiona los clientes de la plataforma ObraTech.</p>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary outline text-[20px]">search</span>
+                <input type="text" id="searchInput" placeholder="Buscar por nombre, correo o empresa..." 
+                       class="w-full bg-surface-light border border-white/10 text-white rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50 shadow-inner text-sm" />
+            </div>
         </header>
 
-        <main class="p-8">
+        <main class="p-6 md:px-12 py-8 relative z-10 flex-1 max-w-7xl">
+            
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="font-display font-bold text-xl text-white">Clientes Registrados</h2>
+                <div class="px-4 py-1.5 bg-surface-light border border-white/5 rounded-lg">
+                    <span class="text-text-secondary-dark text-sm font-medium">Total: </span>
+                    <span class="text-white font-display font-bold" th:text="${totalClientes}">0</span>
+                </div>
+            </div>
+
             <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                <div th:each="cliente : ${clientes}" class="bg-surface-dark border border-gray-800 p-6 rounded-xl hover:border-primary transition-all shadow-md">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-gray-300">person</span>
+                
+                <div th:each="cliente, iterStat : ${clientes}" 
+                     class="glass-panel cliente-card p-6 rounded-3xl relative overflow-hidden group animate-fade-in-up" 
+                     th:style="'animation-delay: ' + (${iterStat.index} * 0.05) + 's;'">
+                    
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl transition-all group-hover:bg-primary/10"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 gradient-bg text-background-dark font-display font-bold text-xl shadow-lg group-hover:scale-105 transition-transform">
+                                <span th:text="${(cliente.nombre != null and cliente.nombre.length() > 0 ? cliente.nombre.substring(0,1).toUpperCase() : '') + (cliente.apellido != null and cliente.apellido.length() > 0 ? cliente.apellido.substring(0,1).toUpperCase() : '')}">NA</span>
+                            </div>
+                            
+                            <div class="overflow-hidden pt-1">
+                                <h3 class="cliente-nombre text-lg font-display font-bold text-white truncate" th:text="${cliente.nombre} + ' ' + ${cliente.apellido}">Nombre Apellido</h3>
+                                <span class="cliente-empresa inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider mt-1.5" 
+                                      th:classappend="${cliente.empresa != null and !cliente.empresa.isEmpty() ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-surface-light text-text-secondary-dark border border-white/10'}"
+                                      th:text="${cliente.empresa != null and !cliente.empresa.isEmpty() ? cliente.empresa : 'Particular'}">Empresa</span>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-white" th:text="${cliente.nombre} + ' ' + ${cliente.apellido}">Nombre Apellido</h3>
-                            <p class="text-sm text-text-secondary-dark" th:text="${cliente.empresa != null and !cliente.empresa.isEmpty() ? cliente.empresa : 'Particular'}">Empresa</p>
+
+                        <div class="space-y-3 bg-surface-light/50 border border-white/5 rounded-xl p-4">
+                            <div class="cliente-email flex items-center gap-3 text-sm text-text-secondary-dark">
+                                <span class="material-symbols-outlined outline text-[16px] text-primary">mail</span>
+                                <span class="truncate" th:text="${cliente.username}">email@ejemplo.com</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-text-secondary-dark">
+                                <span class="material-symbols-outlined outline text-[16px] text-primary">call</span>
+                                <span th:text="${cliente.telefono != null ? cliente.telefono : 'No registrado'}">Tel</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-sm space-y-2 mb-4 text-text-secondary-dark">
-                        <p class="flex items-center space-x-2"><span class="material-symbols-outlined text-sm">mail</span><span th:text="${cliente.username}">email@ejemplo.com</span></p>
-                        <p class="flex items-center space-x-2"><span class="material-symbols-outlined text-sm">phone</span><span th:text="${cliente.telefono != null ? cliente.telefono : 'N/A'}">Tel</span></p>
                     </div>
                 </div>
-                <div th:if="${#lists.isEmpty(clientes)}" class="col-span-full py-12 text-center text-text-secondary-dark">
-                    <span class="material-symbols-outlined text-4xl mb-2 opacity-50">search_off</span>
-                    <p>No se encontraron clientes registrados en el sistema.</p>
+
+                <div th:if="${#lists.isEmpty(clientes)}" class="col-span-full py-16 text-center flex flex-col items-center justify-center">
+                    <div class="w-20 h-20 bg-surface-light rounded-full flex items-center justify-center mb-4 border border-white/5 shadow-lg">
+                        <span class="material-symbols-outlined text-text-secondary-dark outline text-[40px]">search_off</span>
+                    </div>
+                    <p class="text-xl font-display font-bold text-white mb-2">No se encontraron clientes</p>
+                    <p class="text-text-secondary-dark">Aún no hay clientes registrados en el sistema.</p>
                 </div>
             </div>
         </main>
     </div>
+
 <script src="/js/obratech.js"></script>
+<script>
+    // Buscador en tiempo real
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.cliente-card');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const name = card.querySelector('.cliente-nombre')?.textContent.toLowerCase() || '';
+                    const company = card.querySelector('.cliente-empresa')?.textContent.toLowerCase() || '';
+                    const email = card.querySelector('.cliente-email')?.textContent.toLowerCase() || '';
+                    
+                    if (name.includes(term) || company.includes(term) || email.includes(term)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>

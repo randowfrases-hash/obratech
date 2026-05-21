@@ -5,14 +5,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.time.LocalDateTime;
 
+import com.obratech.entity.enums.EstadoEjecucion;
+
 @Document(collection = "historial_proyectos")
 public class HistorialProyecto {
 
     @Id
     private String id;
 
-    private String estadoAnterior;
-    private String estadoNuevo;
+    private EstadoEjecucion estadoAnterior;
+    private EstadoEjecucion estadoNuevo;
     private LocalDateTime fechaCambio;
 
     @DBRef
@@ -20,7 +22,7 @@ public class HistorialProyecto {
 
     public HistorialProyecto() {}
 
-    public HistorialProyecto(String estadoAnterior, String estadoNuevo, Proyecto proyecto) {
+    public HistorialProyecto(EstadoEjecucion estadoAnterior, EstadoEjecucion estadoNuevo, Proyecto proyecto) {
         this.estadoAnterior = estadoAnterior;
         this.estadoNuevo = estadoNuevo;
         this.fechaCambio = LocalDateTime.now();
@@ -35,19 +37,19 @@ public class HistorialProyecto {
         this.id = id;
     }
 
-    public String getEstadoAnterior() {
+    public EstadoEjecucion getEstadoAnterior() {
         return estadoAnterior;
     }
 
-    public void setEstadoAnterior(String estadoAnterior) {
+    public void setEstadoAnterior(EstadoEjecucion estadoAnterior) {
         this.estadoAnterior = estadoAnterior;
     }
 
-    public String getEstadoNuevo() {
+    public EstadoEjecucion getEstadoNuevo() {
         return estadoNuevo;
     }
 
-    public void setEstadoNuevo(String estadoNuevo) {
+    public void setEstadoNuevo(EstadoEjecucion estadoNuevo) {
         this.estadoNuevo = estadoNuevo;
     }
 

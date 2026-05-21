@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crear Cuenta — ObraTech</title>
+    <title>Crear Cuenta – ObraTech</title>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,6 +34,14 @@
         select option { background: #1A1A1A; color: #E0E0E0; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         .fade-in { animation: fadeIn .5s ease-out both; }
+        .role-radio:checked + div {
+            border-color: #FF9900;
+            background-color: rgba(255, 153, 0, 0.1);
+        }
+        .role-radio:checked + div .icon-box {
+            background-color: #FF9900;
+            color: #121212;
+        }
     </style>
 </head>
 
@@ -127,43 +135,104 @@
                     <p id="password-strength-text" class="text-xs text-text-secondary-dark mt-1 h-4"></p>
                 </div>
 
-                <!-- Tipo de usuario -->
+                <!-- Selección de roles del usuario -->
                 <div>
-                    <label class="block text-text-main-dark text-sm font-medium mb-2">Soy un...</label>
-                    <div class="relative">
-                        <select name="role"
-                                class="w-full bg-surface-2 border border-white/10 text-text-main-dark
-                                       rounded-xl px-4 py-3.5 text-sm outline-none appearance-none
-                                       focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-all cursor-pointer">
-                            <option value="none" class="text-text-secondary-dark">Selecciona tu rol</option>
-                            <option value="contratista">️ Contratista — Gestiono equipos y proyectos</option>
-                            <option value="cliente"> Cliente — Publico y contrato proyectos</option>
-                            <option value="trabajador"> Trabajador — Busco oportunidades laborales</option>
-                        </select>
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary-dark pointer-events-none">
-                            <span class="material-symbols-outlined text-xl">expand_more</span>
-                        </span>
+                    <label class="block text-text-main-dark text-sm font-medium mb-4">Soy un... (puedes seleccionar varios)</label>
+                    <div class="space-y-3">
+                        <!-- Contratista -->
+                        <label class="relative block cursor-pointer group">
+                            <input type="checkbox" name="roles" value="contratista" class="peer sr-only" />
+                            <div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-surface-2 transition-all duration-300
+                                        group-hover:bg-white/5 group-hover:border-primary/50
+                                        peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.1)]">
+                                <div class="w-12 h-12 rounded-xl bg-surface-dark border border-white/10 flex items-center justify-center shrink-0 transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                    <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                 peer-checked:text-background-dark group-hover:text-primary">engineering</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Contratista</p>
+                                    <p class="text-xs text-text-secondary-dark mt-0.5">Gestiono equipos y proyectos</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-md border-2 border-white/20 flex items-center justify-center transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary">
+                                    <span class="material-symbols-outlined text-background-dark text-[16px] scale-0 peer-checked:scale-100 transition-transform duration-200">check</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <!-- Cliente -->
+                        <label class="relative block cursor-pointer group">
+                            <input type="checkbox" name="roles" value="cliente" class="peer sr-only" />
+                            <div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-surface-2 transition-all duration-300
+                                        group-hover:bg-white/5 group-hover:border-primary/50
+                                        peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.1)]">
+                                <div class="w-12 h-12 rounded-xl bg-surface-dark border border-white/10 flex items-center justify-center shrink-0 transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                    <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                 peer-checked:text-background-dark group-hover:text-primary">person</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Cliente</p>
+                                    <p class="text-xs text-text-secondary-dark mt-0.5">Publico y contrato proyectos</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-md border-2 border-white/20 flex items-center justify-center transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary">
+                                    <span class="material-symbols-outlined text-background-dark text-[16px] scale-0 peer-checked:scale-100 transition-transform duration-200">check</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Trabajador -->
+                        <label class="relative block cursor-pointer group">
+                            <input type="checkbox" name="roles" value="trabajador" class="peer sr-only" />
+                            <div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-surface-2 transition-all duration-300
+                                        group-hover:bg-white/5 group-hover:border-primary/50
+                                        peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:shadow-[0_0_20px_rgba(255,153,0,0.1)]">
+                                <div class="w-12 h-12 rounded-xl bg-surface-dark border border-white/10 flex items-center justify-center shrink-0 transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                                    <span class="material-symbols-outlined text-text-secondary-dark transition-colors duration-300
+                                                 peer-checked:text-background-dark group-hover:text-primary">construction</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-dark group-hover:text-primary transition-colors">Trabajador</p>
+                                    <p class="text-xs text-text-secondary-dark mt-0.5">Busco oportunidades laborales</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-md border-2 border-white/20 flex items-center justify-center transition-all duration-300
+                                            peer-checked:bg-primary peer-checked:border-primary">
+                                    <span class="material-symbols-outlined text-background-dark text-[16px] scale-0 peer-checked:scale-100 transition-transform duration-200">check</span>
+                                </div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Términos -->
-                <label class="flex items-start gap-2 cursor-pointer">
-                    <input type="checkbox" id="acepta-terminos" required
-                           class="mt-0.5 w-4 h-4 rounded border-white/20 bg-surface-2 accent-primary shrink-0" />
-                    <span class="text-text-secondary-dark text-sm leading-relaxed">
+                <label class="flex items-start gap-3 cursor-pointer mt-4 group">
+                    <div class="relative mt-1">
+                        <input type="checkbox" id="acepta-terminos" required class="peer sr-only" />
+                        <div class="w-5 h-5 rounded border-2 border-white/20 bg-surface-2 transition-all duration-300 
+                                    peer-checked:bg-primary peer-checked:border-primary peer-focus:ring-2 peer-focus:ring-primary/40
+                                    group-hover:border-primary/50 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-background-dark text-[14px] scale-0 peer-checked:scale-100 transition-transform duration-200">
+                                check
+                            </span>
+                        </div>
+                    </div>
+                    <span class="text-text-secondary-dark text-sm leading-relaxed group-hover:text-text-main-dark transition-colors">
                         Acepto los
-                        <a href="#" class="text-primary hover:underline">Términos y Condiciones</a>
+                        <a href="#" class="text-primary font-medium hover:underline">Términos y Condiciones</a>
                         y la
-                        <a href="#" class="text-primary hover:underline">Política de Privacidad</a>
+                        <a href="#" class="text-primary font-medium hover:underline">Política de Privacidad</a>
                     </span>
                 </label>
 
                 <!-- Botones -->
-                <div class="flex gap-3 pt-1">
+                <div class="flex gap-3 pt-2">
                     <button type="submit"
-                            class="flex-1 bg-primary text-background-dark font-bold py-3.5 rounded-xl
-                                   text-sm uppercase tracking-wide hover:bg-primary/90 active:scale-95
-                                   transition-all duration-200">
+                            class="flex-[2] bg-primary text-background-dark font-bold py-3.5 rounded-xl
+                                   text-sm uppercase tracking-wide hover:bg-orange-400 active:scale-95
+                                   transition-all duration-200 shadow-[0_0_15px_rgba(255,153,0,0.3)] hover:shadow-[0_0_25px_rgba(255,153,0,0.5)]">
                         Crear Cuenta
                     </button>
                     <button type="button" onclick="window.location.href='/index'"
@@ -176,9 +245,39 @@
             </form>
         </div>
 
-        <p class="text-center text-text-secondary-dark text-sm pb-4">
+        <p class="text-center text-text-secondary-dark text-sm">
             ¿Ya tienes cuenta?
             <a href="/login" class="text-primary font-semibold hover:underline ml-1">Inicia sesión</a>
+        </p>
+
+        <!-- Divisor -->
+        <div class="flex items-center gap-3">
+            <hr class="flex-1 border-white/10" />
+            <span class="text-text-secondary-dark text-xs">o continuar con</span>
+            <hr class="flex-1 border-white/10" />
+        </div>
+
+        <!-- Social login -->
+        <div class="space-y-3">
+            <button onclick="window.location.href='/oauth2/authorization/google'"
+                    class="w-full flex items-center justify-center gap-3 bg-surface-dark border border-white/10
+                           text-text-main-dark py-3 rounded-xl text-sm font-medium hover:bg-white/10
+                           active:scale-95 transition-all duration-200">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continuar con Google
+            </button>
+        </div>
+
+        <!-- Términos -->
+        <p class="text-center text-text-secondary-dark text-xs pb-4">
+            <a href="#" class="hover:text-primary hover:underline">Términos y Condiciones</a>
+            <span class="mx-2">•</span>
+            <a href="#" class="hover:text-primary hover:underline">Política de Privacidad</a>
         </p>
     </div>
 

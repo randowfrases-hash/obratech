@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${proyecto.titulo} + ' - ObraTech'">Detalles Proyecto - ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet" />
+    <title th:text="${proyecto.titulo} + ' | ObraTech'">Detalles Proyecto | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .sidebar-link {
-            transition: all 0.3s ease;
+        .cover-image {
+            background-image: url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80');
+            background-size: cover;
+            background-position: center;
         }
 
-        .sidebar-link:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-left: 3px solid #FF9800;
-        }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%);
-        }
-
-        .detail-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #242424 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .hero-pattern {
+            background-color: #121212;
+            background-image: radial-gradient(rgba(255, 152, 0, 0.1) 1px, transparent 1px);
+            background-size: 32px 32px;
         }
     </style>
     <script>
@@ -39,13 +40,16 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
                     },
                 },
             },
@@ -53,41 +57,44 @@
     </script>
 </head>
 
-<body class="bg-background-dark font-display text-white">
-    <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30 hero-pattern">
+
+    <!-- Sidebar (Condicional para Cliente/Contratista, no Admin) -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:flex flex-col" th:unless="${#lists.contains(session.usuario.roles, 'ROLE_ADMIN')}">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}"
-                class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Dashboard</span>
+        
+        <nav class="p-4 space-y-2 mt-4 font-display flex-1">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
             </a>
-            <a th:href="@{/proyectos/mis-proyectos}"
-                class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                <span class="material-symbols-outlined text-text-secondary-dark">folder</span>
-                <span class="text-text-secondary-dark">Mis Proyectos</span>
+            <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">folder_open</span>
+                <span class="font-semibold">Mis Proyectos</span>
             </a>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center">
-                    <span
-                        th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
+        
+        <div class="p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}">U</span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-text-main-dark font-medium text-sm" th:text="${session.usuario.username}">Usuario</p>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs font-semibold uppercase" th:text="${#lists.contains(session.usuario.roles, 'ROLE_CONTRACTOR') ? 'Contratista' : 'Cliente'}">Rol</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit"
-                    class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -95,101 +102,120 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a th:href="@{/proyectos/mis-proyectos}" class="text-text-secondary-dark hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">arrow_back</span>
+    <div class="flex-1 flex flex-col min-w-0 relative" th:classappend="${#lists.contains(session.usuario.roles, 'ROLE_ADMIN') ? '' : 'md:ml-64'}">
+        
+        <!-- Cover Header -->
+        <div class="h-56 md:h-72 w-full cover-image relative">
+            <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-black/40"></div>
+            
+            <header class="px-6 md:px-12 py-6 relative z-10 flex justify-between items-center">
+                <a th:href="${#lists.contains(session.usuario.roles, 'ROLE_ADMIN') ? '/admin/desboard' : '/proyectos/mis-proyectos'}" class="flex items-center gap-2 text-white hover:text-primary transition-colors bg-black/40 px-4 py-2.5 rounded-xl backdrop-blur-md border border-white/10 font-display font-medium text-sm">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    <span>Volver</span>
+                </a>
+
+                <div th:if="${session.usuario.role != 'ROLE_ADMIN'}" class="flex gap-3">
+                    <a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}" class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors text-sm font-display font-medium text-white border border-white/10">
+                        <span class="material-symbols-outlined outline text-[18px]">edit</span>
+                        Editar
                     </a>
+                </div>
+            </header>
+        </div>
+
+        <main class="px-6 md:px-12 pb-12 -mt-24 md:-mt-32 relative z-20 max-w-6xl mx-auto w-full">
+            
+            <!-- Project Title Box -->
+            <div class="glass-panel rounded-3xl p-8 mb-8 border border-white/5 relative overflow-hidden">
+                <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
                     <div>
-                        <h1 class="text-2xl font-bold text-white" th:text="${proyecto.titulo}">Título del Proyecto</h1>
-                        <p class="text-text-secondary-dark text-sm mt-1" th:text="${proyecto.tipoProyecto}">Tipo de Proyecto</p>
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="px-3 py-1 bg-surface-light border border-white/10 rounded-full text-xs font-semibold text-text-secondary-dark uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-symbols-outlined outline text-[16px]">category</span>
+                                <span th:text="${proyecto.tipoProyecto}">Tipo de Proyecto</span>
+                            </span>
+                            <span class="px-3 py-1 bg-primary/10 border border-primary/30 text-primary rounded-full text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                                <span th:text="${proyecto.estadoEjecucion}">Estado</span>
+                            </span>
+                        </div>
+                        <h1 class="text-3xl md:text-5xl font-display font-bold text-white tracking-tight" th:text="${proyecto.titulo}">Título del Proyecto</h1>
+                    </div>
+                    
+                    <div class="bg-surface-dark/50 border border-white/5 p-4 rounded-2xl flex items-center gap-4 min-w-max">
+                        <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center text-green-400 shrink-0">
+                            <span class="material-symbols-outlined text-[28px]">payments</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold">Presupuesto</p>
+                            <p class="text-2xl font-display font-bold text-white">$<span th:text="${#numbers.formatInteger(proyecto.presupuesto, 0)}">0</span></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Content -->
-        <main class="p-8">
-            <div class="max-w-6xl mx-auto">
-                <!-- Main Info -->
-                <div class="detail-card rounded-xl p-8 mb-8">
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Main Desc & Details -->
+                <div class="lg:col-span-2 space-y-8">
                     <!-- Description -->
-                    <div class="mb-8 pb-8 border-b border-gray-700">
-                        <h2 class="text-xl font-bold text-white mb-4">Descripción</h2>
-                        <p class="text-text-main-dark text-lg" th:text="${proyecto.descripcion}">Descripción del proyecto</p>
+                    <div class="glass-panel rounded-3xl p-8 border border-white/5">
+                        <h2 class="text-xl font-display font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary outline">description</span>
+                            Descripción del Proyecto
+                        </h2>
+                        <p class="text-text-secondary-dark text-lg leading-relaxed whitespace-pre-line" th:text="${proyecto.descripcion}">Descripción detallada del proyecto...</p>
                     </div>
 
-                    <!-- Grid Info -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 pb-8 border-b border-gray-700">
-                        <div>
-                            <p class="text-text-secondary-dark text-sm mb-2">Ubicación</p>
-                            <p class="text-lg font-semibold text-white" th:text="${proyecto != null ? proyecto.ubicacion : 'N/A'}">--</p>
+                    <!-- Contratista Asignado (If exists) -->
+                    <div th:if="${proyecto.contratistaAsignado != null}" class="glass-panel rounded-3xl p-8 border border-primary/30 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-bl-full pointer-events-none"></div>
+                        
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-display font-bold text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary outline">engineering</span>
+                                Contratista Asignado
+                            </h2>
+                            <span class="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-400 rounded-full text-xs font-display font-bold uppercase tracking-wide">
+                                Seleccionado
+                            </span>
                         </div>
-                        <div>
-                            <p class="text-text-secondary-dark text-sm mb-2">Presupuesto</p>
-                            <p class="text-lg font-semibold text-primary">$<span th:text="${#numbers.formatInteger(proyecto.presupuesto, 0)}">0</span></p>
-                        </div>
-                        <div>
-                            <p class="text-text-secondary-dark text-sm mb-2">Estado</p>
-                            <span class="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-sm font-medium" th:text="${proyecto.estadoEjecucion}">--</span>
-                        </div>
-                        <div>
-                            <p class="text-text-secondary-dark text-sm mb-2">Área Total</p>
-                            <p class="text-lg font-semibold text-white" th:text="${proyecto.areaTotal} + ' m²'">-- m²</p>
-                        </div>
-                    </div>
 
-                    <!-- Dates -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-gray-900 rounded-lg p-4">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <span class="material-symbols-outlined text-primary">event</span>
-                                <p class="text-text-secondary-dark text-sm">Fecha de Inicio</p>
+                        <div class="flex flex-col sm:flex-row items-center gap-6 bg-surface-light/30 border border-white/5 rounded-2xl p-6">
+                            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shrink-0 shadow-lg font-bold text-2xl text-background-dark">
+                                <span th:text="${proyecto.contratistaAsignado.nombre != null and !proyecto.contratistaAsignado.nombre.isEmpty() ? proyecto.contratistaAsignado.nombre.substring(0,1).toUpperCase() : (proyecto.contratistaAsignado.username != null and !proyecto.contratistaAsignado.username.isEmpty() ? proyecto.contratistaAsignado.username.substring(0,1).toUpperCase() : 'C')}">C</span>
                             </div>
-                            <p class="text-lg font-semibold text-white" th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}">--/--/----</p>
-                        </div>
-                        <div class="bg-gray-900 rounded-lg p-4">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <span class="material-symbols-outlined text-primary">event_available</span>
-                                <p class="text-text-secondary-dark text-sm">Fecha de Entrega</p>
-                            </div>
-                            <p class="text-lg font-semibold text-white" th:text="${#temporals.format(proyecto.fechaEntrega, 'dd/MM/yyyy')}">--/--/----</p>
-                        </div>
-                        <div class="bg-gray-900 rounded-lg p-4">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <span class="material-symbols-outlined text-primary">schedule</span>
-                                <p class="text-text-secondary-dark text-sm">Plazo Estimado</p>
-                            </div>
-                            <p class="text-lg font-semibold text-white" th:text="${proyecto.plazoEstimado} + ' meses'">-- meses</p>
-                        </div>
-                    </div>
-
-                    <!-- Contratista Asignado -->
-                    <div th:if="${proyecto.contratistaAsignado != null}" class="mt-8 pt-8 border-t border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Contratista Asignado</h3>
-                        <div class="bg-gray-900 rounded-lg p-6">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h4 class="text-lg font-bold text-white" th:text="${proyecto.contratistaAsignado.nombre + ' ' + proyecto.contratistaAsignado.apellido}">Nombre del Contratista</h4>
-                                    <p class="text-text-secondary-dark text-sm mt-1" th:text="${'@' + proyecto.contratistaAsignado.username}">@usuario</p>
-                                    <p class="text-text-main-dark text-sm mt-2" th:text="${proyecto.contratistaAsignado.especialidad}">Especialidad</p>
-                                </div>
-                                <div class="text-right">
-                                    <div class="flex items-center space-x-1 mb-2">
-                                        <span class="material-symbols-outlined text-primary">star</span>
-                                        <span class="text-white font-medium" th:text="${proyecto.contratistaAsignado.calificacionPromedio != null ? #numbers.formatDecimal(proyecto.contratistaAsignado.calificacionPromedio, 1, 1) : '0.0'}">0.0</span>
-                                    </div>
-                                    <span class="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-sm font-medium">Seleccionado</span>
+                            
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-xl font-display font-bold text-white flex items-center justify-center sm:justify-start gap-1.5">
+                                    <span th:text="${proyecto.contratistaAsignado.nombre != null ? (proyecto.contratistaAsignado.nombre + (proyecto.contratistaAsignado.apellido != null ? ' ' + proyecto.contratistaAsignado.apellido : '')) : (proyecto.contratistaAsignado.username != null ? proyecto.contratistaAsignado.username : 'Contratista')}">Nombre del Contratista</span>
+                                    <span th:if="${proyecto.contratistaAsignado.verificado}" class="inline-flex items-center text-primary" title="Contratista Verificado">
+                                        <span class="material-symbols-outlined text-[18px]">verified</span>
+                                    </span>
+                                </h3>
+                                <p class="text-primary text-sm font-medium mb-2" th:text="${proyecto.contratistaAsignado.username != null ? '@' + proyecto.contratistaAsignado.username : '@contratista'}">@usuario</p>
+                                
+                                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                                    <span class="px-2.5 py-1 bg-surface-dark border border-white/10 rounded-md text-xs text-text-secondary-dark flex items-center gap-1">
+                                        <span class="material-symbols-outlined outline text-[14px]">work</span>
+                                        <span th:text="${proyecto.contratistaAsignado.especialidad != null ? proyecto.contratistaAsignado.especialidad : 'Sin especialidad'}">Especialidad</span>
+                                    </span>
+                                    <span class="px-2.5 py-1 bg-surface-dark border border-white/10 rounded-md text-xs text-text-secondary-dark flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-primary text-[14px]">star</span>
+                                        <span th:text="${proyecto.contratistaAsignado.calificacionPromedio != null ? #numbers.formatDecimal(proyecto.contratistaAsignado.calificacionPromedio, 1, 1) : '0.0'}">0.0</span>
+                                    </span>
                                 </div>
                             </div>
-                            <div class="mt-4 flex gap-2">
-                                <a th:href="@{/contratistas/{id}(id=${proyecto.contratistaAsignado.id})}" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-center font-medium">
+
+                            <div class="flex flex-col gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                                <a th:href="@{/contratistas/{id}(id=${proyecto.contratistaAsignado.id})}" class="px-5 py-2.5 bg-surface-dark border border-white/10 hover:bg-white/5 rounded-xl text-white text-sm font-semibold transition-colors text-center whitespace-nowrap">
                                     Ver Perfil
                                 </a>
-                                <a th:href="@{/calificaciones/calificar/{proyectoId}/{contratistaId}(proyectoId=${proyecto.id},contratistaId=${proyecto.contratistaAsignado.id})}" class="flex-1 px-4 py-2 bg-primary hover:bg-orange-500 text-black rounded-lg transition-colors text-center font-medium">
+                                <a th:href="@{/calificaciones/calificar/{proyectoId}/{contratistaId}(proyectoId=${proyecto.id},contratistaId=${proyecto.contratistaAsignado.id})}" class="px-5 py-2.5 gradient-bg rounded-xl text-background-dark text-sm font-bold hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] transition-all text-center whitespace-nowrap">
                                     Calificar
                                 </a>
                             </div>
@@ -197,31 +223,302 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}"
-                        class="flex-1 gradient-bg px-6 py-3 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
-                        <span class="material-symbols-outlined">edit</span>
-                        <span>Editar</span>
-                    </a>
-                    <form th:action="@{/proyectos/{id}/eliminar(id=${proyecto.id})}" method="post" class="flex-1">
-                        <button type="submit"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar este proyecto?')"
-                            class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold py-3 rounded-lg transition-colors flex items-center justify-center space-x-2">
-                            <span class="material-symbols-outlined">delete</span>
-                            <span>Eliminar</span>
-                        </button>
-                    </form>
-                    <a th:href="@{/proyectos/mis-proyectos}"
-                        class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center space-x-2">
-                        <span class="material-symbols-outlined">close</span>
-                        <span>Volver</span>
-                    </a>
+                <!-- Pool de Trabajadores y Equipos de Trabajo -->
+                <div class="space-y-6">
+                    <!-- Pool de Trabajadores -->
+                    <div class="glass-panel rounded-3xl p-6 border border-white/5">
+                        <h3 class="font-display font-bold text-lg text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">engineering</span>
+                            Pool de Trabajadores
+                        </h3>
+                        <p class="text-xs text-text-secondary-dark mb-4">Trabajadores que han aceptado unirse al proyecto y están disponibles para conformar equipos.</p>
+                        <div th:if="${#lists.isEmpty(proyecto.equipoTrabajo)}" class="text-sm text-text-secondary-dark py-4 text-center">
+                            No hay trabajadores en el pool del proyecto.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(proyecto.equipoTrabajo)}" class="space-y-3">
+                            <div th:each="trabajador : ${proyecto.equipoTrabajo}" class="flex items-center justify-between p-3 bg-surface-dark/50 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-background-dark font-bold text-sm"
+                                         th:text="${trabajador.nombre != null and !trabajador.nombre.isEmpty() ? trabajador.nombre.substring(0,1).toUpperCase() : 'T'}">T</div>
+                                    <div>
+                                        <span class="text-sm font-semibold text-white flex items-center gap-1.5">
+                                            <span th:text="${trabajador.nombre + ' ' + trabajador.apellido}">Nombre</span>
+                                            <span th:if="${trabajador.verificado}" class="material-symbols-outlined text-primary text-[14px]">verified</span>
+                                        </span>
+                                        <span class="text-xs text-text-secondary-dark block" th:text="${trabajador.oficio ?: 'Oficio no registrado'}">Oficio</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipos de Trabajo (Cards) -->
+                    <div class="glass-panel rounded-3xl p-6 border border-white/5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">diversity_3</span>
+                                Equipos de Trabajo
+                            </h3>
+                            <!-- Botón Crear Equipo (Visible para el contratista asignado) -->
+                            <button th:if="${proyecto.contratistaAsignado != null and session.usuario != null and proyecto.contratistaAsignado.username.equalsIgnoreCase(session.usuario.username) and !#lists.isEmpty(proyecto.equipoTrabajo)}"
+                                    onclick="document.getElementById('crearEquipoModal').classList.remove('hidden')"
+                                    class="px-3 py-1.5 gradient-bg text-background-dark font-display font-bold text-xs rounded-xl hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] transition-all">
+                                Crear Equipo
+                            </button>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(equipos)}" class="text-sm text-text-secondary-dark py-6 text-center">
+                            No se han creado equipos de trabajo para este proyecto.
+                        </div>
+
+                        <div th:unless="${#lists.isEmpty(equipos)}" class="space-y-4">
+                            <div th:each="equipo : ${equipos}" class="p-4 bg-surface-dark/70 rounded-2xl border border-white/5 space-y-4">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <h4 class="font-display font-bold text-white text-base" th:text="${equipo.nombre}">Nombre Equipo</h4>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-surface-light border border-white/5 text-primary mt-1"
+                                              th:text="${equipo.actividad}">Actividad</span>
+                                    </div>
+                                    <!-- Acciones del contratista -->
+                                    <div th:if="${proyecto.contratistaAsignado != null and session.usuario != null and proyecto.contratistaAsignado.username.equalsIgnoreCase(session.usuario.username)}" class="flex items-center gap-1.5">
+                                        <button th:data-id="${equipo.id}"
+                                                th:data-avance="${equipo.porcentajeAvance}"
+                                                onclick="abrirModalAvance(this.getAttribute('data-id'), parseFloat(this.getAttribute('data-avance')))"
+                                                class="w-8 h-8 rounded-lg bg-surface-light hover:bg-white/5 border border-white/10 flex items-center justify-center text-text-secondary-dark hover:text-white transition-colors"
+                                                title="Actualizar Avance">
+                                            <span class="material-symbols-outlined text-[18px]">trending_up</span>
+                                        </button>
+                                        <form th:action="@{/contratistas/proyectos/{proyectoId}/equipos/{equipoId}/eliminar(proyectoId=${proyecto.id},equipoId=${equipo.id})}" method="post"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar este equipo?')">
+                                            <button type="submit" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 flex items-center justify-center transition-colors"
+                                                    title="Eliminar Equipo">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Progreso -->
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs text-text-secondary-dark font-medium">
+                                        <span>Progreso de Actividad</span>
+                                        <span th:text="${#numbers.formatDecimal(equipo.porcentajeAvance, 1, 1)} + '%'">0.0%</span>
+                                    </div>
+                                    <div class="w-full bg-surface-light rounded-full h-2 overflow-hidden border border-white/5">
+                                        <div class="h-full rounded-full transition-all duration-500"
+                                             th:style="'width: ' + ${equipo.porcentajeAvance} + '%; background-color: hsl(' + (${equipo.porcentajeAvance} * 1.2) + ', 80%, 45%)'"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Integrantes -->
+                                <div class="space-y-2">
+                                    <p class="text-[10px] font-bold text-text-secondary-dark uppercase tracking-wider">Integrantes</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <div th:each="int : ${equipo.integrantes}" class="flex items-center gap-1.5 px-2 py-1 bg-surface-light rounded-lg border border-white/5 text-xs text-white">
+                                            <div class="w-5 h-5 rounded-full gradient-bg flex items-center justify-center text-[10px] text-background-dark font-bold"
+                                                 th:text="${int.nombre != null and !int.nombre.isEmpty() ? int.nombre.substring(0,1).toUpperCase() : 'T'}">T</div>
+                                            <span th:text="${int.nombre}">Integrante</span>
+                                            <span th:if="${int.verificado}" class="material-symbols-outlined text-primary text-[12px]">verified</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modales de Equipos (Para contratista asignado) -->
+                <div th:if="${proyecto.contratistaAsignado != null and session.usuario != null and proyecto.contratistaAsignado.username.equalsIgnoreCase(session.usuario.username)}">
+                    <!-- Modal Crear Equipo -->
+                    <div id="crearEquipoModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm hidden transition-all duration-300">
+                        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-white/10 relative">
+                            <button onclick="document.getElementById('crearEquipoModal').classList.add('hidden')"
+                                    class="absolute right-4 top-4 w-8 h-8 rounded-full bg-surface-light hover:bg-white/10 flex items-center justify-center text-text-secondary-dark hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                            <h3 class="text-xl font-display font-bold text-white mb-4">Crear Equipo de Trabajo</h3>
+                            <form th:action="@{/contratistas/proyectos/{proyectoId}/equipos/crear(proyectoId=${proyecto.id})}" method="post" class="space-y-4" onsubmit="return validarCrearEquipoForm()">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary-dark mb-1.5">Nombre o Identificación</label>
+                                    <input type="text" name="nombre" required placeholder="Ej. Cuadrilla de Encofrado"
+                                           class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary-dark mb-1.5">Actividad Asignada</label>
+                                    <input type="text" name="actividad" required placeholder="Ej. Armado de vigas y columnas"
+                                           class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary-dark mb-1.5">Porcentaje de Avance Inicial (%)</label>
+                                    <input type="number" name="porcentajeAvance" min="0" max="100" step="0.1" value="0.0" required
+                                           class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary-dark mb-1.5">Asignar Integrantes (Mínimo 1)</label>
+                                    <div class="max-h-40 overflow-y-auto space-y-2 p-3 bg-surface-dark/50 border border-white/10 rounded-xl">
+                                        <div th:each="trabajador : ${proyecto.equipoTrabajo}" class="flex items-center gap-3">
+                                            <input type="checkbox" name="integranteIds" th:value="${trabajador.id}" class="rounded border-white/10 text-primary focus:ring-primary bg-surface-light w-4 h-4 checkbox-integrante">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="text-sm font-semibold text-white" th:text="${trabajador.nombre + ' ' + trabajador.apellido}">Nombre</span>
+                                                <span th:if="${trabajador.verificado}" class="material-symbols-outlined text-primary text-[14px]">verified</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p id="errorIntegrantes" class="text-xs text-red-400 mt-1 hidden">Debes seleccionar al menos un integrante.</p>
+                                </div>
+                                <div class="flex justify-end gap-3 pt-2">
+                                    <button type="button" onclick="document.getElementById('crearEquipoModal').classList.add('hidden')"
+                                            class="px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all text-sm font-semibold">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="px-5 py-2.5 rounded-xl gradient-bg text-background-dark font-display font-bold text-sm hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] transition-all">
+                                        Guardar Equipo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Modal Actualizar Avance -->
+                    <div id="avanceModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm hidden transition-all duration-300">
+                        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-white/10 relative">
+                            <button onclick="document.getElementById('avanceModal').classList.add('hidden')"
+                                    class="absolute right-4 top-4 w-8 h-8 rounded-full bg-surface-light hover:bg-white/10 flex items-center justify-center text-text-secondary-dark hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                            <h3 class="text-xl font-display font-bold text-white mb-4">Actualizar Avance de Equipo</h3>
+                            <form id="avanceForm" method="post" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary-dark mb-1.5">Nuevo Porcentaje de Avance (%)</label>
+                                    <input type="number" id="nuevoAvanceInput" name="porcentajeAvance" min="0" max="100" step="0.1" required
+                                           class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all">
+                                </div>
+                                <div class="flex justify-end gap-3 pt-2">
+                                    <button type="button" onclick="document.getElementById('avanceModal').classList.add('hidden')"
+                                            class="px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all text-sm font-semibold">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="px-5 py-2.5 rounded-xl gradient-bg text-background-dark font-display font-bold text-sm hover:shadow-[0_0_15px_rgba(255,152,0,0.4)] transition-all">
+                                        Actualizar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <script th:inline="javascript">
+                        function abrirModalAvance(equipoId, avanceActual) {
+                            const proyectoId = /*[[${proyecto.id}]]*/ '';
+                            const form = document.getElementById('avanceForm');
+                            form.action = `/contratistas/proyectos/${proyectoId}/equipos/${equipoId}/actualizar-avance`;
+                            document.getElementById('nuevoAvanceInput').value = avanceActual;
+                            document.getElementById('avanceModal').classList.remove('hidden');
+                        }
+
+                        function validarCrearEquipoForm() {
+                            const checkboxes = document.querySelectorAll('.checkbox-integrante');
+                            let checkedCount = 0;
+                            checkboxes.forEach(cb => {
+                                if (cb.checked) checkedCount++;
+                            });
+                            const errorMsg = document.getElementById('errorIntegrantes');
+                            if (checkedCount === 0) {
+                                errorMsg.classList.remove('hidden');
+                                return false;
+                            }
+                            errorMsg.classList.add('hidden');
+                            return true;
+                        }
+                    </script>
+                </div>
+
+                <!-- Specs Sidebar -->
+                <div class="space-y-6">
+                    <!-- Info Grid Widget -->
+                    <div class="glass-panel rounded-3xl p-6 border border-white/5">
+                        <h3 class="font-display font-bold text-lg text-white mb-6 border-b border-white/5 pb-4">Especificaciones</h3>
+                        
+                        <ul class="space-y-5">
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-surface-light flex items-center justify-center shrink-0 text-text-secondary-dark">
+                                    <span class="material-symbols-outlined outline text-[20px]">location_on</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-0.5">Ubicación</p>
+                                    <p class="text-sm font-medium text-white" th:text="${proyecto != null ? proyecto.ubicacion : 'N/A'}">--</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-surface-light flex items-center justify-center shrink-0 text-text-secondary-dark">
+                                    <span class="material-symbols-outlined outline text-[20px]">square_foot</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-0.5">Área Total</p>
+                                    <p class="text-sm font-medium text-white" th:text="${proyecto.areaTotal} + ' mÂ²'">-- mÂ²</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-surface-light flex items-center justify-center shrink-0 text-text-secondary-dark">
+                                    <span class="material-symbols-outlined outline text-[20px]">calendar_today</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-0.5">Fecha de Inicio</p>
+                                    <p class="text-sm font-medium text-white" th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}">--/--/----</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-surface-light flex items-center justify-center shrink-0 text-text-secondary-dark">
+                                    <span class="material-symbols-outlined outline text-[20px]">event_available</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-0.5">Fecha de Entrega</p>
+                                    <p class="text-sm font-medium text-white" th:text="${#temporals.format(proyecto.fechaEntrega, 'dd/MM/yyyy')}">--/--/----</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-surface-light flex items-center justify-center shrink-0 text-text-secondary-dark">
+                                    <span class="material-symbols-outlined outline text-[20px]">hourglass_empty</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-0.5">Plazo Estimado</p>
+                                    <p class="text-sm font-medium text-white" th:text="${proyecto.plazoEstimado} + ' meses'">-- meses</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Documentos Widget -->
+                    <div th:if="${proyecto.documentoLegalUrl != null and !proyecto.documentoLegalUrl.isEmpty()}" class="glass-panel rounded-3xl p-6 border border-white/5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+                        <h3 class="font-display font-bold text-lg text-white mb-4">Documentación</h3>
+                        <div class="flex items-center justify-between p-4 bg-surface-light/50 border border-white/10 rounded-xl hover:border-white/20 transition-colors">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <span class="material-symbols-outlined text-blue-400 text-3xl">picture_as_pdf</span>
+                                <div class="truncate">
+                                    <p class="text-white font-medium text-sm truncate" th:text="${proyecto.documentoLegalNombre != null ? proyecto.documentoLegalNombre : 'Estatutos_Legales.pdf'}">Doc.pdf</p>
+                                    <p class="text-text-secondary-dark text-xs">Documento Legal</p>
+                                </div>
+                            </div>
+                            <a th:href="@{/proyectos/documento/{id}(id=${proyecto.documentoLegalUrl})}" class="w-10 h-10 shrink-0 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">download</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Delete Project Action -->
+                    <div th:if="${session.usuario.role != 'ROLE_ADMIN'}" class="pt-4">
+                        <form th:action="@{/proyectos/{id}/eliminar(id=${proyecto.id})}" method="post">
+                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este proyecto de forma permanente?')" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 rounded-xl transition-colors font-display font-bold text-sm">
+                                <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+                                Eliminar Proyecto
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </main>
     </div>
+
 <script src="/js/obratech.js"></script>
 </body>
-
 </html>

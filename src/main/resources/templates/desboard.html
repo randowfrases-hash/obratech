@@ -1,61 +1,54 @@
 <!DOCTYPE html>
-<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet" />
+    <title>Dashboard Cliente | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
-            border: 1px solid rgba(255, 152, 0, 0.2);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .stat-card:hover {
-            border-color: rgba(255, 152, 0, 0.5);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.2);
+            transform: translateY(-4px);
+            border-color: rgba(255, 152, 0, 0.4);
+            box-shadow: 0 12px 24px -10px rgba(255, 152, 0, 0.2);
         }
 
         .project-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #242424 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-
+        .project-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: transparent; transition: all 0.3s ease;
+        }
         .project-card:hover {
-            border-color: rgba(255, 152, 0, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.5);
+            border-color: rgba(255, 152, 0, 0.3);
         }
+        .project-card:hover::before { background: #FF9800; }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%);
-        }
-
-        .sidebar-link {
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-link:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-left: 3px solid #FF9800;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, #FF9800 0%, #FF6B00 100%);
-            height: 8px;
-            border-radius: 4px;
+        .progress-bar-inner {
+            transition: width 1s ease-out;
+            background: linear-gradient(90deg, #FF9800, #FF6B00);
         }
     </style>
     <script>
@@ -65,99 +58,79 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
-                        "background-light": "#f6f7f8",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
                     },
                 },
             },
         }
     </script>
 </head>
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
 
-<body class="bg-background-dark font-display text-white">
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}"
-                class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                <span class="material-symbols-outlined text-primary">dashboard</span>
-                <span class="text-text-main-dark font-medium">Dashboard</span>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <!-- Dashboard (Activo) -->
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-semibold">Dashboard</span>
             </a>
-
-            <!-- Opciones para Empresa / Persona -->
-            <div th:if="${session.usuario != null and session.usuario.role == 'ROLE_CLIENT'}">
-                <a th:href="@{/proyectos/publicar}"
-                    class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">construction</span>
-                    <span class="text-text-secondary-dark">Publicar Proyectos</span>
+            
+            <div th:if="${session.usuario != null and #lists.contains(session.usuario.roles, 'ROLE_CLIENT')}">
+                <a th:href="@{/proyectos/publicar}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">add_circle</span>
+                    <span class="font-medium">Publicar Proyectos</span>
                 </a>
-                <a th:href="@{/proyectos/mis-proyectos}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">folder</span>
-                    <span class="text-text-secondary-dark">Mi Historial de Proyectos</span>
+                <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder_open</span>
+                    <span class="font-medium">Mi Historial de Proyectos</span>
                 </a>
-                    <a th:href="@{/postulaciones/mis-postulaciones}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                        <span class="material-symbols-outlined text-text-secondary-dark">people</span>
-                        <span class="text-text-secondary-dark">Ver postulaciones</span>
-                    </a>
-                <a th:href="@{/clientes/mis-contratistas}"
-                    class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">star</span>
-                    <span class="text-text-secondary-dark">Calificaciones de Contratistas</span>
+                <a th:href="@{/postulaciones/mis-postulaciones}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">people</span>
+                    <span class="font-medium">Ver postulaciones</span>
                 </a>
-            </div>
-
-            <!-- Opciones para Contratista -->
-            <div th:if="${session.usuario != null and session.usuario.role == 'ROLE_CONTRACTOR'}">
-                <a th:href="@{/postulaciones}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">assignment_turned_in</span>
-                    <span class="text-text-secondary-dark">Postularme a proyectos</span>
+                <a th:href="@{/clientes/mis-contratistas}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">star</span>
+                    <span class="font-medium">Calificaciones</span>
                 </a>
-                <a th:href="@{/contratistas/proyectos-asignados}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">folder_special</span>
-                    <span class="text-text-secondary-dark">Proyectos Asignados</span>
-                </a>
-                <a th:href="@{/perfil-contratista}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">person</span>
-                    <span class="text-text-secondary-dark">Mi Perfil</span>
-                </a>
-            </div>
-
-            <!-- Opciones para Cliente -->
-            <div th:if="${session.usuario != null and session.usuario.role == 'ROLE_CLIENT'}">
-                <a th:href="@{/perfil-cliente}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
-                    <span class="material-symbols-outlined text-text-secondary-dark">person</span>
-                    <span class="text-text-secondary-dark">Mi Perfil</span>
+                <a th:href="@{/perfil-cliente}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group mt-2 border-t border-white/5 pt-4">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">person</span>
+                    <span class="font-medium">Mi Perfil</span>
                 </a>
             </div>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center">
-                    <span
-                        th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
-
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-text-main-dark font-medium text-sm" th:text="${session.usuario.username}">Usuario</p>
-                    <p class="text-text-secondary-dark text-xs" th:text="${session.usuario.role}"></p>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs" th:text="${session.usuario.role}">Rol</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit"
-                    class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -165,277 +138,289 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <!-- (debug banner removed) -->
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <!-- Decoración de fondo -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
 
-                    <h1 class="text-2xl font-bold text-white">Bienvenido, <span
-                            th:text="${session.usuario.username}">Usuario</span></h1>
-                    <p class="text-text-secondary-dark text-sm mt-1">Gestiona tus proyectos de construcción de forma
-                        eficiente</p>
+        <!-- Header -->
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight">Bienvenido, <span th:text="${session.usuario.username}">Usuario</span></h1>
+                    <p class="text-text-secondary-dark font-medium">Gestiona tus proyectos de construcción de forma eficiente</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a th:href="@{/desboard}" class="p-2 rounded-lg bg-surface-dark hover:bg-gray-800 transition-colors inline-flex items-center">
-                        <span class="material-symbols-outlined text-text-secondary-dark">notifications</span>
-                    </a>
-                    <a th:href="@{/proyectos/publicar}"
-                        class="gradient-bg px-6 py-2 rounded-lg text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
-                        <span class="material-symbols-outlined align-middle">add</span>
+                    <a th:href="@{/proyectos/publicar}" class="gradient-bg text-background-dark font-display font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1">
+                        <span class="material-symbols-outlined">add</span>
                         <span>Nuevo Proyecto</span>
                     </a>
-
-
                 </div>
             </div>
         </header>
 
         <!-- Dashboard Content -->
-        <main class="p-8">
+        <main class="p-6 md:p-12 relative z-10 flex-1">
+            <!-- Alerta de Restricción por Verificación -->
+            <div th:if="${errorVerificacion}" class="mb-8 glass-panel border-red-500/30 bg-red-500/5 rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute -right-16 -top-16 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+                <div class="flex items-start space-x-4 relative z-10">
+                    <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 shrink-0">
+                        <span class="material-symbols-outlined">block</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-display font-bold text-white mb-1">Acceso restringido</h3>
+                        <p class="text-red-200/80 text-sm leading-relaxed">
+                            No tienes permisos para publicar proyectos nuevos. Primero debes completar tu perfil y esperar a que el administrador valide y apruebe tu cuenta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner de Cuenta Pendiente de Verificación -->
+            <div th:if="${!usuarioVerificado}" class="mb-8 glass-panel border-amber-500/20 bg-amber-500/5 rounded-2xl p-6 relative overflow-hidden group">
+                <!-- Luz ambiental ámbar -->
+                <div class="absolute -right-16 -top-16 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shrink-0">
+                            <span class="material-symbols-outlined outline animate-pulse">gpp_maybe</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-display font-bold text-white mb-1">Cuenta pendiente de verificación</h3>
+                            <p class="text-text-secondary-dark text-sm max-w-2xl leading-relaxed">
+                                Tu cuenta se ha registrado con éxito, pero para poder publicar proyectos o interactuar en la plataforma, el administrador debe verificar tu información personal primero.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+                        En Revisión
+                    </div>
+                </div>
+            </div>
+
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card rounded-xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="glass-panel stat-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white">construction</span>
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined outline">construction</span>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+12%</span>
+                        <span class="text-green-400 text-xs font-bold px-2 py-1 bg-green-500/10 rounded-full">+12%</span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">24</h3>
-                    <p class="text-text-secondary-dark text-sm">Proyectos Activos</p>
+                    <h3 class="text-3xl font-display font-bold text-white mb-1">24</h3>
+                    <p class="text-text-secondary-dark text-xs uppercase tracking-wider font-semibold">Proyectos Activos</p>
                 </div>
 
-                <div class="stat-card rounded-xl p-6">
+                <div class="glass-panel stat-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white">groups</span>
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400">
+                            <span class="material-symbols-outlined outline">groups</span>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+8%</span>
+                        <span class="text-green-400 text-xs font-bold px-2 py-1 bg-green-500/10 rounded-full">+8%</span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">156</h3>
-                    <p class="text-text-secondary-dark text-sm">Miembros del Equipo</p>
+                    <h3 class="text-3xl font-display font-bold text-white mb-1">156</h3>
+                    <p class="text-text-secondary-dark text-xs uppercase tracking-wider font-semibold">Miembros de Equipo</p>
                 </div>
 
-                <div class="stat-card rounded-xl p-6">
+                <div class="glass-panel stat-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white">trending_up</span>
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-400">
+                            <span class="material-symbols-outlined outline">trending_up</span>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+15%</span>
+                        <span class="text-green-400 text-xs font-bold px-2 py-1 bg-green-500/10 rounded-full">+15%</span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">$2.4M</h3>
-                    <p class="text-text-secondary-dark text-sm">Presupuesto Total</p>
+                    <h3 class="text-3xl font-display font-bold text-white mb-1">$2.4M</h3>
+                    <p class="text-text-secondary-dark text-xs uppercase tracking-wider font-semibold">Presupuesto Total</p>
                 </div>
 
-                <div class="stat-card rounded-xl p-6">
+                <div class="glass-panel stat-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white">task_alt</span>
+                        <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center text-green-400">
+                            <span class="material-symbols-outlined outline">task_alt</span>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+5%</span>
+                        <span class="text-green-400 text-xs font-bold px-2 py-1 bg-green-500/10 rounded-full">+5%</span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">89%</h3>
-                    <p class="text-text-secondary-dark text-sm">Proyectos Completados</p>
+                    <h3 class="text-3xl font-display font-bold text-white mb-1">89%</h3>
+                    <p class="text-text-secondary-dark text-xs uppercase tracking-wider font-semibold">Tasa de Éxito</p>
                 </div>
             </div>
 
             <!-- Projects Section -->
-            <div class="mb-8">
+            <div class="mb-12">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-white">Proyectos Recientes</h2>
-                    <a href="#" class="text-primary hover:text-orange-400 text-sm font-medium">Ver todos →</a>
+                    <h2 class="text-2xl font-display font-bold text-white">Proyectos Recientes</h2>
+                    <a th:href="@{/proyectos/mis-proyectos}" class="text-primary hover:text-primary-hover text-sm font-semibold flex items-center gap-1 transition-colors">
+                        Ver todos <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </a>
                 </div>
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Project Card 1 -->
-                    <div class="project-card rounded-xl p-6">
+                    <div class="glass-panel project-card rounded-2xl p-6 flex flex-col">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-bold text-white mb-1">Torre Residencial A</h3>
-                                <p class="text-text-secondary-dark text-sm">Edificación</p>
+                                <h3 class="text-lg font-display font-bold text-white mb-1 group-hover:text-primary transition-colors">Torre Residencial A</h3>
+                                <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Edificación</p>
                             </div>
-                            <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">En
-                                Progreso</span>
+                            <span class="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-400 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>En Progreso
+                            </span>
                         </div>
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between text-sm mb-2">
-                                <span class="text-text-secondary-dark">Progreso</span>
-                                <span class="text-white font-medium">65%</span>
+                        <div class="mb-6 flex-grow">
+                            <div class="flex items-center justify-between text-xs font-display font-medium text-text-secondary-dark mb-2">
+                                <span>Progreso</span>
+                                <span class="text-white">65%</span>
                             </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="progress-bar" style="width: 65%"></div>
+                            <div class="h-2 w-full bg-surface-light rounded-full overflow-hidden border border-white/5">
+                                <div class="h-full progress-bar-inner rounded-full" style="width: 65%"></div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span
-                                    class="material-symbols-outlined text-text-secondary-dark text-base">calendar_today</span>
-                                <span class="text-text-secondary-dark">3 meses restantes</span>
+                        <div class="flex items-center justify-between text-sm pt-4 border-t border-white/5">
+                            <div class="flex items-center space-x-1.5 text-text-secondary-dark">
+                                <span class="material-symbols-outlined outline text-[16px]">calendar_today</span>
+                                <span>3 meses rest.</span>
                             </div>
-                            <span class="text-white font-medium">$450K</span>
+                            <span class="text-primary font-display font-bold text-lg">$450K</span>
                         </div>
                     </div>
 
                     <!-- Project Card 2 -->
-                    <div class="project-card rounded-xl p-6">
+                    <div class="glass-panel project-card rounded-2xl p-6 flex flex-col">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-bold text-white mb-1">Centro Comercial Norte</h3>
-                                <p class="text-text-secondary-dark text-sm">Comercial</p>
+                                <h3 class="text-lg font-display font-bold text-white mb-1 group-hover:text-primary transition-colors">Centro Comercial Norte</h3>
+                                <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Comercial</p>
                             </div>
-                            <span
-                                class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium">Planificación</span>
+                            <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5">
+                                Planificación
+                            </span>
                         </div>
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between text-sm mb-2">
-                                <span class="text-text-secondary-dark">Progreso</span>
-                                <span class="text-white font-medium">25%</span>
+                        <div class="mb-6 flex-grow">
+                            <div class="flex items-center justify-between text-xs font-display font-medium text-text-secondary-dark mb-2">
+                                <span>Progreso</span>
+                                <span class="text-white">25%</span>
                             </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="progress-bar" style="width: 25%"></div>
+                            <div class="h-2 w-full bg-surface-light rounded-full overflow-hidden border border-white/5">
+                                <div class="h-full progress-bar-inner rounded-full" style="width: 25%"></div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span
-                                    class="material-symbols-outlined text-text-secondary-dark text-base">calendar_today</span>
-                                <span class="text-text-secondary-dark">8 meses restantes</span>
+                        <div class="flex items-center justify-between text-sm pt-4 border-t border-white/5">
+                            <div class="flex items-center space-x-1.5 text-text-secondary-dark">
+                                <span class="material-symbols-outlined outline text-[16px]">calendar_today</span>
+                                <span>8 meses rest.</span>
                             </div>
-                            <span class="text-white font-medium">$1.2M</span>
+                            <span class="text-primary font-display font-bold text-lg">$1.2M</span>
                         </div>
                     </div>
 
                     <!-- Project Card 3 -->
-                    <div class="project-card rounded-xl p-6">
+                    <div class="glass-panel project-card rounded-2xl p-6 flex flex-col">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-bold text-white mb-1">Villa Moderna</h3>
-                                <p class="text-text-secondary-dark text-sm">Residencial</p>
+                                <h3 class="text-lg font-display font-bold text-white mb-1 group-hover:text-primary transition-colors">Villa Moderna</h3>
+                                <p class="text-text-secondary-dark text-xs font-semibold uppercase tracking-wider">Residencial</p>
                             </div>
-                            <span
-                                class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">Completado</span>
+                            <span class="px-3 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5">
+                                Completado
+                            </span>
                         </div>
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between text-sm mb-2">
-                                <span class="text-text-secondary-dark">Progreso</span>
-                                <span class="text-white font-medium">100%</span>
+                        <div class="mb-6 flex-grow">
+                            <div class="flex items-center justify-between text-xs font-display font-medium text-text-secondary-dark mb-2">
+                                <span>Progreso</span>
+                                <span class="text-white">100%</span>
                             </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="progress-bar" style="width: 100%"></div>
+                            <div class="h-2 w-full bg-surface-light rounded-full overflow-hidden border border-white/5">
+                                <div class="h-full progress-bar-inner rounded-full" style="width: 100%"></div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between text-sm">
-                            <div class="flex items-center space-x-2">
-                                <span
-                                    class="material-symbols-outlined text-text-secondary-dark text-base">check_circle</span>
-                                <span class="text-text-secondary-dark">Finalizado</span>
+                        <div class="flex items-center justify-between text-sm pt-4 border-t border-white/5">
+                            <div class="flex items-center space-x-1.5 text-text-secondary-dark">
+                                <span class="material-symbols-outlined outline text-[16px]">check_circle</span>
+                                <span>Finalizado</span>
                             </div>
-                            <span class="text-white font-medium">$280K</span>
+                            <span class="text-primary font-display font-bold text-lg">$280K</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Activity & Info Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Recent Activity -->
-                <div class="bg-surface-dark rounded-xl p-6 border border-gray-800">
-                    <h3 class="text-xl font-bold text-white mb-6">Actividad Reciente</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-4">
-                            <div
-                                class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-white text-sm">add</span>
+            <!-- Bottom Section -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <!-- Activity Feed -->
+                <div class="glass-panel rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-xl font-display font-bold text-white mb-6">Actividad Reciente</h3>
+                    <div class="space-y-6">
+                        <div class="flex gap-4 relative">
+                            <div class="absolute left-5 top-10 bottom-[-24px] w-0.5 bg-white/5"></div>
+                            <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg z-10">
+                                <span class="material-symbols-outlined text-background-dark text-[20px] font-bold">add</span>
                             </div>
-                            <div class="flex-1">
-                                <p class="text-text-main-dark text-sm"><span class="font-medium">Nuevo proyecto</span>
-                                    "Torre Residencial A" creado</p>
-                                <p class="text-text-secondary-dark text-xs mt-1">Hace 2 horas</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div
-                                class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-white text-sm">group_add</span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-text-main-dark text-sm"><span class="font-medium">5 nuevos
-                                        miembros</span> agregados al equipo</p>
-                                <p class="text-text-secondary-dark text-xs mt-1">Hace 5 horas</p>
+                            <div>
+                                <p class="text-sm text-white"><span class="font-display font-bold">Nuevo proyecto</span> "Torre Residencial A" publicado.</p>
+                                <p class="text-xs text-text-secondary-dark mt-1 font-semibold">Hace 2 horas</p>
                             </div>
                         </div>
-                        <div class="flex items-start space-x-4">
-                            <div
-                                class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-white text-sm">check_circle</span>
+                        <div class="flex gap-4 relative">
+                            <div class="absolute left-5 top-10 bottom-[-24px] w-0.5 bg-white/5"></div>
+                            <div class="w-10 h-10 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center flex-shrink-0 z-10">
+                                <span class="material-symbols-outlined text-blue-400 text-[20px]">person_add</span>
                             </div>
-                            <div class="flex-1">
-                                <p class="text-text-main-dark text-sm"><span class="font-medium">Villa Moderna</span>
-                                    completado exitosamente</p>
-                                <p class="text-text-secondary-dark text-xs mt-1">Hace 1 día</p>
+                            <div>
+                                <p class="text-sm text-white"><span class="font-display font-bold">5 postulaciones</span> nuevas recibidas para Centro Comercial Norte.</p>
+                                <p class="text-xs text-text-secondary-dark mt-1 font-semibold">Hace 5 horas</p>
                             </div>
                         </div>
-                        <div class="flex items-start space-x-4">
-                            <div
-                                class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-white text-sm">payments</span>
+                        <div class="flex gap-4 relative">
+                            <div class="absolute left-5 top-10 bottom-[-24px] w-0.5 bg-white/5"></div>
+                            <div class="w-10 h-10 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center justify-center flex-shrink-0 z-10">
+                                <span class="material-symbols-outlined text-green-400 text-[20px]">task_alt</span>
                             </div>
-                            <div class="flex-1">
-                                <p class="text-text-main-dark text-sm"><span class="font-medium">Pago recibido</span> de
-                                    $50,000</p>
-                                <p class="text-text-secondary-dark text-xs mt-1">Hace 2 días</p>
+                            <div>
+                                <p class="text-sm text-white"><span class="font-display font-bold">Villa Moderna</span> marcada como completada exitosamente.</p>
+                                <p class="text-xs text-text-secondary-dark mt-1 font-semibold">Hace 1 día</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 relative">
+                            <div class="w-10 h-10 bg-purple-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center flex-shrink-0 z-10">
+                                <span class="material-symbols-outlined text-purple-400 text-[20px]">payments</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-white"><span class="font-display font-bold">Pago procesado</span> para contratista Juan Pérez.</p>
+                                <p class="text-xs text-text-secondary-dark mt-1 font-semibold">Hace 2 días</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- User Info Card -->
-                <div class="bg-surface-dark rounded-xl p-6 border border-gray-800">
-                    <h3 class="text-xl font-bold text-white mb-6">Información del Perfil</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold text-2xl"
-                                    th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
-                            </div>
-                            <div>
-                                <p class="text-white font-bold text-lg" th:text="${session.usuario.username}">Nombre Usuario</p>
-                                    <p class="text-text-secondary-dark text-sm" th:text="${contratista != null ? contratista.email : 'correo@ejemplo.com'}">email@ejemplo.com</p>
-                            </div>
+                <!-- Quick Profile Card -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 border border-white/5 relative overflow-hidden flex flex-col justify-center">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+                    
+                    <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
+                        <div class="w-24 h-24 gradient-bg rounded-2xl rotate-3 shadow-lg flex items-center justify-center shrink-0">
+                            <span class="text-background-dark font-display font-bold text-5xl -rotate-3" th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
                         </div>
-                        <div class="pt-4 border-t border-gray-800 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-text-secondary-dark">Tipo de Usuario:</span>
-                                <span class="text-white font-medium" th:text="${session.usuario.role}">Usuario</span>
+                        <div class="text-center md:text-left w-full">
+                            <h3 class="text-2xl font-display font-bold text-white mb-1" th:text="${session.usuario.username}">Usuario</h3>
+                            <p class="text-primary text-sm font-semibold uppercase tracking-wider mb-4" th:text="${session.usuario.role}">Rol</p>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-surface-light rounded-xl p-3 border border-white/5">
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Miembro</p>
+                                    <p class="text-sm font-bold text-white">2026</p>
+                                </div>
+                                <div class="bg-surface-light rounded-xl p-3 border border-white/5">
+                                    <p class="text-xs text-text-secondary-dark uppercase tracking-wider font-semibold mb-1">Estado</p>
+                                    <p class="text-sm font-bold text-green-400 flex items-center gap-1 justify-center md:justify-start">
+                                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Activo
+                                    </p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between" th:if="${session.usuario.role == 'ROLE_CONTRACTOR'}">
-                                <span class="text-text-secondary-dark">Especialidad:</span>
-                                <span class="text-white font-medium" th:text="${contratista != null ? contratista.especialidad : 'N/A'}">N/A</span>
-                            </div>
-                            <div class="flex items-center justify-between" th:if="${session.usuario.role == 'ROLE_CONTRACTOR'}">
-                                <span class="text-text-secondary-dark">Calificación Promedio:</span>
-                              <span class="text-white font-medium" th:text="${contratista != null and contratista.calificacionPromedio != null ? #numbers.formatDecimal(contratista.calificacionPromedio, 1, 1) : '0.0'}">0.0</span>
-                            </div>
-                            <div class="flex items-center justify-between" th:unless="${session.usuario.role == 'ROLE_CONTRACTOR'}">
-                                <span class="text-text-secondary-dark">Proyectos Activos:</span>
-                                <span class="text-white font-medium">24</span>
-                            </div>
-                            <div class="flex items-center justify-between" th:unless="${session.usuario.role == 'ROLE_CONTRACTOR'}">
-                                <span class="text-text-secondary-dark">Miembro desde:</span>
-                                <span class="text-white font-medium">2024</span>
-                            </div>
+                            
+                            <a th:href="@{/perfil-cliente}" class="inline-flex w-full md:w-auto items-center justify-center gap-2 bg-surface-light hover:bg-white/10 text-white font-display font-bold px-6 py-3 rounded-xl transition-colors border border-white/10">
+                                Ver Perfil Completo <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </a>
                         </div>
-                        <a th:if="${session.usuario.role == 'ROLE_CONTRACTOR'}"
-                           th:href="@{/perfil-contratista/editar}"
-                           class="w-full mt-4 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors text-center block">
-                            Editar Perfil
-                        </a>
-                        <a th:unless="${session.usuario.role == 'ROLE_CONTRACTOR'}"
-                           th:href="@{/perfil-cliente}"
-                           class="w-full mt-4 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors text-center block">
-                            Editar Perfil
-                        </a>
                     </div>
                 </div>
             </div>
@@ -443,5 +428,4 @@
     </div>
 <script src="/js/obratech.js"></script>
 </body>
-
 </html>

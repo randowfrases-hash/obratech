@@ -30,18 +30,22 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Buscar el usuario en la BD
         Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
         
-        // Guardar en la sesión
+        // Guardar en la sesion
         HttpSession session = request.getSession();
         session.setAttribute("usuario", usuario);
+        if (usuario != null) {
+            session.setAttribute("userRole", usuario.getRole());
+            session.setAttribute("userRoles", usuario.getRoles());
+            session.setAttribute("sessionCreatedAt", System.currentTimeMillis());
+        }
         
-        // Redireccionar según el rol
-        String role = authentication.getAuthorities()
-                .iterator().next().getAuthority();
+        // Redireccionar segun el rol determinista
+        String role = usuario != null ? usuario.getRole() : "ROLE_USER";
 
         switch (role) {
             case "ROLE_WORKER" -> response.sendRedirect("/desboard-trabajador");
-            case "ROLE_ADMIN" -> response.sendRedirect("/admin");
-            case "ROLE_CLIENT" -> response.sendRedirect("/desboard");
+            case "ROLE_ADMIN" -> response.sendRedirect("/admin/desboard");
+            case "ROLE_CLIENT" -> response.sendRedirect("/desboard-cliente");
             case "ROLE_CONTRACTOR" -> response.sendRedirect("/desboard-contratista");
             default -> response.sendRedirect("/");
         }

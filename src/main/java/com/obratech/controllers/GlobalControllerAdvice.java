@@ -16,49 +16,41 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.obratech.entity.Usuario;
-import com.obratech.repository.ContratistaRepository;
-import com.obratech.repository.TrabajadorRepository;
-import com.obratech.repository.ClienteRepository;
+import com.obratech.repository.PerfilRepository;
 
 /**
- * e. Manejo global de errores del aplicativo.
- *    Intercepta excepciones y las convierte en vistas de error amigables.
+ * Manejo global de errores del aplicativo.
+ * Intercepta excepciones y las convierte en vistas de error amigables.
  */
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalControllerAdvice.class);
 
-    private final ContratistaRepository contratistaRepository;
-    private final TrabajadorRepository  trabajadorRepository;
-    private final ClienteRepository     clienteRepository;
+    private final PerfilRepository perfilRepository;
 
-    public GlobalControllerAdvice(ContratistaRepository contratistaRepository,
-                                  TrabajadorRepository trabajadorRepository,
-                                  ClienteRepository clienteRepository) {
-        this.contratistaRepository = contratistaRepository;
-        this.trabajadorRepository  = trabajadorRepository;
-        this.clienteRepository     = clienteRepository;
+    public GlobalControllerAdvice(PerfilRepository perfilRepository) {
+        this.perfilRepository = perfilRepository;
     }
 
-    // ── Inyecta el perfil del usuario en todas las vistas ─────────────────────
+    //  Inyecta el perfil del usuario en todas las vistas 
     @ModelAttribute("perfilGlobal")
     public Object addProfileToModel(HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) return null;
-        return switch (usuario.getRole()) {
-            case "ROLE_CONTRACTOR" -> contratistaRepository.findByUsername(usuario.getUsername());
-            case "ROLE_WORKER"     -> trabajadorRepository.findByUsername(usuario.getUsername());
-            case "ROLE_CLIENT"     -> clienteRepository.findByUsername(usuario.getUsername());
-            default                -> null;
-        };
+        try {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            if (usuario == null || usuario.getUsername() == null) return null;
+            return perfilRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(null);
+        } catch (Exception e) {
+            log.error("Error al cargar perfil global en el advice: {}", e.getMessage());
+            return null;
+        }
     }
 
-    // ── 403: Acceso denegado ──────────────────────────────────────────────────
+    //  403: Acceso denegado 
     @ExceptionHandler(AccessDeniedException.class)
     public String handleAccessDenied(AccessDeniedException ex,
                                      HttpServletResponse response, Model model) {
-        log.warn("🔒 Acceso denegado: {}", ex.getMessage());
+        log.warn(" Acceso denegado: {}", ex.getMessage());
         response.setStatus(HttpStatus.FORBIDDEN.value());
         model.addAttribute("codigoError", 403);
         model.addAttribute("errorTitle", "Acceso Denegado");
@@ -69,25 +61,25 @@ public class GlobalControllerAdvice {
         return "error";
     }
 
-    // ── 404: Ruta no encontrada ───────────────────────────────────────────────
+    //  404: Ruta no encontrada 
     @ExceptionHandler(NoHandlerFoundException.class)
     public String handleNotFound(NoHandlerFoundException ex,
                                  HttpServletResponse response, Model model) {
-        log.warn("🔍 Página no encontrada: {}", ex.getRequestURL());
+        log.warn(" Pgina no encontrada: {}", ex.getRequestURL());
         response.setStatus(HttpStatus.NOT_FOUND.value());
         model.addAttribute("codigoError", 404);
-        model.addAttribute("errorTitle", "Página No Encontrada");
+        model.addAttribute("errorTitle", "Pgina No Encontrada");
         model.addAttribute("errorMessage",
-            "La página que buscas no existe o fue movida a otra dirección.");
+            "La pgina que buscas no existe o fue movida a otra direccin.");
         model.addAttribute("errorIcon", "search_off");
         return "error";
     }
 
-    // ── 404: Recurso estático no encontrado ───────────────────────────────────
+    //  404: Recurso esttico no encontrado 
     @ExceptionHandler(NoResourceFoundException.class)
     public String handleNoResource(NoResourceFoundException ex,
                                    HttpServletResponse response, Model model) {
-        log.warn("📂 Recurso no encontrado: {}", ex.getMessage());
+        log.warn(" Recurso no encontrado: {}", ex.getMessage());
         response.setStatus(HttpStatus.NOT_FOUND.value());
         model.addAttribute("codigoError", 404);
         model.addAttribute("errorTitle", "Recurso No Encontrado");
@@ -96,42 +88,42 @@ public class GlobalControllerAdvice {
         return "error";
     }
 
-    // ── 401: Usuario no autenticado ───────────────────────────────────────────
+    //  401: Usuario no autenticado 
     @ExceptionHandler(UsernameNotFoundException.class)
     public String handleUsernameNotFound(UsernameNotFoundException ex,
                                          HttpServletResponse response, Model model) {
-        log.warn("👤 Autenticación fallida: {}", ex.getMessage());
+        log.warn(" Autenticacin fallida: {}", ex.getMessage());
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         model.addAttribute("codigoError", 401);
-        model.addAttribute("errorTitle", "Autenticación Fallida");
+        model.addAttribute("errorTitle", "Autenticacin Fallida");
         model.addAttribute("errorMessage",
             "No encontramos una cuenta con las credenciales proporcionadas.");
         model.addAttribute("errorIcon", "person_off");
         return "error";
     }
 
-    // ── 400: Argumento ilegal (validación de negocio) ─────────────────────────
+    //  400: Argumento ilegal (validacin de negocio) 
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgument(IllegalArgumentException ex,
                                         HttpServletResponse response, Model model) {
-        log.warn("⚠️ Error de validación: {}", ex.getMessage());
+        log.warn(" Error de validacin: {}", ex.getMessage());
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         model.addAttribute("codigoError", 400);
-        model.addAttribute("errorTitle", "Datos Inválidos");
+        model.addAttribute("errorTitle", "Datos Invlidos");
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorIcon", "error_outline");
         return "error";
     }
 
-    // ── 500: Error inesperado ─────────────────────────────────────────────────
+    //  500: Error inesperado 
     @ExceptionHandler(Exception.class)
     public String handleGeneral(Exception ex, HttpServletResponse response, Model model) {
-        log.error("💥 Error inesperado: {}", ex.getMessage(), ex);
+        log.error(" Error inesperado: {}", ex.getMessage(), ex);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         model.addAttribute("codigoError", 500);
         model.addAttribute("errorTitle", "Error Interno del Servidor");
         model.addAttribute("errorMessage",
-            "Ocurrió un problema inesperado. Por favor intenta de nuevo más tarde.");
+            "Ocurri un problema inesperado. Por favor intenta de nuevo ms tarde.");
         model.addAttribute("errorIcon", "warning");
         return "error";
     }

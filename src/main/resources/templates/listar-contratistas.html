@@ -1,208 +1,245 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listar Contratistas - ObraTech</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listar Contratistas | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .table-row-hover {
+            transition: all 0.2s ease;
+        }
+        .table-row-hover:hover {
+            background: rgba(255, 152, 0, 0.05);
+        }
+    </style>
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#FF9800',
-                        'primary-light': '#FFF3E0',
-                        'background-dark': '#121212',
-                        'surface-dark': '#1A1A1A',
-                        'success': '#00A651',
-                        'danger': '#D32F2F',
-                        'warning': '#F57C00',
-                        'info': '#0097A7',
-                        'text-main-dark': '#E0E0E0',
-                        'text-secondary-dark': '#A0A0A0',
-                        'border-light': '#333333'
-                    }
-                }
-            }
+                        "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1A1A1A",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
+                        "text-secondary-dark": "#A0A0A0",
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
+                    },
+                },
+            },
         }
     </script>
 </head>
 
-<body class="bg-background-dark font-display text-white">
-    <!-- Main Container -->
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-surface-dark border-r border-border-light shadow-sm">
-            <!-- Logo -->
-            <div class="p-6 border-b border-border-light">
-                <div class="flex items-center space-x-2">
-                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white text-2xl">construction</span>
-                    </div>
-                    <span class="text-xl font-bold text-white">ObraTech</span>
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:flex flex-col">
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
                 </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
-
-            <!-- User Info -->
-            <div class="p-4 border-b border-border-light">
-                <p class="text-sm text-text-secondary-dark">Bienvenido</p>
-                <p class="font-semibold text-white" th:text="${usuario.username}">usuario</p>
-                <p class="text-xs text-primary mt-1" th:text="${usuario.role}">ROLE_ADMIN</p>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="p-4 space-y-2">
-                <a th:href="@{/desboard}"
-                    class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-4 border-primary">
-                    <span class="material-symbols-outlined text-primary">dashboard</span>
-                    <span class="text-text-main-dark font-medium">Dashboard</span>
-                </a>
-
-                <!-- Logout Form -->
-                <form th:action="@{/logout}" method="post" class="w-full">
-                    <button type="submit"
-                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-red-50 text-danger transition">
-                        <span class="material-symbols-outlined">logout</span>
-                        <span>Cerrar Sesión</span>
-                    </button>
-                </form>
-            </nav>
         </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <div class="bg-surface-dark border-b border-border-light shadow-sm p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold text-white flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-primary text-4xl">engineering</span>
-                            <span>Listar Contratistas</span>
-                        </h1>
-                        <p class="text-text-secondary-dark mt-1">Gestiona la lista de contratistas disponibles</p>
-                    </div>
+        
+        <nav class="p-4 space-y-2 mt-4 font-display flex-1">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            
+            <a th:href="@{/contratistas}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                <span class="material-symbols-outlined">engineering</span>
+                <span class="font-semibold">Contratistas</span>
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}">U</span>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs font-semibold uppercase" th:text="${usuario.role}">Rol</p>
                 </div>
             </div>
-
-
-            <!-- Content -->
-            <div class="p-6">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-[#1f1f1f] rounded-lg shadow p-6 border-l-4 border-primary">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-text-secondary-dark text-sm font-medium">Total de Contratistas</p>
-                                <p class="text-3xl font-bold text-text-main-dark mt-2" th:text="${totalContratistas}">0
-                                </p>
-                            </div>
-                            <span class="material-symbols-outlined text-primary text-4xl opacity-80">group</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-[#1f1f1f] rounded-lg shadow p-6 border-l-4 border-primary">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-text-secondary-dark text-sm font-medium">Contratistas Activos</p>
-                                <p class="text-3xl font-bold text-success mt-2" th:text="${#lists.size(contratistas)}">0
-                                </p>
-                            </div>
-                            <span
-                                class="material-symbols-outlined text-success text-4xl opacity-80">verified_user</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-[#1f1f1f] rounded-lg shadow p-6 border-l-4 border-primary">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-text-secondary-dark text-sm font-medium">Calificación Promedio</p>
-                                <p class="text-3xl font-bold text-info mt-2">4.5</p>
-                            </div>
-                            <span class="material-symbols-outlined text-info text-4xl opacity-80">star</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contratistas Table -->
-                <div class="bg-surface-dark rounded-lg shadow overflow-hidden">
-                    <div class="p-6 border-b border-border-light">
-                        <h2 class="text-xl font-bold text-text-main-dark">Contratistas</h2>
-                    </div>
-
-                    <div th:if="${#lists.isEmpty(contratistas)}" class="p-12 text-center">
-                        <span class="material-symbols-outlined text-6xl text-gray-300 block mb-4">engineering</span>
-                        <p class="text-text-secondary-dark text-lg">No hay contratistas registrados</p>
-                    </div>
-
-                    <div th:unless="${#lists.isEmpty(contratistas)}" class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-surface-dark border-b border-border-light">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-text-main-dark">Nombre
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-text-main-dark">Email</th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-text-main-dark">
-                                        Calificación</th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-text-main-dark">Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y divide-border-light">
-                                <tr th:each="contratista : ${contratistas}" class="hover:bg-gray-50 transition">
-
-                                    <!-- Nombre + username -->
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-text-main-dark"
-                                            th:text="${contratista.nombre + ' ' + contratista.apellido}">
-                                        </p>
-                                        <p class="text-sm text-text-secondary-dark"
-                                            th:text="'@' + ${contratista.username}">
-                                        </p>
-                                    </td>
-
-                                    <!-- Email -->
-                                    <td class="px-6 py-4 text-text-secondary-dark" th:text="${contratista.email}"></td>
-
-                                    <!-- Calificación -->
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center space-x-1">
-                                            <span class="material-symbols-outlined text-warning text-xl">star</span>
-                                            <span class="font-semibold text-text-main-dark"
-                                                th:text="${#numbers.formatDecimal(contratista.calificacionPromedio != null ? contratista.calificacionPromedio : 0, 1, 2)}">
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    <!-- Botón ver -->
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center space-x-2">
-                                            <a th:href="@{/contratistas/{id}(id=${contratista.id})}"
-                                                class="inline-flex items-center px-3 py-2 rounded-lg bg-primary-light text-primary hover:bg-primary hover:text-white transition text-sm font-medium">
-                                                <span class="material-symbols-outlined text-lg">visibility</span>
-                                            </a>
-                                        </div>
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-            </div>
+            <form th:action="@{/logout}" method="post" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </form>
         </div>
     </div>
 
-    <style>
-        .sidebar-link:hover {
-            @apply bg-primary-light text-primary;
-        }
-    </style>
+    <!-- Main Content -->
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-[36px]">engineering</span>
+                    Directorio de Contratistas
+                </h1>
+                <p class="text-text-secondary-dark font-medium">Gestiona y contacta a los mejores profesionales de ObraTech.</p>
+            </div>
+        </header>
+
+        <main class="p-6 md:p-12 relative z-10 flex-1 max-w-7xl">
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Total de Contratistas</p>
+                            <p class="text-4xl font-display font-bold text-white" th:text="${totalContratistas}">0</p>
+                        </div>
+                        <div class="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center border border-primary/30 shadow-lg text-primary">
+                            <span class="material-symbols-outlined text-3xl">groups</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Contratistas Activos</p>
+                            <p class="text-4xl font-display font-bold text-green-400" th:text="${#lists.size(contratistas)}">0</p>
+                        </div>
+                        <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30 shadow-lg text-green-400">
+                            <span class="material-symbols-outlined text-3xl">verified_user</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 stat-card relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Calificación Promedio</p>
+                            <p class="text-4xl font-display font-bold text-blue-400">4.5</p>
+                        </div>
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30 shadow-lg text-blue-400">
+                            <span class="material-symbols-outlined text-3xl">star</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="glass-panel rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 class="text-xl font-display font-bold text-white">Lista de Contratistas</h2>
+                    <!-- Placeholder para futuro buscador o filtro -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-surface-light border border-white/10 rounded-xl text-text-secondary-dark text-sm w-full sm:w-64">
+                        <span class="material-symbols-outlined outline text-[18px]">search</span>
+                        <input type="text" placeholder="Buscar..." class="bg-transparent border-none outline-none text-white w-full placeholder:text-text-secondary-dark/50">
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(contratistas)}" class="p-16 text-center flex flex-col items-center justify-center">
+                    <div class="w-20 h-20 bg-surface-light rounded-full flex items-center justify-center mb-4">
+                        <span class="material-symbols-outlined text-text-secondary-dark outline text-[40px]">engineering</span>
+                    </div>
+                    <p class="text-lg font-display font-bold text-white mb-2">No hay contratistas registrados</p>
+                    <p class="text-text-secondary-dark text-sm">La lista de contratistas en la plataforma se encuentra vacía.</p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(contratistas)}" class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-light/50 border-b border-white/5">
+                                <th class="px-8 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Perfil</th>
+                                <th class="px-8 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Contacto</th>
+                                <th class="px-8 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider">Reputación</th>
+                                <th class="px-8 py-4 text-xs font-display font-bold text-text-secondary-dark uppercase tracking-wider text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <tr th:each="contratista : ${contratistas}" class="table-row-hover group">
+                                
+                                <td class="px-8 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shrink-0 font-bold text-background-dark">
+                                            <span th:text="${contratista.nombre != null and !contratista.nombre.isEmpty() ? contratista.nombre.substring(0,1).toUpperCase() : (contratista.username != null and !contratista.username.isEmpty() ? contratista.username.substring(0,1).toUpperCase() : 'C')}">C</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-display font-bold text-white text-sm flex items-center gap-1.5">
+                                                <span th:text="${contratista.nombre != null ? (contratista.nombre + (contratista.apellido != null ? ' ' + contratista.apellido : '')) : (contratista.username != null ? contratista.username : 'Contratista')}">Nombre Apellido</span>
+                                                <span th:if="${contratista.verificado}" class="inline-flex items-center text-primary" title="Contratista Verificado">
+                                                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                                                </span>
+                                            </p>
+                                            <p class="text-primary text-xs font-medium" th:text="'@' + ${contratista.username}">@usuario</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-8 py-4">
+                                    <div class="flex items-center gap-2 text-text-secondary-dark text-sm">
+                                        <span class="material-symbols-outlined outline text-[16px]">mail</span>
+                                        <span th:text="${contratista.email}">correo@ejemplo.com</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-8 py-4">
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-light border border-white/5 rounded-full">
+                                        <span class="material-symbols-outlined text-primary text-[16px]">star</span>
+                                        <span class="font-display font-bold text-white text-sm" th:text="${#numbers.formatDecimal(contratista.calificacionPromedio != null ? contratista.calificacionPromedio : 0, 1, 2)}">0.0</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-8 py-4 text-right">
+                                    <a th:href="@{/contratistas/{id}(id=${contratista.id})}" class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-surface-light border border-white/10 text-text-secondary-dark hover:text-white hover:border-primary/50 hover:bg-primary/10 transition-colors" title="Ver Detalles">
+                                        <span class="material-symbols-outlined outline text-[20px]">visibility</span>
+                                    </a>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
 <script src="/js/obratech.js"></script>
 </body>
-
 </html>

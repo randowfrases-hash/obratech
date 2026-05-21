@@ -3,190 +3,404 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ajustes de Perfil - ObraTech</title>
-    <!-- Modern Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <title>Ajustes de Perfil Trabajador | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .glass-panel { background: rgba(30, 30, 35, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .gradient-text { background: linear-gradient(135deg, #FF9800 0%, #FF5722 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-bg { background: radial-gradient(circle at top right, rgba(255,152,0,0.15) 0%, transparent 60%), radial-gradient(circle at bottom left, rgba(255,87,34,0.1) 0%, transparent 50%); }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="radio"]:checked + div {
+            border-color: #FF9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
     </style>
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: { "primary": "#FF9800", "background-dark": "#0B0C10", "surface-dark": "#121418" },
-                    fontFamily: { "display": ["Outfit", "sans-serif"], "body": ["Inter", "sans-serif"] },
+                    colors: {
+                        "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1A1A1A",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
+                        "text-secondary-dark": "#A0A0A0",
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
+                    },
                 },
             },
         }
     </script>
 </head>
 
-<body class="bg-background-dark font-body text-gray-200 antialiased min-h-screen flex selection:bg-primary selection:text-white">
-    
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
     <!-- Sidebar -->
-    <aside class="fixed left-0 top-0 h-full w-20 lg:w-64 glass-panel border-r border-gray-800/50 z-40 transition-all duration-300 flex flex-col justify-between">
-        <div>
-            <div class="h-20 flex items-center justify-center lg:justify-start lg:px-8 border-b border-gray-800/50">
-                <img alt="Logo" class="h-8 lg:h-10" src="/img/logo3.png" />
-                <span class="hidden lg:block ml-3 font-display font-bold text-xl tracking-tight text-white">Obra<span class="text-primary">Tech</span></span>
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
-            
-            <nav class="p-4 space-y-2 mt-4">
-                <a th:href="@{/desboard-trabajador}" class="flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition-all group">
-                    <span class="material-symbols-outlined text-2xl lg:text-xl group-hover:scale-110 transition-transform">dashboard</span>
-                    <span class="hidden lg:block ml-3 font-medium">Mi Resumen</span>
-                </a>
-                <a th:href="@{/trabajadores/perfil}" class="flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 rounded-xl bg-gradient-to-r from-primary/20 to-transparent border-l-2 border-primary text-primary transition-all group">
-                    <span class="material-symbols-outlined text-2xl lg:text-xl group-hover:scale-110 transition-transform">person</span>
-                    <span class="hidden lg:block ml-3 font-medium">Ajustes de Perfil</span>
-                </a>
-            </nav>
         </div>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <a th:href="@{/desboard-trabajador}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Mi Resumen</span>
+            </a>
+            
+            <div class="mt-4 border-t border-white/5 pt-4">
+                <a th:href="@{/trabajadores/perfil}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="font-semibold">Ajustes de Perfil</span>
+                </a>
+            </div>
+        </nav>
         
-        <div class="p-4 border-t border-gray-800/50">
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 rounded-xl hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all group">
-                    <span class="material-symbols-outlined text-2xl lg:text-xl group-hover:-translate-x-1 transition-transform">logout</span>
-                    <span class="hidden lg:block ml-3 font-medium">Desconectar</span>
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${usuario.username.substring(0,1).toUpperCase()}">U</span>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${trabajador.nombre} + ' ' + ${trabajador.apellido}">Nombre</p>
+                    <p class="text-primary text-xs font-semibold uppercase">Trabajador</p>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
+                    <span>Cerrar Sesión</span>
                 </button>
             </form>
         </div>
-    </aside>
+    </div>
 
     <!-- Main Content -->
-    <main class="ml-20 lg:ml-64 flex-1 flex flex-col min-h-screen relative overflow-hidden hero-bg">
-        
-        <header class="h-20 px-8 flex items-center justify-between border-b border-gray-800/50 z-10">
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
+        <!-- Header -->
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0">
             <div>
-                <h1 class="font-display font-bold text-2xl text-white">Tu <span class="gradient-text">Perfil Profesional</span></h1>
-                <p class="text-sm text-gray-400">Mantén tus datos y CV actualizados para las ofertas laborales.</p>
+                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight">Ajustes de Perfil</h1>
+                <p class="text-text-secondary-dark font-medium">Mantén tus datos y CV actualizados para atraer mejores ofertas laborales.</p>
             </div>
         </header>
 
-        <div class="p-8 z-10 overflow-y-auto max-w-4xl mx-auto w-full">
+        <main class="p-6 md:p-12 relative z-10 flex-1 max-w-5xl">
             
-            <div th:if="${param.exito}" class="mb-6 bg-green-500/10 border-l-4 border-green-500 p-4 rounded-r-xl flex items-center gap-3">
-                <span class="material-symbols-outlined text-green-500">check_circle</span>
-                <p class="text-sm text-green-400 font-medium">¡Tu perfil se ha actualizado con éxito!</p>
+            <div th:if="${param.exito}" class="mb-8 glass-panel border-green-500/30 bg-green-500/10 p-5 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-green-400">check_circle</span>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-green-400">¡Actualización Exitosa!</h3>
+                    <p class="text-sm text-green-400/80 mt-0.5">Tu perfil se ha guardado correctamente.</p>
+                </div>
             </div>
 
-            <div th:if="${error}" class="mb-6 bg-red-500/10 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center gap-3">
-                <span class="material-symbols-outlined text-red-400">error</span>
-                <p class="text-sm text-red-400 font-medium" th:text="${error}">Error al guardar.</p>
+            <div th:if="${error}" class="mb-8 glass-panel border-red-500/30 bg-red-500/10 p-5 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-red-400">error</span>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-red-400">Error al guardar</h3>
+                    <p class="text-sm text-red-400/80 mt-0.5" th:text="${error}">Ha ocurrido un problema.</p>
+                </div>
             </div>
 
-            <form th:action="@{/trabajadores/perfil}" method="post" enctype="multipart/form-data" th:object="${trabajador}" class="glass-panel p-8 rounded-3xl border border-gray-800 shadow-xl space-y-6">
+            <form th:action="@{/trabajadores/perfil}" method="post" enctype="multipart/form-data" th:object="${trabajador}" class="glass-panel p-8 md:p-10 rounded-3xl border border-white/5 space-y-10">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Nombres -->
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">badge</span> Nombre</label>
-                        <input type="text" th:field="*{nombre}" class="w-full bg-surface-dark border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Ej. Juan Manuel" required>
-                    </div>
+                <!-- Datos Personales -->
+                <div>
+                    <h2 class="font-display font-bold text-xl text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">badge</span>
+                        Información Personal
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Nombre</label>
+                            <input type="text" th:field="*{nombre}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. Juan Manuel" required>
+                        </div>
 
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">badge</span> Apellido</label>
-                        <input type="text" th:field="*{apellido}" class="w-full bg-surface-dark border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Ej. Pérez">
-                    </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Apellido</label>
+                            <input type="text" th:field="*{apellido}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. Pérez">
+                        </div>
 
-                    <!-- Contacto -->
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">mail</span> Correo Electrónico</label>
-                        <input type="email" th:field="*{email}" class="w-full bg-surface-dark border border-gray-700 text-white opacity-50 cursor-not-allowed rounded-xl px-4 py-3" readonly title="El correo electrónico no puede ser modificado.">
-                    </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest flex items-center justify-between">
+                                Correo Electrónico
+                                <span class="material-symbols-outlined text-[14px] text-primary" title="Solo lectura">lock</span>
+                            </label>
+                            <input type="email" th:field="*{email}" class="w-full bg-surface-dark border border-white/5 text-text-secondary-dark rounded-xl px-4 py-3 cursor-not-allowed" readonly title="El correo no puede modificarse">
+                        </div>
 
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">phone</span> Teléfono</label>
-                        <input type="text" th:field="*{telefono}" class="w-full bg-surface-dark border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Ej. +57 320 000 0000">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Teléfono</label>
+                            <input type="text" th:field="*{telefono}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. +57 300 000 0000">
+                        </div>
                     </div>
                 </div>
 
-                <hr class="border-gray-800 my-8">
+                <hr class="border-white/5">
 
-                <!-- Laboral -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">engineering</span> Oficio Principal</label>
-                        <select th:field="*{oficio}" class="w-full bg-surface-dark border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none cursor-pointer">
-                            <option value="No Especificado">-- Selecciona tu especialidad --</option>
-                            <option value="Plomero">Plomería y tuberías</option>
-                            <option value="Electricista">Electricidad</option>
-                            <option value="Carpintero">Carpintería de obra</option>
-                            <option value="Albañil">Albañilería y obra gris</option>
-                            <option value="Pintor">Pintura y acabados</option>
-                            <option value="Topógrafo">Topografía estructural</option>
-                            <option value="Ayudante">Ayudante General de construcción</option>
-                        </select>
+                <!-- Datos Profesionales -->
+                <div>
+                    <h2 class="font-display font-bold text-xl text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">engineering</span>
+                        Perfil Profesional
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Oficio Principal</label>
+                            <div class="relative">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                <!-- Plomero -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Plomero" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">plumbing</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Plomería</p>
+                                    </div>
+                                </label>
+
+                                <!-- Electricista -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Electricista" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">bolt</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Electricidad</p>
+                                    </div>
+                                </label>
+
+                                <!-- Carpintero -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Carpintero" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">carpenter</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Carpintería</p>
+                                    </div>
+                                </label>
+
+                                <!-- Albañil -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Albañil" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">architecture</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Albañilería</p>
+                                    </div>
+                                </label>
+
+                                <!-- Pintor -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Pintor" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">format_paint</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Pintura</p>
+                                    </div>
+                                </label>
+
+                                <!-- Topógrafo -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Topógrafo" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">terrain</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Topografía</p>
+                                    </div>
+                                </label>
+
+                                <!-- Ayudante -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="Ayudante" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-primary/5 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_15px_rgba(255,153,0,0.1)]">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">engineering</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Ayudante</p>
+                                    </div>
+                                </label>
+
+                                <!-- Otros -->
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" th:field="*{oficio}" value="No Especificado" class="peer sr-only" />
+                                    <div class="h-full flex flex-col items-center text-center gap-2 p-3 rounded-xl border border-white/10 bg-white/5 transition-all duration-300
+                                                group-hover:bg-white/10 group-hover:border-primary/50
+                                                peer-checked:border-primary peer-checked:bg-primary/10">
+                                        <div class="w-10 h-10 rounded-lg bg-surface-dark border border-white/10 flex items-center justify-center transition-all duration-300
+                                                    peer-checked:bg-primary peer-checked:border-primary">
+                                            <span class="material-symbols-outlined text-text-secondary-dark text-xl transition-colors duration-300
+                                                         peer-checked:text-background-dark group-hover:text-primary">more_horiz</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-text-main-dark group-hover:text-primary transition-colors">Otros</p>
+                                    </div>
+                                </label>
+                            </div>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary-dark pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Años de Experiencia</label>
+                            <input type="number" min="0" th:field="*{experiencia}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" placeholder="0">
+                        </div>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">timer</span> Años de Experiencia</label>
-                        <input type="number" min="0" th:field="*{experiencia}" class="w-full bg-surface-dark border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-                    </div>
-                    
-                    <div class="space-y-1 md:col-span-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-xs">event_available</span> Disponibilidad Actual</label>
-                        <div class="flex items-center space-x-6 p-4 bg-surface-dark rounded-xl border border-gray-700">
-                            <label class="flex items-center cursor-pointer text-sm">
-                                <input type="radio" th:field="*{disponibilidad}" value="true" class="w-4 h-4 text-primary bg-gray-800 border-gray-600 focus:ring-primary focus:ring-2">
-                                <span class="ml-2 text-white">Disponible para contrato</span>
+                    <!-- Disponibilidad Custom Radios -->
+                    <div class="space-y-3">
+                        <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Estado de Disponibilidad</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" th:field="*{disponibilidad}" value="true" class="peer sr-only">
+                                <div class="p-4 rounded-xl border border-white/10 bg-surface-light hover:border-white/30 transition-all flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+                                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-display font-bold text-white text-sm">Disponible</h4>
+                                        <p class="text-xs text-text-secondary-dark mt-0.5">Listo para aceptar nuevos contratos</p>
+                                    </div>
+                                    <span class="material-symbols-outlined ml-auto text-primary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+                                </div>
                             </label>
-                            <label class="flex items-center cursor-pointer text-sm">
-                                <input type="radio" th:field="*{disponibilidad}" value="false" class="w-4 h-4 text-primary bg-gray-800 border-gray-600 focus:ring-primary focus:ring-2">
-                                <span class="ml-2 text-gray-400">Ocupado / Trabajando</span>
+
+                            <label class="relative cursor-pointer">
+                                <input type="radio" th:field="*{disponibilidad}" value="false" class="peer sr-only">
+                                <div class="p-4 rounded-xl border border-white/10 bg-surface-light hover:border-white/30 transition-all flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+                                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-display font-bold text-white text-sm">Ocupado</h4>
+                                        <p class="text-xs text-text-secondary-dark mt-0.5">Actualmente trabajando</p>
+                                    </div>
+                                    <span class="material-symbols-outlined ml-auto text-primary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+                                </div>
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-gray-800 my-8">
+                <hr class="border-white/5">
 
-                <!-- CV Section -->
-                <div class="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-                    <h3 class="font-display font-bold text-xl text-white flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-primary">upload_file</span> Currículum Vitae</h3>
-                    <p class="text-sm text-gray-400 mb-6">Sube tu hoja de vida en formato PDF o Word para que los contratistas conozcan tu trayectoria detallada.</p>
+                <!-- CV Upload -->
+                <div>
+                    <h2 class="font-display font-bold text-xl text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">upload_file</span>
+                        Currículum Vitae
+                    </h2>
                     
-                    <div class="flex flex-col sm:flex-row items-center gap-4">
-                        <label class="w-full flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors group">
-                            <span class="material-symbols-outlined text-3xl text-gray-500 group-hover:text-primary mb-2 transition-colors">description</span>
-                            <span class="text-sm text-gray-400 font-medium text-center">Haz clic para buscar el archivo o arrástralo aquí</span>
-                            <input type="file" name="cvFile" class="hidden" accept=".pdf,.doc,.docx" id="fileInput">
-                        </label>
+                    <div class="bg-surface-light border border-white/5 rounded-2xl p-6">
+                        <p class="text-sm text-text-secondary-dark mb-6">Sube tu hoja de vida en formato PDF o Word para que los contratistas conozcan tu trayectoria detallada.</p>
                         
-                        <div class="w-full sm:w-1/3 flex flex-col items-center justify-center p-4 bg-surface-dark rounded-xl border border-gray-700" th:if="${trabajador.cvUrl != null}">
-                            <span class="text-xs text-green-400 uppercase tracking-widest font-bold mb-2 text-center">Archivo Actual</span>
-                            <span class="material-symbols-outlined text-gray-400 text-3xl mb-1">check_circle</span>
-                            <span class="text-[10px] text-gray-500 truncate w-full text-center" th:text="${trabajador.cvUrl}">CV_actual.pdf</span>
+                        <div class="flex flex-col md:flex-row items-center gap-6">
+                            <label class="w-full md:flex-1 flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors group">
+                                <span class="material-symbols-outlined text-4xl text-text-secondary-dark group-hover:text-primary mb-3 transition-colors outline">cloud_upload</span>
+                                <span class="text-sm text-white font-medium text-center">Haz clic para explorar o arrastra aquí</span>
+                                <span class="text-xs text-text-secondary-dark mt-1 text-center">PDF, DOC, DOCX (Max 5MB)</span>
+                                <input type="file" name="cvFile" class="hidden" accept=".pdf,.doc,.docx" id="fileInput">
+                            </label>
+                            
+                            <div class="w-full md:w-64 flex flex-col items-center justify-center p-6 bg-background-dark rounded-xl border border-white/5 shrink-0" th:if="${trabajador.cvUrl != null}">
+                                <span class="text-xs text-green-400 uppercase tracking-widest font-bold mb-3 text-center">Archivo Actual</span>
+                                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-2">
+                                    <span class="material-symbols-outlined text-blue-400 text-2xl">description</span>
+                                </div>
+                                <span class="text-xs text-text-secondary-dark truncate w-full text-center" th:text="${trabajador.cvUrl}">CV_actual.pdf</span>
+                                <a th:href="@{'/uploads/' + ${trabajador.cvUrl}}" class="mt-3 text-xs text-primary font-bold hover:underline">Ver Documento</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="flex justify-end gap-4 pt-6">
-                    <a th:href="@{/desboard-trabajador}" class="px-6 py-3 rounded-xl border border-gray-700 text-gray-300 font-medium hover:bg-surface-dark transition text-sm">Cancelar</a>
-                    <button type="submit" class="px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-orange-600 text-white font-bold hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all flex items-center gap-2 text-sm shadow-lg">
+                <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 mt-10">
+                    <a th:href="@{/desboard-trabajador}" class="px-6 py-3.5 rounded-xl border border-white/10 text-white hover:bg-white/5 font-display font-bold transition-colors text-center text-sm">Cancelar</a>
+                    <button type="submit" class="gradient-bg text-background-dark font-display font-bold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1 text-sm">
                         <span class="material-symbols-outlined text-[20px]">save</span> Guardar Cambios
                     </button>
                 </div>
 
             </form>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
-        // Simple file input reflection
         const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
-            const label = this.parentElement.querySelector('span:nth-child(2)');
-            label.textContent = "Archivo listo: " + fileName;
-            label.classList.add("text-primary", "font-bold");
+            const fileName = e.target.files[0] ? e.target.files[0].name : '';
+            const spans = this.parentElement.querySelectorAll('span');
+            if (fileName) {
+                spans[0].textContent = "task";
+                spans[0].classList.add("text-primary");
+                spans[1].textContent = "Archivo seleccionado:";
+                spans[2].textContent = fileName;
+                spans[2].classList.add("text-primary", "font-bold");
+                this.parentElement.classList.add("border-primary", "bg-primary/5");
+            }
         });
     </script>
 <script src="/js/obratech.js"></script>

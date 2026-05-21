@@ -2,12 +2,20 @@ package com.obratech.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import com.obratech.entity.enums.EstadoAsignacion;
+import com.obratech.entity.enums.EstadoEjecucion;
+import com.obratech.entity.enums.EstadoValidacion;
 
 @Document(collection = "proyectos")
 public class Proyecto {
@@ -28,8 +36,9 @@ public class Proyecto {
     private LocalDate fechaLimitePostulacion;
     private LocalDateTime fechaLimite;
 
-    private String estadoAsignacion;
-    private String estadoEjecucion;
+    private EstadoAsignacion estadoAsignacion = EstadoAsignacion.SIN_ASIGNAR;
+    @Indexed
+    private EstadoEjecucion estadoEjecucion = EstadoEjecucion.PENDIENTE;
 
     private Double areaTotal;
     private Integer numeroPisos;
@@ -40,28 +49,32 @@ public class Proyecto {
     private String documentoLegalNombre;
 
     @DBRef
+    @Indexed
     private Usuario cliente;
 
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
-    private String estadoValidacion = "PENDIENTE";
+    @Indexed
+    private EstadoValidacion estadoValidacion = EstadoValidacion.PENDIENTE;
+
+    private String observaciones;
 
     @DBRef
-    private Set<Persona> personas = new HashSet<>();
+    private List<Perfil> equipoTrabajo = new ArrayList<>();
+
+    private Map<String, String> actividadesAsignadas = new HashMap<>();
 
     @DBRef
-    private Set<Trabajador> trabajadoresAsignados = new HashSet<>();
-
-    @DBRef
-    private com.obratech.entity.Contratista contratistaAsignado;
+    @Indexed
+    private Perfil contratistaAsignado;
 
     public Proyecto() {}
 
     public Proyecto(String titulo, String descripcion) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.estadoAsignacion = "Sin asignar";
-        this.estadoEjecucion = "Pendiente";
+        this.estadoAsignacion = EstadoAsignacion.SIN_ASIGNAR;
+        this.estadoEjecucion = EstadoEjecucion.PENDIENTE;
         this.fechaCreacion = LocalDateTime.now();
     }
 
@@ -153,19 +166,19 @@ public class Proyecto {
         this.fechaLimite = fechaLimite;
     }
 
-    public String getEstadoAsignacion() {
+    public EstadoAsignacion getEstadoAsignacion() {
         return estadoAsignacion;
     }
 
-    public void setEstadoAsignacion(String estadoAsignacion) {
+    public void setEstadoAsignacion(EstadoAsignacion estadoAsignacion) {
         this.estadoAsignacion = estadoAsignacion;
     }
 
-    public String getEstadoEjecucion() {
+    public EstadoEjecucion getEstadoEjecucion() {
         return estadoEjecucion;
     }
 
-    public void setEstadoEjecucion(String estadoEjecucion) {
+    public void setEstadoEjecucion(EstadoEjecucion estadoEjecucion) {
         this.estadoEjecucion = estadoEjecucion;
     }
 
@@ -209,36 +222,44 @@ public class Proyecto {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public Set<Persona> getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(Set<Persona> personas) {
-        this.personas = personas;
-    }
-
-    public com.obratech.entity.Contratista getContratistaAsignado() {
-        return contratistaAsignado;
-    }
-
-    public void setContratistaAsignado(com.obratech.entity.Contratista contratistaAsignado) {
-        this.contratistaAsignado = contratistaAsignado;
-    }
-
-    public String getEstadoValidacion() {
+    public EstadoValidacion getEstadoValidacion() {
         return estadoValidacion;
     }
 
-    public void setEstadoValidacion(String estadoValidacion) {
+    public void setEstadoValidacion(EstadoValidacion estadoValidacion) {
         this.estadoValidacion = estadoValidacion;
     }
 
-    public Set<Trabajador> getTrabajadoresAsignados() {
-        return trabajadoresAsignados;
+    public String getObservaciones() {
+        return observaciones;
     }
 
-    public void setTrabajadoresAsignados(Set<Trabajador> trabajadoresAsignados) {
-        this.trabajadoresAsignados = trabajadoresAsignados;
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public List<Perfil> getEquipoTrabajo() {
+        return equipoTrabajo;
+    }
+
+    public void setEquipoTrabajo(List<Perfil> equipoTrabajo) {
+        this.equipoTrabajo = equipoTrabajo;
+    }
+
+    public Map<String, String> getActividadesAsignadas() {
+        return actividadesAsignadas;
+    }
+
+    public void setActividadesAsignadas(Map<String, String> actividadesAsignadas) {
+        this.actividadesAsignadas = actividadesAsignadas;
+    }
+
+    public Perfil getContratistaAsignado() {
+        return contratistaAsignado;
+    }
+
+    public void setContratistaAsignado(Perfil contratistaAsignado) {
+        this.contratistaAsignado = contratistaAsignado;
     }
 
     public String getDocumentoLegalUrl() { return documentoLegalUrl; }

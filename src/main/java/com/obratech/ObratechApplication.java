@@ -1,4 +1,3 @@
-
 package com.obratech;
 
 import org.springframework.boot.SpringApplication;
@@ -15,3 +14,4 @@ public class ObratechApplication {
 	}
 
 }
+

@@ -31,7 +31,7 @@ public class ObratechAuthSuccessHandler implements AuthenticationSuccessHandler 
 
         String username = authentication.getName();
 
-        // ── Limpiar intentos fallidos y registrar último acceso ──────────────────
+        //  Limpiar intentos fallidos y registrar ltimo acceso 
         loginAttemptService.registrarExito(username);
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
@@ -39,14 +39,15 @@ public class ObratechAuthSuccessHandler implements AuthenticationSuccessHandler 
             Usuario usuario = usuarioOpt.get();
             HttpSession session = request.getSession(true);
 
-            // Guardar usuario en sesión (los controladores lo usan)
+            // Guardar usuario en sesin (los controladores lo usan)
             session.setAttribute("usuario", usuario);
 
-            // ── Atributos útiles de sesión para las vistas ───────────────────────
+            //  Atributos tiles de sesin para las vistas 
             session.setAttribute("sessionCreatedAt", System.currentTimeMillis());
-            session.setAttribute("userRole", usuario.getRole());
+            session.setAttribute("userRoles", usuario.getRoles());
+            session.setAttribute("userRole", usuario.getRole()); // fallback por compatibilidad
 
-            System.out.println("✅ Login exitoso: " + usuario.getUsername() + " [" + usuario.getRole() + "]");
+            System.out.println(" Login exitoso: " + usuario.getUsername() + " " + usuario.getRoles());
         }
 
         response.sendRedirect("/desboard");

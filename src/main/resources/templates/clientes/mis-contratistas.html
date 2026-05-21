@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mis Contratistas — ObraTech</title>
+    <title>Mis Contratistas – ObraTech</title>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,7 +24,7 @@
 <body class="bg-background-dark font-display text-white">
 
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-50">
         <div class="p-6 border-b border-gray-800 flex items-center gap-3">
             <img src="/img/logo3.png" alt="ObraTech" class="h-10" />
             <span class="text-xl font-bold">ObraTech</span>
@@ -63,10 +63,17 @@
     </div>
 
     <!-- Main -->
-    <div class="ml-64 min-h-screen">
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <h1 class="text-2xl font-bold">Historial de Contratistas</h1>
-            <p class="text-text-secondary-dark text-sm mt-1">Contratistas con los que has trabajado en tus proyectos</p>
+    <div class="md:ml-64 min-h-screen">
+        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold">Historial de Contratistas</h1>
+                <p class="text-text-secondary-dark text-sm mt-1">Contratistas con los que has trabajado en tus proyectos</p>
+            </div>
+            <div class="relative max-w-md w-full">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <input type="text" id="searchContratista" placeholder="Buscar por nombre, correo o especialidad..." 
+                       class="w-full bg-background-dark border border-gray-700 text-white rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner" />
+            </div>
         </header>
 
         <main class="p-8">
@@ -83,33 +90,36 @@
 
             <!-- Grid de contratistas -->
             <div th:if="${!#lists.isEmpty(contratistas)}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <div th:each="contratista : ${contratistas}" class="card rounded-2xl p-6 hover:border-primary/40 transition-all duration-200">
+                <div th:each="contratista, iterStat : ${contratistas}" 
+                     class="contratista-card card rounded-2xl p-6 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(255,152,0,0.15)] hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up"
+                     th:style="'animation-delay: ' + (${iterStat.index} * 0.05) + 's;'">
                     <!-- Avatar -->
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-primary text-3xl">engineering</span>
+                        <div class="w-14 h-14 bg-gradient-to-br from-primary to-rose-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform">
+                            <span class="text-white text-xl font-bold" th:text="${(contratista.nombre != null and contratista.nombre.length() > 0 ? contratista.nombre.substring(0,1).toUpperCase() : '') + (contratista.apellido != null and contratista.apellido.length() > 0 ? contratista.apellido.substring(0,1).toUpperCase() : '')}">C</span>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-white text-lg"
+                        <div class="overflow-hidden">
+                            <h3 class="contratista-nombre font-bold text-white text-lg truncate"
                                 th:text="${(contratista.nombre ?: '') + ' ' + (contratista.apellido ?: '')}">Nombre</h3>
-                            <p class="text-text-secondary-dark text-sm" th:text="${contratista.especialidad ?: 'Sin especialidad'}">Especialidad</p>
+                            <span class="contratista-especialidad inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 bg-purple-500/20 text-purple-400" 
+                                  th:text="${contratista.especialidad ?: 'Sin especialidad'}">Especialidad</span>
                         </div>
                     </div>
 
                     <!-- Info -->
-                    <div class="space-y-2 mb-5">
-                        <div class="flex items-center gap-2 text-sm text-text-secondary-dark" th:if="${contratista.email}">
+                    <div class="space-y-3 mb-5">
+                        <div class="contratista-email flex items-center gap-3 p-2 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors text-sm text-text-secondary-dark" th:if="${contratista.email}">
                             <span class="material-symbols-outlined text-base">email</span>
-                            <span th:text="${contratista.email}"></span>
+                            <span class="truncate" th:text="${contratista.email}"></span>
                         </div>
-                        <div class="flex items-center gap-2 text-sm text-text-secondary-dark" th:if="${contratista.telefono}">
+                        <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors text-sm text-text-secondary-dark" th:if="${contratista.telefono}">
                             <span class="material-symbols-outlined text-base">phone</span>
                             <span th:text="${contratista.telefono}"></span>
                         </div>
-                        <div class="flex items-center gap-2 text-sm" th:if="${contratista.calificacionPromedio != null}">
+                        <div class="flex items-center gap-2 text-sm bg-amber-500/10 p-2 rounded-lg border border-amber-500/20" th:if="${contratista.calificacionPromedio != null}">
                             <span class="material-symbols-outlined text-amber-400 text-base">star</span>
-                            <span class="text-amber-400 font-semibold" th:text="${#numbers.formatDecimal(contratista.calificacionPromedio, 1, 1)}"></span>
-                            <span class="text-text-secondary-dark">/ 5.0</span>
+                            <span class="text-amber-400 font-bold" th:text="${#numbers.formatDecimal(contratista.calificacionPromedio, 1, 1)}"></span>
+                            <span class="text-amber-400/60 text-xs ml-1">Calificación promedio</span>
                         </div>
                     </div>
 
@@ -130,5 +140,37 @@
         </main>
     </div>
 <script src="/js/obratech.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchContratista');
+        const cards = document.querySelectorAll('.contratista-card');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const name = card.querySelector('.contratista-nombre')?.textContent.toLowerCase() || '';
+                    const specialty = card.querySelector('.contratista-especialidad')?.textContent.toLowerCase() || '';
+                    const email = card.querySelector('.contratista-email')?.textContent.toLowerCase() || '';
+                    
+                    if (name.includes(term) || specialty.includes(term) || email.includes(term)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translate3d(0, 20px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+</style>
 </body>
 </html>

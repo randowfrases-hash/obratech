@@ -1,152 +1,253 @@
 package com.obratech.controllers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import com.obratech.entity.Contratista;
+import com.obratech.entity.enums.EstadoEjecucion;
+import com.obratech.entity.Perfil;
 import com.obratech.entity.Proyecto;
-import com.obratech.entity.Trabajador;
 import com.obratech.entity.Usuario;
-import com.obratech.repository.ContratistaRepository;
+import com.obratech.entity.InvitacionTrabajo;
+import com.obratech.repository.PerfilRepository;
 import com.obratech.repository.ProyectoRepository;
-import com.obratech.repository.TrabajadorRepository;
+import com.obratech.repository.InvitacionTrabajoRepository;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class DesboardController {
 
-    @Autowired
-    private ContratistaRepository contratistaRepository;
-    
-    @Autowired
-    private TrabajadorRepository trabajadorRepository;
-    
-    @Autowired
-    private ProyectoRepository proyectoRepository;
+    @Autowired private PerfilRepository perfilRepository;
+    @Autowired private ProyectoRepository proyectoRepository;
+    @Autowired private InvitacionTrabajoRepository invitacionTrabajoRepository;
+    @Autowired private com.obratech.repository.UsuarioRepository usuarioRepository;
+
+    private Usuario obtenerUsuarioDeSesionOContexto(HttpSession session) {
+        // 1. Intentar obtener el usuario de la sesión actual
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario != null) {
+            return usuario;
+        }
+
+        // 2. Si no está en sesión, intentar recuperarlo del SecurityContext de Spring Security
+        org.springframework.security.core.Authentication auth = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            String username = null;
+            Object principal = auth.getPrincipal();
+            
+            if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
+                username = userDetails.getUsername();
+            } else if (principal instanceof org.springframework.security.oauth2.core.user.OAuth2User oauth2User) {
+                username = oauth2User.getAttribute("email");
+                if (username == null || username.isBlank()) {
+                    username = oauth2User.getName();
+                }
+            } else if (principal instanceof String principalString) {
+                username = principalString;
+            }
+
+            if (username != null && !username.isBlank()) {
+                final String finalUsername = username.trim().toLowerCase();
+                Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(finalUsername).orElse(null);
+                if (dbUsuario != null) {
+                    // Restaurar los atributos esenciales en la sesión
+                    session.setAttribute("usuario", dbUsuario);
+                    session.setAttribute("userRole", dbUsuario.getRole());
+                    session.setAttribute("userRoles", dbUsuario.getRoles());
+                    System.out.println("[DEBUG-Sesion] Sesión restaurada automáticamente desde SecurityContext para: " + finalUsername);
+                    return dbUsuario;
+                }
+            }
+        }
+        return null;
+    }
 
     @GetMapping("/desboard")
-    public String mostrarDesboard(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+    public String mostrarDesboard(
+            @org.springframework.web.bind.annotation.RequestParam(value = "errorVerificacion", required = false) Boolean errorVerificacion,
+            HttpSession session, 
+            Model model) {
+        Usuario usuario = obtenerUsuarioDeSesionOContexto(session);
+        if (usuario == null) return "redirect:/login";
 
-        if (usuario == null) {
-            // No hay sesión activa, redirige al login
+        model.addAttribute("usuario", usuario);
+
+        String suffix = (errorVerificacion != null && errorVerificacion) ? "?errorVerificacion=true" : "";
+
+        // Si tiene ms de un rol de negocio, llevar a la pantalla de seleccin
+        if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
             return "redirect:/login";
         }
 
-        // Añadir el usuario al modelo para que Thymeleaf lo reconozca
-        model.addAttribute("usuario", usuario);
-
-        // Si es contratista, buscar y agregar sus datos
-        if ("ROLE_CONTRACTOR".equals(usuario.getRole())) {
-            Contratista contratista = contratistaRepository.findByUsername(usuario.getUsername());
-            if (contratista != null) {
-                model.addAttribute("contratista", contratista);
-                // Preparar datos seguros para la plantilla (evita accesos nulos en Thymeleaf)
-                model.addAttribute("contratistaUsername", 
-                    usuario.getUsername() != null ? usuario.getUsername().substring(0, 1).toUpperCase() : "U");
-                model.addAttribute("contratistaCalificacionPromedio", 
-                    contratista.getCalificacionPromedio() != null ? String.format("%.1f", contratista.getCalificacionPromedio()) : "0.0");
-                model.addAttribute("contratistaEmail", 
-                    contratista.getEmail() != null ? contratista.getEmail() : "correo@ejemplo.com");
-                model.addAttribute("contratistaEspecialidad", 
-                    contratista.getEspecialidad() != null ? contratista.getEspecialidad() : "N/A");
-                model.addAttribute("contratistaTelefono", 
-                    contratista.getTelefono() != null ? contratista.getTelefono() : "N/A");
-                } else {
-                // Si no existe Contratista, proporciona valores por defecto
-                model.addAttribute("contratistaUsername", "U");
-                model.addAttribute("contratistaCalificacionPromedio", "0.0");
-                model.addAttribute("contratistaEmail", "correo@ejemplo.com");
-                model.addAttribute("contratistaEspecialidad", "N/A");
-                model.addAttribute("contratistaTelefono", "N/A");
-                model.addAttribute("contratistaUbicacion", "N/A");
-            }
+        long rolesNegocio = usuario.getRoles().stream()
+            .filter(r -> r.equals("ROLE_CLIENT") || r.equals("ROLE_CONTRACTOR") || r.equals("ROLE_WORKER"))
+            .count();
+        
+        if (rolesNegocio > 1) {
+            return "redirect:/seleccionar-perfil" + suffix;
         }
 
-        // Redireccionar según el rol del usuario
-        if (usuario.getRole() != null) {
-            return switch (usuario.getRole()) {
-                case "ROLE_CONTRACTOR" -> "desboard-contratista";
-                case "ROLE_CLIENT" -> "desboard";
-                case "ROLE_WORKER" -> "redirect:/desboard-trabajador";
-                case "ROLE_ADMIN" -> "redirect:/admin/desboard";
-                default -> "redirect:/login";
-            };
-        }
-
-        // Si no hay rol, redirige al login
+        // Si solo tiene uno o es admin, redirigir directamente
+        if (usuario.getRoles().contains("ROLE_ADMIN")) return "redirect:/admin/desboard";
+        if (usuario.getRoles().contains("ROLE_CONTRACTOR")) return "redirect:/desboard-contratista" + suffix;
+        if (usuario.getRoles().contains("ROLE_WORKER")) return "redirect:/desboard-trabajador" + suffix;
+        if (usuario.getRoles().contains("ROLE_CLIENT")) return "redirect:/desboard-cliente" + suffix;
+        
         return "redirect:/login";
     }
 
-    @GetMapping("/desboard-contratista")
-    public String mostrarDesboardContratista(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-        if (usuario == null || !"ROLE_CONTRACTOR".equals(usuario.getRole())) {
-            return "redirect:/login";
-        }
-
+    @GetMapping("/seleccionar-perfil")
+    public String mostrarSeleccionPerfil(HttpSession session, Model model) {
+        Usuario usuario = obtenerUsuarioDeSesionOContexto(session);
+        if (usuario == null) return "redirect:/login";
         model.addAttribute("usuario", usuario);
+        return "seleccionar-perfil";
+    }
 
-        Contratista contratista = contratistaRepository.findByUsername(usuario.getUsername());
+    @GetMapping("/desboard-cliente")
+    public String mostrarDesboardCliente(
+            @org.springframework.web.bind.annotation.RequestParam(value = "errorVerificacion", required = false) Boolean errorVerificacion,
+            HttpSession session, 
+            Model model) {
+        Usuario usuario = obtenerUsuarioDeSesionOContexto(session);
+        if (usuario == null || !usuario.getRoles().contains("ROLE_CLIENT")) return "redirect:/login";
+        
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        model.addAttribute("usuario", dbUsuario);
+        model.addAttribute("usuarioVerificado", dbUsuario.isVerificado());
+        model.addAttribute("errorVerificacion", errorVerificacion != null && errorVerificacion);
+
+        List<Proyecto> proyectosDelCliente = proyectoRepository.findByClienteId(dbUsuario.getId());
+
+        long total = proyectosDelCliente == null ? 0 : proyectosDelCliente.size();
+        long enProgreso = proyectosDelCliente == null ? 0 : proyectosDelCliente.stream()
+                .filter(p -> p.getEstadoEjecucion() != null && p.getEstadoEjecucion() != EstadoEjecucion.COMPLETADO)
+                .count();
+        long completados = proyectosDelCliente == null ? 0 : proyectosDelCliente.stream()
+                .filter(p -> p.getEstadoEjecucion() == EstadoEjecucion.COMPLETADO)
+                .count();
+
+        model.addAttribute("totalProyectos", total);
+        model.addAttribute("proyectosEnProgreso", enProgreso);
+        model.addAttribute("proyectosCompletados", completados);
+        model.addAttribute("proyectos", proyectosDelCliente);
+        return "desboard";
+    }
+
+    @GetMapping("/desboard-contratista")
+    public String mostrarDesboardContratista(
+            @org.springframework.web.bind.annotation.RequestParam(value = "errorVerificacion", required = false) Boolean errorVerificacion,
+            HttpSession session, 
+            Model model) {
+        Usuario usuario = obtenerUsuarioDeSesionOContexto(session);
+        if (usuario == null || !usuario.getRoles().contains("ROLE_CONTRACTOR")) return "redirect:/login";
+
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        model.addAttribute("usuario", dbUsuario);
+        model.addAttribute("usuarioVerificado", dbUsuario.isVerificado());
+        model.addAttribute("errorVerificacion", errorVerificacion != null && errorVerificacion);
+
+        Perfil contratista = perfilRepository.findByUsernameIgnoreCase(dbUsuario.getUsername()).orElse(null);
         if (contratista != null) {
             model.addAttribute("contratista", contratista);
-            model.addAttribute("contratistaUsername", 
-                usuario.getUsername() != null ? usuario.getUsername().substring(0, 1).toUpperCase() : "U");
-            model.addAttribute("contratistaCalificacionPromedio", 
-                contratista.getCalificacionPromedio() != null ? String.format("%.1f", contratista.getCalificacionPromedio()) : "0.0");
-            model.addAttribute("contratistaEmail", 
+            
+            String displayUsername = (contratista.getNombre() != null && !contratista.getNombre().isBlank()) 
+                                    ? contratista.getNombre() : dbUsuario.getUsername();
+            
+            model.addAttribute("contratistaUsername",
+                (displayUsername != null && !displayUsername.isEmpty()) 
+                    ? displayUsername.substring(0, 1).toUpperCase() : "U");
+                    
+            model.addAttribute("contratistaCalificacionPromedio",
+                contratista.getCalificacionPromedio() != null
+                    ? String.format("%.1f", contratista.getCalificacionPromedio()) : "0.0");
+            model.addAttribute("contratistaEmail",
                 contratista.getEmail() != null ? contratista.getEmail() : "correo@ejemplo.com");
-            model.addAttribute("contratistaEspecialidad", 
+            model.addAttribute("contratistaEspecialidad",
                 contratista.getEspecialidad() != null ? contratista.getEspecialidad() : "N/A");
-            model.addAttribute("contratistaTelefono", 
+            model.addAttribute("contratistaTelefono",
                 contratista.getTelefono() != null ? contratista.getTelefono() : "N/A");
+            model.addAttribute("contratistaUbicacion",
+                contratista.getUbicacion() != null ? contratista.getUbicacion() : "N/A");
+            
+            // Obtener proyectos activos y completados del contratista
+            List<Proyecto> proyectosActivos = proyectoRepository
+                    .findByContratistaAsignadoIdAndEstadoEjecucionNot(contratista.getId(), com.obratech.entity.enums.EstadoEjecucion.COMPLETADO);
+            List<Proyecto> proyectosCompletados = proyectoRepository
+                    .findByContratistaAsignadoIdAndEstadoEjecucion(contratista.getId(), com.obratech.entity.enums.EstadoEjecucion.COMPLETADO);
+            
+            model.addAttribute("proyectosEnProgreso", proyectosActivos != null ? proyectosActivos.size() : 0);
+            model.addAttribute("proyectosCompletados", proyectosCompletados != null ? proyectosCompletados.size() : 0);
+            
+            // Contar total de trabajadores únicos en el equipo de todos los proyectos
+            java.util.Set<String> trabajadoresUnicos = new java.util.HashSet<>();
+            if (proyectosActivos != null) {
+                for (Proyecto proyecto : proyectosActivos) {
+                    if (proyecto.getEquipoTrabajo() != null) {
+                        for (Perfil perfil : proyecto.getEquipoTrabajo()) {
+                            if (perfil.getId() != null) {
+                                trabajadoresUnicos.add(perfil.getId());
+                            }
+                        }
+                    }
+                }
+            }
+            model.addAttribute("totalTrabajadoresEnEquipo", trabajadoresUnicos.size());
         } else {
             model.addAttribute("contratistaUsername", "U");
             model.addAttribute("contratistaCalificacionPromedio", "0.0");
             model.addAttribute("contratistaEmail", "correo@ejemplo.com");
             model.addAttribute("contratistaEspecialidad", "N/A");
             model.addAttribute("contratistaTelefono", "N/A");
+            model.addAttribute("contratistaUbicacion", "N/A");
+            model.addAttribute("proyectosEnProgreso", 0);
+            model.addAttribute("proyectosCompletados", 0);
+            model.addAttribute("totalTrabajadoresEnEquipo", 0);
         }
 
         return "desboard-contratista";
     }
 
     @GetMapping("/desboard-trabajador")
-    public String mostrarDesboardTrabajador(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null || !"ROLE_WORKER".equals(usuario.getRole())) return "redirect:/login";
+    public String mostrarDesboardTrabajador(
+            @org.springframework.web.bind.annotation.RequestParam(value = "errorVerificacion", required = false) Boolean errorVerificacion,
+            HttpSession session, 
+            Model model) {
+        Usuario usuario = obtenerUsuarioDeSesionOContexto(session);
+        if (usuario == null || !usuario.getRoles().contains("ROLE_WORKER")) return "redirect:/login";
 
-        model.addAttribute("usuario", usuario);
-        
-        // Buscar trabajador por username
-        Trabajador trabajador = trabajadorRepository.findByUsername(usuario.getUsername());
-        
-        // Si no existe, crear uno vacío para evitar errores en la vista
-        if (trabajador == null) {
-            Trabajador nuevoTrabajador = new Trabajador();
-            nuevoTrabajador.setUsername(usuario.getUsername());
-            nuevoTrabajador.setActivo(true);
-            nuevoTrabajador.setNombre(usuario.getUsername());
-            nuevoTrabajador.setApellido("");
-            nuevoTrabajador.setDisponibilidad(false);
-            trabajador = nuevoTrabajador;
-        }
-        
-        final Trabajador trabajadorFinal = trabajador;
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        model.addAttribute("usuario", dbUsuario);
+        model.addAttribute("usuarioVerificado", dbUsuario.isVerificado());
+        model.addAttribute("errorVerificacion", errorVerificacion != null && errorVerificacion);
+
+        Perfil trabajador = perfilRepository.findByUsernameIgnoreCase(dbUsuario.getUsername()).orElseGet(() -> {
+            Perfil nuevo = new Perfil();
+            nuevo.setUsername(dbUsuario.getUsername());
+            nuevo.setRole("ROLE_WORKER");
+            nuevo.setActivo(true);
+            nuevo.setNombre(dbUsuario.getUsername());
+            nuevo.setApellido("");
+            nuevo.setDisponibilidad(false);
+            return nuevo;
+        });
+
         model.addAttribute("trabajador", trabajador);
 
-        // Agregar proyectos asignados si el trabajador tiene un ID
+        // Invitaciones pendientes
+        List<InvitacionTrabajo> invitacionesPendientes = (trabajador.getId() != null) 
+                ? invitacionTrabajoRepository.findByTrabajadorIdAndEstado(trabajador.getId(), "PENDIENTE") 
+                : new java.util.ArrayList<>();
+        model.addAttribute("invitacionesPendientes", invitacionesPendientes);
+
+        // Proyectos asignados al trabajador (pool de equipoTrabajo)
         if (trabajador.getId() != null) {
-            List<Proyecto> proyectosAsignados = proyectoRepository.findAll().stream()
-                .filter(p -> p.getTrabajadoresAsignados() != null && p.getTrabajadoresAsignados().contains(trabajadorFinal))
-                .collect(Collectors.toList());
+            List<Proyecto> proyectosAsignados = proyectoRepository.findByEquipoTrabajoContaining(trabajador);
             model.addAttribute("proyectosAsignados", proyectosAsignados);
         } else {
             model.addAttribute("proyectosAsignados", new java.util.ArrayList<>());

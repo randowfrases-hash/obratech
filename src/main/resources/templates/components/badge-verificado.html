@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Punto 14: Badge de Usuario Verificado -->
+<!-- Uso: <div th:include="components/badge-verificado :: badge-verificado(verificado=${usuario.verificado}, rol=${usuario.roles})"></div> -->
+
+<div th:fragment="badge-verificado(verificado, rol)" class="inline-flex items-center gap-1">
+    <span th:if="${verificado}" 
+          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-300 shadow-sm">
+        <span class="material-symbols-outlined mr-1 text-base">verified</span>
+        Verificado
+    </span>
+    <span th:unless="${verificado}" 
+          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-normal bg-gray-100 text-gray-600 border border-gray-300">
+        <span class="material-symbols-outlined mr-1 text-base">pending</span>
+        No verificado
+    </span>
+</div>
+
+<!-- Variante compacta (solo ícono) -->
+<div th:fragment="badge-verificado-icon(verificado)" class="inline-flex">
+    <span th:if="${verificado}" 
+          class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white shadow-md" 
+          title="Usuario verificado por administrador">
+        <span class="material-symbols-outlined text-sm">verified</span>
+    </span>
+    <span th:unless="${verificado}" 
+          class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-300 text-gray-600 shadow-md"
+          title="Usuario no verificado">
+        <span class="material-symbols-outlined text-sm">help</span>
+    </span>
+</div>
+
+<!-- Variante con tooltip -->
+<div th:fragment="badge-verificado-tooltip(verificado, nombre)" class="inline-flex">
+    <span th:if="${verificado}" 
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200 cursor-help"
+          th:title="'Usuario ' + ${nombre} + ' fue verificado por el administrador'">
+        <span class="material-symbols-outlined" style="font-size: 14px;">verified</span>
+        Verificado
+    </span>
+</div>
+
+<!-- Indicador de perfil verificado para listas -->
+<div th:fragment="badge-list-item(verificado)" class="flex items-center justify-center">
+    <span th:if="${verificado}" 
+          class="flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-white shadow-sm"
+          th:title="'Perfil verificado'">
+        <span class="material-symbols-outlined" style="font-size: 12px;">done</span>
+    </span>
+</div>
+
+</html>

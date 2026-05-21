@@ -1,4 +1,3 @@
-
 package com.obratech.service;
 
 import com.obratech.entity.Calificacion;
@@ -19,9 +18,21 @@ public class CalificacionService {
 
     public List<Calificacion> findAll() { return repo.findAll(); }
 
-    public Optional<Calificacion> findById(String id) { return repo.findById(id); }
+    public Optional<Calificacion> findById(String id) { 
+        @SuppressWarnings("null")
+        String safeId = id != null ? id : "";
+        return repo.findById(safeId); 
+    }
 
-    public Calificacion save(Calificacion c) { return repo.save(c); }
+    public Calificacion save(Calificacion c) { 
+        @SuppressWarnings("null")
+        Calificacion safeC = c;
+        return repo.save(safeC); 
+    }
 
-    public void deleteById(String id) { repo.deleteById(id); }
+    public void deleteById(String id) { 
+        @SuppressWarnings("null")
+        String safeId = id != null ? id : "";
+        repo.deleteById(safeId); 
+    }
 }

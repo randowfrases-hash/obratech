@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyectos en Proceso | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        .glass-panel { background: rgba(26, 26, 26, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        .project-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: transparent; transition: all 0.3s ease; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px -5px rgba(0,0,0,0.5); border-color: rgba(255, 152, 0, 0.3); }
+        .project-card:hover::before { background: #FF9800; }
+        .badge-pending { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .badge-active { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; }
+        .badge-completed { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; }
+        .progress-bar-inner { transition: width 1s ease-out; background: linear-gradient(90deg, #FF9800, #FF6B00); }
+    </style>
+    <script>
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#FF9800", "primary-hover": "#FF8000", "background-dark": "#121212", "surface-dark": "#1A1A1A", "surface-light": "#242424", "text-main-dark": "#FFFFFF", "text-secondary-dark": "#A0A0A0" }, fontFamily: { "display": ["Outfit", "sans-serif"], "body": ["Work Sans", "sans-serif"] }, }, }, }
+    </script>
+</head>
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <div th:if="${session.usuario != null and #lists.contains(session.usuario.roles, 'ROLE_CLIENT')}">
+                <a th:href="@{/proyectos/publicar}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">add_circle</span>
+                    <span class="font-medium">Publicar Proyectos</span>
+                </a>
+                <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                    <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder</span>
+                    <span class="font-medium">Mis Proyectos</span>
+                </a>
+                <a th:href="@{/clientes/proyectos-en-proceso}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                    <span class="material-symbols-outlined">engineering</span>
+                    <span class="font-semibold">Proyectos en Proceso</span>
+                </a>
+            </div>
+        </nav>
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs" th:text="${session.usuario.role}">Rol</p>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0">
+        <header class="bg-surface-dark border-b border-white/5 px-6 md:px-12 py-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight">Proyectos en Proceso</h1>
+                    <p class="text-text-secondary-dark font-medium">Ver los proyectos activos que aún no se han completado.</p>
+                </div>
+                <a th:href="@{/proyectos/publicar}" class="gradient-bg text-background-dark font-display font-bold px-6 py-3 rounded-xl flex items-center justify-center space-x-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1">
+                    <span class="material-symbols-outlined">add</span>
+                    <span>Nuevo Proyecto</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="p-6 md:p-12 flex-1">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Total Proyectos</p>
+                            <p class="text-4xl font-display font-bold text-white" th:text="${totalProyectos}">0</p>
+                        </div>
+                        <div class="w-14 h-14 bg-surface-light rounded-2xl flex items-center justify-center border border-white/10 shadow-lg">
+                            <span class="material-symbols-outlined text-white text-3xl">home_work</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">En Progreso</p>
+                            <p class="text-4xl font-display font-bold text-blue-400" th:text="${proyectosEnProgreso}">0</p>
+                        </div>
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30 shadow-lg">
+                            <span class="material-symbols-outlined text-blue-400 text-3xl">engineering</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-text-secondary-dark text-xs font-display uppercase tracking-wider font-semibold mb-1">Completados</p>
+                            <p class="text-4xl font-display font-bold text-green-400" th:text="${proyectosCompletados}">0</p>
+                        </div>
+                        <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30 shadow-lg">
+                            <span class="material-symbols-outlined text-green-400 text-3xl">task_alt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${proyectos.isEmpty()}" class="glass-panel rounded-3xl p-16 text-center max-w-2xl mx-auto border-dashed border-2 border-white/20">
+                <div class="w-24 h-24 bg-surface-light rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
+                    <span class="material-symbols-outlined outline text-primary text-5xl -rotate-3">hourglass_top</span>
+                </div>
+                <h2 class="text-2xl font-display font-bold text-white mb-3">No hay proyectos en proceso</h2>
+                <p class="text-text-secondary-dark mb-8">Publica un nuevo proyecto o revisa tu historial para ver su estado.</p>
+                <a th:href="@{/proyectos/mis-proyectos}" class="inline-flex gradient-bg text-background-dark font-display font-bold px-8 py-3.5 rounded-xl items-center gap-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all">
+                    Ver historial completo
+                </a>
+            </div>
+
+            <div th:if="${!proyectos.isEmpty()}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div th:each="proyecto : ${proyectos}" class="glass-panel project-card rounded-2xl p-6 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined outline text-text-secondary-dark text-sm">architecture</span>
+                            <span class="text-xs font-display text-text-secondary-dark font-semibold uppercase tracking-wider" th:text="${proyecto.tipoProyecto}">Tipo</span>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-display font-bold tracking-wide flex items-center gap-1.5"
+                              th:classappend="${proyecto.estadoValidacion == 'PENDIENTE' ? 'badge-pending' : proyecto.estadoEjecucion == 'COMPLETADO' ? 'badge-completed' : 'badge-active'}">
+                            <span th:if="${proyecto.estadoEjecucion != 'COMPLETADO'}" class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                            <span th:text="${proyecto.estadoValidacion == 'PENDIENTE' ? 'En Verificación' : proyecto.estadoEjecucion}">Estado</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-display font-bold text-white mb-2 leading-tight group-hover:text-primary transition-colors" th:text="${proyecto.titulo}">Título del Proyecto</h3>
+                    <p class="text-text-secondary-dark text-sm mb-6 line-clamp-2" th:text="${proyecto.descripcion}">Descripción</p>
+                    <div class="flex items-end justify-between mb-6 pb-6 border-b border-white/5">
+                        <div class="flex items-center gap-2 text-text-secondary-dark">
+                            <span class="material-symbols-outlined outline text-lg">location_on</span>
+                            <span class="text-sm font-medium" th:text="${proyecto.ubicacion}">Ubicación</span>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] uppercase font-display font-semibold tracking-wider text-text-secondary-dark mb-0.5">Presupuesto</p>
+                            <p class="text-xl font-display font-bold text-primary">$<span th:text="${#numbers.formatInteger(proyecto.presupuesto, 0)}">0</span></p>
+                        </div>
+                    </div>
+                    <div class="mb-6 flex-grow">
+                        <div class="flex justify-between text-xs font-display font-medium text-text-secondary-dark mb-2">
+                            <span>Progreso</span>
+                            <span th:text="${proyecto.estadoEjecucion == 'COMPLETADO' ? '100%' : proyecto.estadoEjecucion == 'EN_PROGRESO' ? '65%' : '0%'}">0%</span>
+                        </div>
+                        <div class="h-2 w-full bg-surface-light rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full progress-bar-inner rounded-full" th:style="'width: ' + ${proyecto.estadoEjecucion == 'COMPLETADO' ? '100%' : proyecto.estadoEjecucion == 'EN_PROGRESO' ? '65%' : '0%'}"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 pt-2">
+                        <a th:href="@{/proyectos/{id}(id=${proyecto.id})}" class="col-span-1 bg-surface-light hover:bg-white/10 text-white py-2.5 rounded-xl flex items-center justify-center transition-colors group border border-white/5" title="Ver Detalles">
+                            <span class="material-symbols-outlined outline group-hover:text-primary transition-colors">visibility</span>
+                        </a>
+                        <a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}" class="col-span-1 bg-surface-light hover:bg-white/10 text-white py-2.5 rounded-xl flex items-center justify-center transition-colors group border border-white/5" title="Editar">
+                            <span class="material-symbols-outlined outline group-hover:text-blue-400 transition-colors">edit_square</span>
+                        </a>
+                        <a th:href="@{/postulaciones/{id}/postulantes(id=${proyecto.id})}" class="col-span-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 py-2.5 rounded-xl flex items-center justify-center transition-colors border border-blue-500/20" title="Ver Postulaciones">
+                            <span class="material-symbols-outlined outline">group</span>
+                        </a>
+                        <form th:action="@{/proyectos/{id}/eliminar(id=${proyecto.id})}" method="post" class="col-span-1">
+                            <button type="submit" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2.5 rounded-xl transition-colors border border-red-500/20">
+                                <span class="material-symbols-outlined outline">delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

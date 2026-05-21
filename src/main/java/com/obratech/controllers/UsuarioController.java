@@ -1,17 +1,20 @@
 package com.obratech.controllers;
 
-import com.obratech.entity.Usuario;
-import com.obratech.service.UsuarioService;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.obratech.entity.Usuario;
+import com.obratech.service.UsuarioService;
+
 /**
- * b. Gestión de usuarios y roles — solo accesible por ROLE_ADMIN.
+ *Gestin de usuarios y roles 
  */
 @Controller
 @RequestMapping("/admin/usuarios")
@@ -39,7 +42,7 @@ public class UsuarioController {
         return "redirect:/admin/usuarios";
     }
 
-    /** Elimina un usuario (solo admin) */
+    /** Elimina un usuario  */
     @PostMapping("/{id}/eliminar")
     public String eliminarUsuario(@PathVariable String id, RedirectAttributes ra) {
         usuarioService.deleteById(id);

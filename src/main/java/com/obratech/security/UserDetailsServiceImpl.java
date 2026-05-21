@@ -1,7 +1,6 @@
 package com.obratech.security;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,22 +30,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByUsername(normalizedUsername)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + normalizedUsername));
 
-        // ── Verificar si la cuenta está activa  ──────────
+        //  Verificar si la cuenta est activa  
         if (!usuario.isActivo()) {
             throw new UsernameNotFoundException("La cuenta ha sido desactivada. Contacta al administrador.");
         }
 
-        // ── Verificar bloqueo temporal por intentos fallidos ─────────────────────
+        //  Verificar bloqueo temporal por intentos fallidos 
         if (usuario.getBloqueadoHasta() != null && LocalDateTime.now().isBefore(usuario.getBloqueadoHasta())) {
-            throw new UsernameNotFoundException("Cuenta temporalmente bloqueada. Intenta de nuevo más tarde.");
+            throw new UsernameNotFoundException("Cuenta temporalmente bloqueada. Intenta de nuevo ms tarde.");
         }
 
-        GrantedAuthority authority = new SimpleGrantedAuthority(usuario.getRole());
+        java.util.List<GrantedAuthority> authorities = usuario.getRoles().stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(java.util.stream.Collectors.toList());
 
         return User.builder()
                 .username(usuario.getUsername())
                 .password(usuario.getPassword())
-                .authorities(Collections.singletonList(authority))
+                .authorities(authorities)
                 .accountLocked(usuario.getBloqueadoHasta() != null && LocalDateTime.now().isBefore(usuario.getBloqueadoHasta()))
                 .disabled(!usuario.isActivo())
                 .build();

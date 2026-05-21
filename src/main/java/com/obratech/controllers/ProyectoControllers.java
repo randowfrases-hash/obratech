@@ -2,6 +2,7 @@ package com.obratech.controllers;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -17,7 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.obratech.entity.Proyecto;
 import com.obratech.entity.Usuario;
+import com.obratech.entity.EquipoTrabajo;
+import com.obratech.entity.enums.EstadoAsignacion;
+import com.obratech.entity.enums.EstadoEjecucion;
 import com.obratech.repository.ProyectoRepository;
+import com.obratech.repository.EquipoTrabajoRepository;
 import com.obratech.service.ProyectoService;
 
 import jakarta.servlet.http.HttpSession;
@@ -35,12 +40,25 @@ public class ProyectoControllers {
     @Autowired
     private GridFsTemplate gridFsTemplate;
 
+    @Autowired
+    private com.obratech.repository.UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private EquipoTrabajoRepository equipoTrabajoRepository;
+
     @GetMapping("/publicar")
     public String mostrarFormularioProyecto(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
+
+        // Consultar el estado real en la BD
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(null);
+        if (dbUsuario == null || !dbUsuario.isVerificado()) {
+            return "redirect:/desboard?errorVerificacion=true";
+        }
+
         model.addAttribute("proyecto", new Proyecto());
-        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuario", dbUsuario);
         return "publicar-proyecto-new";
     }
 
@@ -54,10 +72,16 @@ public class ProyectoControllers {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
-        proyecto.setEstadoAsignacion("Sin asignar");
-        proyecto.setEstadoEjecucion("Pendiente");
+        // Consultar el estado real en la BD
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(null);
+        if (dbUsuario == null || !dbUsuario.isVerificado()) {
+            return "redirect:/desboard?errorVerificacion=true";
+        }
+
+        proyecto.setEstadoAsignacion(EstadoAsignacion.SIN_ASIGNAR);
+        proyecto.setEstadoEjecucion(EstadoEjecucion.PENDIENTE);
         proyecto.setFechaCreacion(java.time.LocalDateTime.now());
-        proyecto.setCliente(usuario);
+        proyecto.setCliente(dbUsuario);
 
         if (proyecto.getFechaInicio() == null) {
             proyecto.setFechaInicio(LocalDate.now());
@@ -73,7 +97,7 @@ public class ProyectoControllers {
             } catch (Exception e) {
                 model.addAttribute("error", "Error al subir el documento: " + e.getMessage());
                 model.addAttribute("proyecto", proyecto);
-                model.addAttribute("usuario", usuario);
+                model.addAttribute("usuario", dbUsuario);
                 return "publicar-proyecto-new";
             }
         }
@@ -91,23 +115,18 @@ public class ProyectoControllers {
             return "redirect:/login";
         }
 
-        List<Proyecto> proyectos = proyectoRepository.findAll();
-    proyectos = proyectos.stream()
-        // compare by username because Cliente and Usuario have different primary keys
-        .filter(p -> p.getCliente() != null && p.getCliente().getUsername() != null && p.getCliente().getUsername().equals(usuario.getUsername()))
-        .toList();
+        Usuario dbUsuario = usuarioRepository.findByUsernameIgnoreCase(usuario.getUsername()).orElse(usuario);
+        List<Proyecto> proyectos = proyectoRepository.findByClienteId(dbUsuario.getId());
+        if (proyectos == null) {
+            proyectos = new ArrayList<>();
+        }
 
-        long enProgreso = proyectos.stream()
-                .filter(p -> "En Progreso".equals(p.getEstadoEjecucion()))
-                .count();
-
-        long completados = proyectos.stream()
-                .filter(p -> "Completado".equals(p.getEstadoEjecucion()))
-                .count();
+        long enProgreso = proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.EN_PROGRESO);
+        long completados = proyectoRepository.countByClienteIdAndEstadoEjecucion(usuario.getId(), EstadoEjecucion.COMPLETADO);
 
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("usuario", usuario);
-        model.addAttribute("totalProyectos", proyectos.size());
+        model.addAttribute("totalProyectos", proyectoRepository.countByClienteId(usuario.getId()));
         model.addAttribute("proyectosEnProgreso", enProgreso);
         model.addAttribute("proyectosCompletados", completados);
 
@@ -127,7 +146,9 @@ public class ProyectoControllers {
             return "redirect:/login";
         }
 
-    Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+    @SuppressWarnings("null")
+    String safeId1 = id != null ? id : "";
+    Proyecto proyecto = proyectoRepository.findById(safeId1).orElse(null);
 
     // Allow access if the session user is the project owner (cliente)
     boolean isOwner = proyecto != null && proyecto.getCliente() != null
@@ -139,12 +160,16 @@ public class ProyectoControllers {
         && proyecto.getContratistaAsignado().getUsername() != null
         && proyecto.getContratistaAsignado().getUsername().equalsIgnoreCase(usuario.getUsername());
 
-    if (proyecto == null || !(isOwner || isAssignedContractor)) {
+    boolean isAdmin = usuario.getRoles() != null && usuario.getRoles().contains("ROLE_ADMIN");
+
+    if (proyecto == null || !(isOwner || isAssignedContractor || isAdmin)) {
         return "redirect:/proyectos/mis-proyectos";
     }
 
         model.addAttribute("proyecto", proyecto);
         model.addAttribute("usuario", usuario);
+        List<EquipoTrabajo> equipos = equipoTrabajoRepository.findByProyectoId(proyecto.getId());
+        model.addAttribute("equipos", equipos);
         return "detalles-proyecto";
     }
 
@@ -161,7 +186,9 @@ public class ProyectoControllers {
             return "redirect:/login";
         }
 
-        Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+        @SuppressWarnings("null")
+        String safeId3 = id != null ? id : "";
+        Proyecto proyecto = proyectoRepository.findById(safeId3).orElse(null);
 
      if (proyecto == null || 
          proyecto.getCliente() == null || proyecto.getCliente().getUsername() == null || !proyecto.getCliente().getUsername().equals(usuario.getUsername())) {
@@ -186,7 +213,9 @@ public class ProyectoControllers {
             return "redirect:/login";
         }
 
-        Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+        @SuppressWarnings("null")
+        String safeId4 = id != null ? id : "";
+        Proyecto proyecto = proyectoRepository.findById(safeId4).orElse(null);
 
         if (proyecto == null || 
             proyecto.getCliente() == null || proyecto.getCliente().getUsername() == null || !proyecto.getCliente().getUsername().equals(usuario.getUsername())) {
@@ -201,6 +230,7 @@ public class ProyectoControllers {
         proyecto.setFechaEntrega(proyectoEditado.getFechaEntrega());
         proyecto.setPlazoEstimado(proyectoEditado.getPlazoEstimado());
         proyecto.setAreaTotal(proyectoEditado.getAreaTotal());
+        proyecto.setObservaciones(proyectoEditado.getObservaciones());
 
         proyectoRepository.save(proyecto);
 
@@ -222,7 +252,9 @@ public class ProyectoControllers {
         Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
 
         if (proyecto != null && (proyecto.getCliente() == null || (proyecto.getCliente().getUsername() != null && proyecto.getCliente().getUsername().equals(usuario.getUsername())))) {
-            proyectoRepository.deleteById(id);
+            @SuppressWarnings("null")
+            String safeId2 = id != null ? id : "";
+            proyectoRepository.deleteById(safeId2);
         }
 
         return "redirect:/proyectos/mis-proyectos";

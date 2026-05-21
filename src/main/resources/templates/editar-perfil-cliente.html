@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Perfil - Cliente | ObraTech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajustes de Perfil Cliente | ObraTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%);
-        }
-        .profile-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #242424 100%);
-            border: 1px solid rgba(255, 152, 0, 0.2);
-            transition: all 0.3s ease;
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.outline { font-variation-settings: 'FILL' 0; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #FF9800 0%, #FF6B00 100%); }
+        
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
     </style>
     <script>
@@ -27,54 +28,67 @@
                 extend: {
                     colors: {
                         "primary": "#FF9800",
+                        "primary-hover": "#FF8000",
                         "background-dark": "#121212",
                         "surface-dark": "#1A1A1A",
-                        "text-main-dark": "#E0E0E0",
+                        "surface-light": "#242424",
+                        "text-main-dark": "#FFFFFF",
                         "text-secondary-dark": "#A0A0A0",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Work Sans", "sans-serif"]
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-background-dark font-display text-white">
+
+<body class="bg-background-dark font-body text-white min-h-screen flex selection:bg-primary/30">
+
     <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-gray-800 z-40">
-        <div class="p-6 border-b border-gray-800">
+    <div class="fixed left-0 top-0 h-full w-64 bg-surface-dark border-r border-white/5 z-50 hidden md:block">
+        <div class="p-6 border-b border-white/5">
             <div class="flex items-center space-x-3">
-                <img alt="ObraTech Logo" class="h-10" src="/img/logo3.png" />
-                <span class="text-xl font-bold text-white">ObraTech</span>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-background-dark font-bold">construction</span>
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">ObraTech</span>
             </div>
         </div>
-        <nav class="p-4 space-y-2">
-            <a th:href="@{/desboard}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-secondary-dark">dashboard</span>
-                <span class="text-text-secondary-dark">Dashboard</span>
+        <nav class="p-4 space-y-2 mt-4 font-display">
+            <a th:href="${#lists.contains(usuario.roles, 'ROLE_CONTRACTOR') ? '/desboard-contratista' : '/desboard'}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">dashboard</span>
+                <span class="font-medium">Dashboard</span>
             </a>
-            <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-secondary-dark">folder</span>
-                <span class="text-text-secondary-dark">Mis Proyectos</span>
+            <a th:href="@{/proyectos/mis-proyectos}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl text-text-secondary-dark hover:bg-white/5 hover:text-white transition-all group">
+                <span class="material-symbols-outlined outline group-hover:scale-110 transition-transform">folder_open</span>
+                <span class="font-medium">Mis Proyectos</span>
             </a>
-            <a th:href="@{/perfil-cliente}" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary/20 border-l-3 border-primary">
-                <span class="material-symbols-outlined text-primary">person</span>
-                <span class="text-primary font-medium">Mi Perfil</span>
-            </a>
+            
+            <div class="mt-4 border-t border-white/5 pt-4">
+                <a th:href="@{/perfil-cliente}" class="flex items-center space-x-3 px-4 py-3.5 rounded-xl bg-primary/10 text-primary transition-all relative overflow-hidden group">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="font-semibold">Mi Perfil</span>
+                </a>
+            </div>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center">
-                    <span th:text="${session.usuario.username != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}"></span>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-surface-dark/80 backdrop-blur">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-full flex items-center justify-center shadow-lg font-bold">
+                    <span th:text="${session.usuario != null ? session.usuario.username.substring(0,1).toUpperCase() : 'U'}">U</span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-text-main-dark font-medium text-sm" th:text="${session.usuario.username}">Usuario</p>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-text-main-dark font-medium text-sm truncate" th:text="${session.usuario.username}">Usuario</p>
+                    <p class="text-primary text-xs font-semibold uppercase">Cliente</p>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="w-full">
-                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary-dark hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all font-display text-sm font-medium group">
+                    <span class="material-symbols-outlined outline text-lg group-hover:translate-x-1 transition-transform">logout</span>
                     <span>Cerrar Sesión</span>
                 </button>
             </form>
@@ -82,76 +96,76 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="md:ml-64 flex-1 flex flex-col min-w-0 relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
         <!-- Header -->
-        <header class="bg-surface-dark border-b border-gray-800 px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a th:href="@{/perfil-cliente}" class="text-text-secondary-dark hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                    </a>
-                    <div>
-                        <h1 class="text-2xl font-bold text-white">Editar Perfil</h1>
-                        <p class="text-text-secondary-dark text-sm mt-1">Actualiza tu información personal y de contacto</p>
-                    </div>
-                </div>
+        <header class="bg-surface-dark/50 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-8 relative z-10 sticky top-0 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2 tracking-tight">Editar Perfil</h1>
+                <p class="text-text-secondary-dark font-medium">Actualiza tu información personal para conectar mejor en ObraTech.</p>
             </div>
+            <a th:href="@{/perfil-cliente}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-surface-light border border-white/10 hover:bg-white/10 rounded-xl text-white font-display font-medium transition-colors">
+                <span class="material-symbols-outlined outline text-[20px]">arrow_back</span>
+                Volver al Perfil
+            </a>
         </header>
 
-        <!-- Content -->
-        <main class="p-8">
-            <div class="max-w-2xl mx-auto">
-                <div class="profile-card rounded-2xl p-8 mb-8">
-                    <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
-                        <span class="material-symbols-outlined text-primary">edit_note</span>
-                        <span>Datos del Cliente</span>
-                    </h3>
-                    
-                    <form th:action="@{/perfil-cliente/editar}" method="post" class="space-y-6">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-text-secondary-dark text-sm font-medium mb-2">Nombre</label>
-                                <input type="text" name="nombre" th:value="${cliente != null ? cliente.nombre : ''}" 
-                                       class="w-full bg-surface-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                                       placeholder="Ingresa tu nombre">
-                            </div>
-                            <div>
-                                <label class="block text-text-secondary-dark text-sm font-medium mb-2">Apellido</label>
-                                <input type="text" name="apellido" th:value="${cliente != null ? cliente.apellido : ''}" 
-                                       class="w-full bg-surface-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                                       placeholder="Ingresa tu apellido">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-text-secondary-dark text-sm font-medium mb-2">Empresa (Opcional)</label>
-                            <input type="text" name="empresa" th:value="${cliente != null ? cliente.empresa : ''}" 
-                                   class="w-full bg-surface-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                                   placeholder="Nombre de tu empresa">
-                        </div>
-
-                        <div>
-                            <label class="block text-text-secondary-dark text-sm font-medium mb-2">Teléfono de Contacto</label>
-                            <input type="tel" name="telefono" th:value="${cliente != null ? cliente.telefono : ''}" 
-                                   class="w-full bg-surface-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                                   placeholder="Ej. 3001234567">
-                        </div>
-
-                        <div class="flex flex-col md:flex-row gap-4 pt-4 border-t border-gray-700">
-                            <button type="submit" class="flex-1 gradient-bg hover:opacity-90 px-6 py-3 rounded-lg text-white font-semibold transition-all flex items-center justify-center space-x-2">
-                                <span class="material-symbols-outlined">save</span>
-                                <span>Guardar Cambios</span>
-                            </button>
-                            <a th:href="@{/perfil-cliente}" class="flex-1 bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg text-white font-semibold transition-colors flex items-center justify-center space-x-2">
-                                <span>Cancelar</span>
-                            </a>
-                        </div>
-                    </form>
+        <main class="p-6 md:p-12 relative z-10 flex-1 max-w-4xl mx-auto w-full">
+            
+            <div th:if="${param.exito}" class="mb-8 glass-panel border-green-500/30 bg-green-500/10 p-5 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-green-400">check_circle</span>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-green-400">¡Actualización Exitosa!</h3>
+                    <p class="text-sm text-green-400/80 mt-0.5">Tus datos han sido guardados correctamente.</p>
                 </div>
             </div>
+
+            <form th:action="@{/perfil-cliente/editar}" method="post" class="glass-panel p-8 md:p-10 rounded-3xl border border-white/5 space-y-10">
+                
+                <div>
+                    <h2 class="font-display font-bold text-xl text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">badge</span>
+                        Datos del Cliente
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Nombre</label>
+                            <input type="text" name="nombre" th:value="${cliente != null ? cliente.nombre : ''}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. Juan Manuel" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Apellido</label>
+                            <input type="text" name="apellido" th:value="${cliente != null ? cliente.apellido : ''}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. Pérez" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Empresa (Opcional)</label>
+                            <input type="text" name="empresa" th:value="${cliente != null ? cliente.empresa : ''}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Nombre de tu empresa">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-text-secondary-dark uppercase tracking-widest">Teléfono de Contacto</label>
+                            <input type="tel" name="telefono" th:value="${cliente != null ? cliente.telefono : ''}" class="w-full bg-surface-light border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text-secondary-dark/50" placeholder="Ej. +57 300 000 0000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 mt-10 border-t border-white/5">
+                    <a th:href="@{/perfil-cliente}" class="px-6 py-3.5 rounded-xl border border-white/10 text-white hover:bg-white/5 font-display font-bold transition-colors text-center text-sm">Cancelar</a>
+                    <button type="submit" class="gradient-bg text-background-dark font-display font-bold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,152,0,0.4)] transition-all hover:-translate-y-1 text-sm">
+                        <span class="material-symbols-outlined text-[20px]">save</span> Guardar Cambios
+                    </button>
+                </div>
+
+            </form>
         </main>
     </div>
+
 <script src="/js/obratech.js"></script>
 </body>
 </html>
